@@ -1,9 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { ALL_CARDS } from "@/lib/tarot-cards";
+import { getTarotImage } from "@/lib/tarot-images";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
+import { Sun, Sparkles } from "lucide-react";
 
 type CardOfDay = {
+  id: string;
   name: string;
   emoji: string;
   suit: string;
@@ -29,6 +34,7 @@ export default function CarteDuJourPage() {
   const [reading, setReading] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [intention, setIntention] = useState("");
+  const { profile, addReading } = useUserProfile();
 
   useEffect(() => {
     setCard(getDailyCard());
@@ -44,16 +50,20 @@ export default function CarteDuJourPage() {
       const res = await fetch("/api/carte-du-jour", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ card, intention }),
+        body: JSON.stringify({ card, intention, profile }),
       });
       if (!res.ok || !res.body) throw new Error();
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
+      let full = "";
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        setReading((p) => p + decoder.decode(value, { stream: true }));
+        const chunk = decoder.decode(value, { stream: true });
+        full += chunk;
+        setReading((p) => p + chunk);
       }
+      addReading({ type: "carte du jour", title: `${card.name}${card.reversed ? " (inversée)" : ""}`, content: full });
     } catch {
       setReading("La carte du jour garde son mystère... Réessayez dans quelques instants.");
     } finally {
@@ -63,82 +73,113 @@ export default function CarteDuJourPage() {
 
   if (!card) return null;
 
+  const imageUrl = getTarotImage(card.id);
+
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="max-w-3xl mx-auto px-6 py-16">
       <div className="fade-in-up">
-        <div className="text-center mb-8">
-          <div className="text-5xl mb-4 float-anim">🌅</div>
-          <h1 className="text-3xl font-bold text-purple-100 mb-2">Carte du Jour</h1>
-          <p className="text-purple-400 text-sm capitalize">{today}</p>
+        <div className="text-center mb-12">
+          <div className="badge-gold mb-5">
+            <Sun size={11} className="inline mr-2" />
+            Votre guidance du jour
+          </div>
+          <h1 className="font-serif-display text-5xl text-gradient-cream mb-4">Carte du Jour</h1>
+          <p className="font-serif-text italic text-[#c9b88a] text-lg capitalize">{today}</p>
         </div>
 
         {!revealed ? (
-          <div className="flex flex-col items-center gap-6">
-            <p className="text-purple-300/70 text-sm max-w-sm text-center">
-              Une carte unique vous accompagne chaque jour. Concentrez-vous sur votre journée, puis révélez votre guidance.
+          <div className="flex flex-col items-center gap-8">
+            <p className="text-[#c9b88a] text-center max-w-md font-serif-text italic text-lg">
+              &ldquo;Une carte unique vous accompagne aujourd&apos;hui. Concentrez-vous sur votre journée, puis révélez votre guidance.&rdquo;
             </p>
 
-            {/* Intention input */}
             <div className="w-full max-w-md">
-              <label className="text-purple-400 text-xs block mb-2">Votre intention du jour (optionnel)</label>
+              <label className="luxe-label">Votre intention du jour (optionnel)</label>
               <input
                 value={intention}
                 onChange={(e) => setIntention(e.target.value)}
                 placeholder="Ce sur quoi vous souhaitez une guidance..."
-                className="w-full bg-purple-900/20 border border-purple-700/40 rounded-xl px-4 py-3 text-purple-100 placeholder-purple-500/50 focus:outline-none focus:border-purple-500 text-sm"
+                className="luxe-input"
               />
             </div>
 
-            {/* Card back - unflipped */}
             <div
               onClick={() => setRevealed(true)}
-              className="w-36 h-52 rounded-2xl border-2 border-purple-600/60 bg-gradient-to-b from-[#12003a] to-[#0d0030] flex flex-col items-center justify-center cursor-pointer hover:border-purple-400 hover:shadow-[0_0_40px_rgba(124,58,237,0.4)] transition-all duration-500 hover:scale-105"
+              className="card-scene cursor-pointer group"
+              style={{ width: 200, height: 340 }}
             >
-              <div className="text-5xl text-purple-600 mb-2">✦</div>
-              <div className="text-xs text-purple-600 font-cinzel text-center px-4">Cliquez pour révéler</div>
-              <div className="text-[10px] text-purple-700 mt-2">votre carte du jour</div>
+              <div className="card-3d">
+                <div className="card-face card-back-face">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="text-[#d4af6f] text-3xl">✦</div>
+                    <div className="w-16 h-16 rounded-full border-2 border-[rgba(212,175,111,0.5)] flex items-center justify-center">
+                      <div className="text-[#d4af6f] text-2xl">☽</div>
+                    </div>
+                    <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f]">Cliquez</div>
+                    <div className="text-[#d4af6f] text-3xl">✦</div>
+                  </div>
+                  <div className="absolute inset-0 opacity-15" style={{
+                    backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212,175,111,0.25) 10px, rgba(212,175,111,0.25) 11px)",
+                  }} />
+                </div>
+              </div>
             </div>
 
-            <p className="text-purple-600 text-xs">La même carte vous accompagne toute la journée</p>
+            <p className="text-[11px] tracking-widest uppercase text-[#8a6f3a]">Une seule carte par jour, immuable</p>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-6">
-            {/* Revealed card */}
-            <div className="w-36 h-52 rounded-2xl border-2 border-yellow-500/70 bg-gradient-to-b from-[#0d0025] to-[#1a0048] flex flex-col items-center justify-center shadow-[0_0_40px_rgba(255,215,0,0.2)]">
-              <div className={`text-5xl text-yellow-300 font-bold mb-2 ${card.reversed ? "rotate-180" : ""}`}>
-                {card.emoji}
-              </div>
-              <div className="text-xs font-cinzel text-purple-300 text-center px-2">{card.name}</div>
-              {card.reversed && <div className="text-[9px] text-red-400 mt-1">Inversée</div>}
+          <div className="flex flex-col items-center gap-8">
+            {/* Revealed card with real image */}
+            <div className="relative" style={{ width: 220, height: 380 }}>
+              {imageUrl ? (
+                <div className={`relative w-full h-full rounded-sm overflow-hidden border-2 border-[#d4af6f] shadow-[0_0_60px_rgba(212,175,111,0.3)] ${card.reversed ? "rotate-180" : ""}`}>
+                  <Image src={imageUrl} alt={card.name} fill unoptimized className="object-cover" sizes="220px" />
+                </div>
+              ) : (
+                <div className="w-full h-full rounded-sm border-2 border-[#d4af6f] bg-gradient-to-b from-[#15102b] to-[#07040d] flex flex-col items-center justify-center">
+                  <div className={`text-7xl text-[#d4af6f] mb-4 ${card.reversed ? "rotate-180" : ""}`}>{card.emoji}</div>
+                  <div className="font-serif-display text-cream text-center px-4">{card.name}</div>
+                </div>
+              )}
+              {card.reversed && (
+                <div className="absolute -top-2 right-2 badge-premium !text-[9px]">Inversée</div>
+              )}
             </div>
 
-            {/* Card info */}
-            <div className="mystical-card rounded-2xl p-6 w-full max-w-xl">
-              <div className="text-center mb-4">
-                <h2 className="font-cinzel text-xl text-yellow-300 mb-1">{card.name}</h2>
-                <p className="text-purple-400 text-xs">{card.suit} {card.reversed ? "· Position inversée" : ""}</p>
+            {/* Card details */}
+            <div className="luxe-card-premium rounded-sm p-8 w-full max-w-2xl">
+              <div className="text-center mb-6">
+                <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-2">{card.suit}</div>
+                <h2 className="font-serif-display text-3xl text-gradient-cream mb-1">{card.name}</h2>
+                <p className="text-[11px] tracking-widest text-[#8a6f3a]">
+                  {card.number} {card.reversed && "· Position inversée"}
+                </p>
               </div>
 
-              <div className="flex flex-wrap gap-1 justify-center mb-4">
+              <div className="flex flex-wrap gap-2 justify-center mb-6">
                 {card.keywords.map(k => (
-                  <span key={k} className="text-xs bg-purple-900/40 text-purple-300 px-2 py-0.5 rounded">{k}</span>
+                  <span key={k} className="badge-soft">{k}</span>
                 ))}
               </div>
 
-              <p className="text-purple-200/80 text-sm leading-relaxed text-center mb-4">
+              <div className="gold-line mb-6" />
+
+              <p className="font-serif-text text-[#e8dcc0] text-center text-lg leading-relaxed italic mb-6">
                 {card.reversed ? card.meaningReversed : card.upright}
               </p>
 
               {intention && (
-                <div className="bg-purple-900/20 rounded-xl p-3 mb-4">
-                  <p className="text-xs text-purple-400">Intention : <span className="text-purple-300 italic">"{intention}"</span></p>
+                <div className="bg-[rgba(13,8,32,0.6)] border border-[rgba(212,175,111,0.15)] rounded-sm p-4 mb-6">
+                  <div className="text-[10px] tracking-[0.2em] uppercase text-[#d4af6f] mb-1">Votre intention</div>
+                  <p className="font-serif-text italic text-[#c9b88a]">&ldquo;{intention}&rdquo;</p>
                 </div>
               )}
 
               {!reading && !isStreaming && (
                 <div className="text-center">
-                  <button onClick={getReading} className="gradient-btn glow-btn px-8 py-3 rounded-xl text-white font-semibold">
-                    🔮 Message de la carte
+                  <button onClick={getReading} className="btn-gold">
+                    <Sparkles size={14} />
+                    <span>Recevoir le message complet</span>
                   </button>
                 </div>
               )}
@@ -146,11 +187,10 @@ export default function CarteDuJourPage() {
 
             <ReadingResult text={reading} isStreaming={isStreaming} />
 
-            {/* Daily affirmation */}
-            <div className="mystical-card rounded-xl p-4 w-full max-w-xl text-center">
-              <p className="text-xs text-purple-500 mb-2">Affirmation du jour</p>
-              <p className="text-purple-300 italic text-sm">
-                "Aujourd'hui, je m'ouvre aux messages de {card.name} et accueille sa guidance avec gratitude."
+            <div className="luxe-card rounded-sm p-6 w-full max-w-2xl text-center">
+              <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-3">Affirmation du jour</div>
+              <p className="font-serif-text italic text-[#e8dcc0] text-lg leading-relaxed">
+                &ldquo;Aujourd&apos;hui, je m&apos;ouvre aux messages de {card.name} et accueille sa guidance avec gratitude.&rdquo;
               </p>
             </div>
           </div>

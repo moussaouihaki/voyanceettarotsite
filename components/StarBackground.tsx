@@ -4,13 +4,14 @@ import { useMemo } from "react";
 
 export default function StarBackground() {
   const stars = useMemo(() => {
-    return Array.from({ length: 120 }, (_, i) => ({
+    return Array.from({ length: 180 }, (_, i) => ({
       id: i,
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 100}%`,
-      size: Math.random() * 2.5 + 0.5,
-      dur: `${Math.random() * 4 + 2}s`,
-      delay: `${Math.random() * 5}s`,
+      size: Math.random() * 2.5 + 0.3,
+      dur: `${Math.random() * 5 + 2}s`,
+      delay: `${Math.random() * 6}s`,
+      goldChance: Math.random() > 0.85,
     }));
   }, []);
 
@@ -25,6 +26,8 @@ export default function StarBackground() {
             left: s.left,
             width: s.size,
             height: s.size,
+            background: s.goldChance ? "#d4af6f" : "white",
+            boxShadow: s.goldChance ? "0 0 4px rgba(212, 175, 111, 0.6)" : undefined,
             "--dur": s.dur,
             "--delay": s.delay,
           } as React.CSSProperties}
