@@ -128,7 +128,7 @@ export default function TarifsPage() {
   const handleSubscribe = async (tier: SubscriptionTier) => {
     if (tier === "decouverte") {
       if (profile) updateSubscription("decouverte");
-      window.location.href = profile ? "/mon-profil" : "/mon-profil";
+      window.location.href = "/mon-profil";
       return;
     }
 

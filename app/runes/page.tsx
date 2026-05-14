@@ -1,11 +1,15 @@
 "use client";
 import { useState } from "react";
 import { ELDER_FUTHARK, RUNE_SPREADS, drawRunes, type RuneSpread } from "@/lib/runes";
+import { getRuneSpreadIcon } from "@/lib/spread-icons";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
+import { Sparkles, ArrowLeft, RotateCcw, Flame } from "lucide-react";
 
 type DrawnRune = typeof ELDER_FUTHARK[0] & { isReversed: boolean };
 
 export default function RunesPage() {
+  const { profile, addReading } = useUserProfile();
   const [step, setStep] = useState<"choose" | "question" | "draw" | "reading">("choose");
   const [selectedSpread, setSelectedSpread] = useState<RuneSpread | null>(null);
   const [question, setQuestion] = useState("");
@@ -14,10 +18,7 @@ export default function RunesPage() {
   const [reading, setReading] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
 
-  const handleSpreadSelect = (spread: RuneSpread) => {
-    setSelectedSpread(spread);
-    setStep("question");
-  };
+  const handleSpreadSelect = (spread: RuneSpread) => { setSelectedSpread(spread); setStep("question"); };
 
   const handleDraw = () => {
     if (!selectedSpread) return;
@@ -45,16 +46,20 @@ export default function RunesPage() {
       const res = await fetch("/api/runes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ runes: runeData, question, spreadName: selectedSpread.name }),
+        body: JSON.stringify({ runes: runeData, question, spreadName: selectedSpread.name, profile }),
       });
       if (!res.ok || !res.body) throw new Error();
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
+      let full = "";
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        setReading((p) => p + decoder.decode(value, { stream: true }));
+        const chunk = decoder.decode(value, { stream: true });
+        full += chunk;
+        setReading((p) => p + chunk);
       }
+      addReading({ type: "runes", title: selectedSpread.name, content: full, meta: { question } });
     } catch {
       setReading("Les runes gardent leur silence... Réessayez.");
     } finally {
@@ -65,106 +70,155 @@ export default function RunesPage() {
   const reset = () => { setStep("choose"); setRunes([]); setRevealedRunes(new Set()); setReading(""); setQuestion(""); setSelectedSpread(null); };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-6 py-16">
       {step === "choose" && (
         <div className="fade-in-up">
-          <div className="text-center mb-10">
-            <div className="text-5xl mb-4 float-anim">ᚠ</div>
-            <h1 className="text-3xl font-bold text-purple-100 mb-2">Runes Nordiques</h1>
-            <p className="text-purple-400 text-sm max-w-md mx-auto">Elder Futhark — 24 runes de la tradition vikingue. Consultez la sagesse d'Odin.</p>
+          <div className="text-center mb-12">
+            <div className="badge-gold mb-5">
+              <Flame size={11} className="inline mr-2" />
+              Sagesse Nordique
+            </div>
+            <div className="font-serif-display text-7xl text-[#d4af6f] mb-5 float-slow">ᚠ</div>
+            <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-4">Runes Nordiques</h1>
+            <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-2xl mx-auto">
+              Elder Futhark — les 24 runes de la tradition vikingue. Consultez la sagesse d&apos;Odin.
+            </p>
           </div>
 
-          {/* Rune alphabet preview */}
-          <div className="mystical-card rounded-xl p-4 mb-8">
-            <p className="text-xs text-purple-400 mb-3 text-center font-cinzel">Elder Futhark — Les 24 runes</p>
+          <div className="luxe-card rounded-sm p-7 mb-12">
+            <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] text-center mb-5">Elder Futhark · Les 24 runes</div>
             <div className="flex flex-wrap gap-2 justify-center">
               {ELDER_FUTHARK.map(r => (
-                <div key={r.id} className="text-center group cursor-help relative">
-                  <div className="w-10 h-10 rounded-lg bg-purple-900/40 border border-purple-700/30 flex items-center justify-center text-xl text-yellow-300 hover:bg-purple-800/60 transition-all">
+                <div key={r.id} className="group cursor-help">
+                  <div className="w-11 h-11 rounded-sm border border-[rgba(212,175,111,0.2)] bg-[rgba(13,8,32,0.6)] flex items-center justify-center text-2xl text-[#d4af6f] hover:border-[#d4af6f] hover:bg-[rgba(212,175,111,0.08)] transition-all">
                     {r.symbol}
                   </div>
-                  <div className="text-[9px] text-purple-500 mt-0.5">{r.name}</div>
+                  <div className="text-[9px] tracking-wider text-center text-[#8a6f3a] mt-1">{r.name}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Spread selection */}
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {RUNE_SPREADS.map((spread) => (
-              <button key={spread.id} onClick={() => handleSpreadSelect(spread)}
-                className="mystical-card rounded-xl p-5 text-left hover:scale-[1.02] transition-all duration-300 hover:shadow-[0_0_25px_rgba(124,58,237,0.3)]">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-2xl">{spread.emoji}</span>
-                  <span className="text-xs bg-purple-900/60 text-purple-300 px-2 py-0.5 rounded-full">{spread.count} {spread.count === 1 ? "rune" : "runes"}</span>
-                </div>
-                <h3 className="font-cinzel font-bold text-yellow-300 text-sm mb-2">{spread.name}</h3>
-                <p className="text-purple-400/70 text-xs leading-relaxed">{spread.description}</p>
-              </button>
-            ))}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {RUNE_SPREADS.map((spread) => {
+              const Icon = getRuneSpreadIcon(spread.id);
+              return (
+                <button
+                  key={spread.id}
+                  onClick={() => handleSpreadSelect(spread)}
+                  className="luxe-card rounded-sm p-6 text-left group"
+                >
+                  <div className="flex items-start justify-between mb-5">
+                    <div className="w-11 h-11 rounded-sm bg-gradient-to-br from-[rgba(212,175,111,0.12)] to-transparent border border-[rgba(212,175,111,0.3)] flex items-center justify-center group-hover:border-[#d4af6f] transition-colors">
+                      <Icon size={18} className="text-[#d4af6f]" />
+                    </div>
+                    <span className="badge-soft !text-[9px]">
+                      {spread.count} {spread.count === 1 ? "rune" : "runes"}
+                    </span>
+                  </div>
+                  <h3 className="font-serif-display text-lg text-cream group-hover:text-[#e8c875] transition-colors mb-2">
+                    {spread.name}
+                  </h3>
+                  <p className="text-[13px] text-[#c9b88a] leading-relaxed">{spread.description}</p>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
 
       {step === "question" && selectedSpread && (
-        <div className="max-w-xl mx-auto text-center fade-in-up">
-          <div className="text-4xl mb-4">{selectedSpread.emoji}</div>
-          <h2 className="text-2xl font-bold text-purple-100 mb-2 font-cinzel">{selectedSpread.name}</h2>
-          <p className="text-purple-400 text-sm mb-8">{selectedSpread.description}</p>
-          <div className="mystical-card rounded-xl p-4 mb-6 text-left">
-            <p className="text-xs text-purple-400 mb-2 font-cinzel">Positions :</p>
+        <div className="max-w-2xl mx-auto fade-in-up">
+          <div className="text-center mb-10">
+            {(() => {
+              const Icon = getRuneSpreadIcon(selectedSpread.id);
+              return (
+                <div className="w-16 h-16 rounded-sm mx-auto mb-5 border border-[#d4af6f] flex items-center justify-center bg-[rgba(212,175,111,0.08)]">
+                  <Icon size={24} className="text-[#d4af6f]" />
+                </div>
+              );
+            })()}
+            <h2 className="font-serif-display text-4xl text-gradient-cream mb-3">{selectedSpread.name}</h2>
+            <p className="font-serif-text italic text-[#c9b88a] text-lg">{selectedSpread.description}</p>
+          </div>
+
+          <div className="luxe-card rounded-sm p-6 mb-8">
+            <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-4">Positions</div>
             <div className="flex flex-wrap gap-2">
               {selectedSpread.positions.map((p, i) => (
-                <span key={i} className="text-xs bg-purple-900/40 text-purple-300 px-2 py-1 rounded">{p}</span>
+                <span key={i} className="badge-soft">
+                  <span className="text-[#d4af6f] mr-1.5">{i + 1}.</span>
+                  {p}
+                </span>
               ))}
             </div>
           </div>
-          <textarea value={question} onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Votre question (optionnel) — Concentrez-vous sur Odin..."
-            rows={3} className="w-full bg-purple-900/20 border border-purple-700/40 rounded-xl p-4 text-purple-100 placeholder-purple-500/50 focus:outline-none focus:border-purple-500 resize-none mb-6 text-sm" />
-          <div className="flex gap-3 justify-center">
-            <button onClick={() => setStep("choose")} className="px-6 py-3 rounded-xl border border-purple-700/40 text-purple-300 hover:bg-purple-900/30 transition-all text-sm">← Retour</button>
-            <button onClick={handleDraw} className="gradient-btn glow-btn px-8 py-3 rounded-xl text-white font-semibold text-sm">Tirer les runes ᚠ</button>
+
+          <div className="mb-8">
+            <label className="luxe-label">Votre question (optionnel)</label>
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Concentrez-vous sur Odin avant de tirer..."
+              rows={3}
+              className="luxe-input resize-none"
+            />
+          </div>
+
+          <div className="flex gap-3 justify-center flex-wrap">
+            <button onClick={() => setStep("choose")} className="btn-ghost">
+              <ArrowLeft size={13} className="inline mr-2" />
+              <span>Retour</span>
+            </button>
+            <button onClick={handleDraw} className="btn-gold">
+              <Sparkles size={14} />
+              <span>Tirer les runes</span>
+            </button>
           </div>
         </div>
       )}
 
       {(step === "draw" || step === "reading") && selectedSpread && (
         <div className="fade-in-up">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-purple-100 mb-1 font-cinzel">{selectedSpread.name}</h2>
-            {question && <p className="text-purple-400 text-sm italic">"{question}"</p>}
+          <div className="text-center mb-10">
+            <h2 className="font-serif-display text-3xl text-gradient-cream mb-2">{selectedSpread.name}</h2>
+            {question && <p className="font-serif-text italic text-[#c9b88a] mt-2">&ldquo;{question}&rdquo;</p>}
+            {step === "draw" && !allRevealed && (
+              <p className="text-[11px] tracking-[0.2em] uppercase text-[#d4af6f] mt-4">Cliquez sur chaque rune pour la révéler</p>
+            )}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-5 mb-8 max-w-3xl mx-auto">
+          <div className="flex flex-wrap justify-center gap-6 mb-10 max-w-4xl mx-auto">
             {runes.map((rune, i) => (
-              <div key={rune.id} className="flex flex-col items-center gap-2">
-                <div className="text-xs text-purple-400 font-cinzel text-center max-w-[100px]">{selectedSpread.positions[i]}</div>
+              <div key={rune.id} className="flex flex-col items-center gap-3">
+                <div className="text-[10px] tracking-[0.2em] uppercase text-[#d4af6f] text-center max-w-[110px] font-serif-display">
+                  {selectedSpread.positions[i]}
+                </div>
                 <div
                   onClick={() => !revealedRunes.has(i) && revealRune(i)}
-                  className={`w-20 h-28 rounded-xl border-2 flex flex-col items-center justify-center cursor-pointer transition-all duration-500 ${
+                  className={`w-24 h-32 rounded-sm flex flex-col items-center justify-center cursor-pointer transition-all duration-500 ${
                     revealedRunes.has(i)
-                      ? "border-yellow-500/70 bg-gradient-to-b from-[#0d0025] to-[#1a0048]"
-                      : "border-purple-600/60 bg-gradient-to-b from-[#12003a] to-[#0d0030] hover:border-purple-400"
+                      ? "border-2 border-[#d4af6f] bg-gradient-to-b from-[#15102b] to-[#07040d] shadow-[0_0_30px_rgba(212,175,111,0.2)]"
+                      : "border border-[rgba(212,175,111,0.3)] bg-gradient-to-b from-[#1a1234] to-[#0d0820] hover:border-[#d4af6f]"
                   }`}
                 >
                   {revealedRunes.has(i) ? (
                     <>
-                      <div className={`text-4xl text-yellow-300 font-bold ${rune.isReversed ? "rotate-180" : ""}`}>{rune.symbol}</div>
-                      <div className="text-[10px] font-cinzel text-purple-300 mt-1">{rune.name}</div>
-                      {rune.isReversed && <div className="text-[9px] text-red-400 mt-0.5">Inversée</div>}
+                      <div className={`text-4xl text-[#d4af6f] ${rune.isReversed ? "rotate-180" : ""}`}>{rune.symbol}</div>
+                      <div className="text-[10px] font-serif-display text-[#e8c875] mt-2 tracking-wider">{rune.name}</div>
+                      {rune.isReversed && <div className="text-[8px] tracking-widest uppercase text-[#d4af6f] mt-1">Inversée</div>}
                     </>
                   ) : (
                     <>
-                      <div className="text-3xl text-purple-600">✦</div>
-                      <div className="text-[10px] text-purple-600 mt-1">Cliquer</div>
+                      <div className="text-2xl text-[rgba(212,175,111,0.5)]">✦</div>
+                      <div className="text-[9px] tracking-widest uppercase text-[rgba(212,175,111,0.5)] mt-2">Révéler</div>
                     </>
                   )}
                 </div>
                 {revealedRunes.has(i) && (
-                  <div className="flex flex-wrap gap-1 max-w-[100px] justify-center">
+                  <div className="flex flex-wrap gap-1 max-w-[110px] justify-center">
                     {rune.keywords.slice(0, 2).map(k => (
-                      <span key={k} className="text-[8px] text-purple-500 bg-purple-900/30 px-1 rounded">{k}</span>
+                      <span key={k} className="text-[8px] tracking-wider text-[#c9b88a]">· {k}</span>
                     ))}
                   </div>
                 )}
@@ -174,15 +228,33 @@ export default function RunesPage() {
 
           {step === "draw" && (
             <div className="flex gap-3 justify-center flex-wrap">
-              {!allRevealed && <button onClick={revealAll} className="px-6 py-3 rounded-xl border border-purple-600/40 text-purple-300 hover:bg-purple-900/30 transition-all text-sm">Révéler toutes</button>}
-              {allRevealed && <button onClick={getLecture} className="gradient-btn glow-btn px-8 py-3 rounded-xl text-white font-semibold">ᚠ Obtenir la lecture</button>}
-              <button onClick={reset} className="px-5 py-3 rounded-xl border border-purple-700/30 text-purple-400 hover:bg-purple-900/20 transition-all text-sm">Recommencer</button>
+              {!allRevealed && (
+                <button onClick={revealAll} className="btn-outline-gold">
+                  <span>Révéler toutes les runes</span>
+                </button>
+              )}
+              {allRevealed && (
+                <button onClick={getLecture} className="btn-gold">
+                  <Sparkles size={14} />
+                  <span>Obtenir la lecture</span>
+                </button>
+              )}
+              <button onClick={reset} className="btn-ghost">
+                <RotateCcw size={13} className="inline mr-2" />
+                <span>Recommencer</span>
+              </button>
             </div>
           )}
 
           <ReadingResult text={reading} isStreaming={isStreaming} />
+
           {step === "reading" && !isStreaming && reading && (
-            <div className="text-center mt-6"><button onClick={reset} className="gradient-btn px-8 py-3 rounded-xl text-white text-sm">Nouveau tirage</button></div>
+            <div className="text-center mt-8">
+              <button onClick={reset} className="btn-outline-gold">
+                <RotateCcw size={13} className="inline mr-2" />
+                <span>Nouveau tirage</span>
+              </button>
+            </div>
           )}
         </div>
       )}

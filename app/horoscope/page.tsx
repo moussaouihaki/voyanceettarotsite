@@ -1,12 +1,15 @@
 "use client";
 import { useState } from "react";
 import { ZODIAC_SIGNS } from "@/lib/astrology";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
+import { Star, Sparkles } from "lucide-react";
 
 type Period = "jour" | "semaine" | "mois";
 
 export default function HoroscopePage() {
-  const [selectedSign, setSelectedSign] = useState<string | null>(null);
+  const { profile, sunSignName, addReading } = useUserProfile();
+  const [selectedSign, setSelectedSign] = useState<string | null>(sunSignName);
   const [period, setPeriod] = useState<Period>("jour");
   const [reading, setReading] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
@@ -19,16 +22,20 @@ export default function HoroscopePage() {
       const res = await fetch("/api/horoscope", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sign: signName, period }),
+        body: JSON.stringify({ sign: signName, period, profile }),
       });
       if (!res.ok || !res.body) throw new Error();
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
+      let full = "";
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        setReading((p) => p + decoder.decode(value, { stream: true }));
+        const chunk = decoder.decode(value, { stream: true });
+        full += chunk;
+        setReading((p) => p + chunk);
       }
+      addReading({ type: "horoscope", title: `${signName} · ${period}`, content: full });
     } catch {
       setReading("Les astres sont voilés en ce moment... Réessayez.");
     } finally {
@@ -40,88 +47,96 @@ export default function HoroscopePage() {
   const today = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
-      <div className="text-center mb-8 fade-in-up">
-        <div className="text-5xl mb-4 float-anim">⭐</div>
-        <h1 className="text-3xl font-bold text-purple-100 mb-2">Horoscope</h1>
-        <p className="text-purple-400 text-sm capitalize">{today}</p>
+    <div className="max-w-5xl mx-auto px-6 py-16">
+      <div className="text-center mb-12 fade-in-up">
+        <div className="badge-gold mb-5">
+          <Star size={11} className="inline mr-2" />
+          Astrologie quotidienne
+        </div>
+        <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-3">Horoscope</h1>
+        <p className="font-serif-text italic text-[#c9b88a] text-lg capitalize">{today}</p>
       </div>
 
       {/* Period selector */}
-      <div className="flex gap-2 justify-center mb-8">
-        {(["jour", "semaine", "mois"] as Period[]).map((p) => (
-          <button
-            key={p}
-            onClick={() => { setPeriod(p); setReading(""); setSelectedSign(null); }}
-            className={`px-5 py-2 rounded-full text-sm transition-all capitalize ${period === p ? "bg-purple-700 text-white" : "border border-purple-700/40 text-purple-400 hover:bg-purple-900/30"}`}
-          >
-            {p === "jour" ? "Aujourd'hui" : p === "semaine" ? "Cette semaine" : "Ce mois"}
-          </button>
-        ))}
+      <div className="flex justify-center mb-10">
+        <div className="luxe-card rounded-sm p-1 inline-flex">
+          {(["jour", "semaine", "mois"] as Period[]).map((p) => (
+            <button
+              key={p}
+              onClick={() => { setPeriod(p); setReading(""); }}
+              className={`px-6 py-2.5 text-[11px] tracking-[0.2em] uppercase transition-all ${
+                period === p ? "bg-[rgba(212,175,111,0.15)] text-[#e8c875]" : "text-[#c9b88a]"
+              }`}
+            >
+              {p === "jour" ? "Aujourd'hui" : p === "semaine" ? "Cette semaine" : "Ce mois"}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Signs grid */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 mb-8 fade-in-up-delay-2">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 mb-10">
         {ZODIAC_SIGNS.map((sign) => (
           <button
             key={sign.id}
             onClick={() => getHoroscope(sign.name)}
-            className={`mystical-card rounded-xl p-3 text-center transition-all duration-300 hover:scale-[1.05] ${selectedSign === sign.name ? "border-yellow-500/60 shadow-[0_0_20px_rgba(255,215,0,0.2)]" : "hover:border-purple-500/50"}`}
+            className={`luxe-card rounded-sm p-4 text-center transition-all group ${
+              selectedSign === sign.name
+                ? "border-[#d4af6f] bg-[rgba(212,175,111,0.08)] shadow-[0_0_30px_rgba(212,175,111,0.15)]"
+                : ""
+            }`}
           >
-            <div className="text-2xl mb-1">{sign.emoji}</div>
-            <div className="text-xs font-cinzel text-yellow-300">{sign.symbol}</div>
-            <div className="text-xs text-purple-300 mt-0.5">{sign.name}</div>
-            <div className="text-[10px] text-purple-500 mt-0.5">{sign.element}</div>
+            <div className="font-serif-display text-3xl text-[#d4af6f] mb-1.5 group-hover:text-[#e8c875] transition-colors">{sign.symbol}</div>
+            <div className="font-serif-display text-cream text-sm">{sign.name}</div>
+            <div className="text-[9px] tracking-widest uppercase text-[#8a6f3a] mt-1">{sign.element}</div>
           </button>
         ))}
       </div>
 
       {/* Selected sign info */}
       {selectedSignData && (
-        <div className="mystical-card rounded-xl p-4 mb-6 flex items-center gap-4 fade-in-up">
-          <div className="text-4xl">{selectedSignData.emoji}</div>
-          <div>
-            <div className="font-cinzel text-yellow-300 font-bold">{selectedSignData.symbol} {selectedSignData.name}</div>
-            <div className="text-xs text-purple-400">{selectedSignData.dates} · {selectedSignData.element} · {selectedSignData.ruler}</div>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {selectedSignData.keywords.slice(0, 4).map(k => (
-                <span key={k} className="text-[10px] bg-purple-900/40 text-purple-400 px-1.5 py-0.5 rounded">{k}</span>
-              ))}
+        <div className="luxe-card-premium rounded-sm p-7 mb-8 fade-in-up">
+          <div className="flex items-center gap-5">
+            <div className="w-16 h-16 rounded-full border-2 border-[#d4af6f] bg-[rgba(212,175,111,0.08)] flex items-center justify-center flex-shrink-0">
+              <span className="font-serif-display text-3xl text-[#d4af6f]">{selectedSignData.symbol}</span>
+            </div>
+            <div className="flex-1">
+              <div className="font-serif-display text-2xl text-gradient-cream mb-1">{selectedSignData.name}</div>
+              <div className="text-[11px] tracking-wider text-[#c9b88a] mb-2">
+                {selectedSignData.dates} · {selectedSignData.element} · Régi par {selectedSignData.ruler}
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {selectedSignData.keywords.slice(0, 4).map(k => (
+                  <span key={k} className="badge-soft !text-[9px]">{k}</span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {!selectedSign && !isStreaming && (
-        <div className="text-center text-purple-500 py-12">
-          <div className="text-4xl mb-3">⬆️</div>
-          <p>Sélectionnez votre signe pour obtenir votre horoscope</p>
+        <div className="text-center text-[#c9b88a] py-16">
+          <Sparkles size={28} className="text-[#d4af6f] mx-auto mb-4" />
+          <p className="font-serif-text italic text-lg">Sélectionnez votre signe pour obtenir votre horoscope</p>
         </div>
       )}
 
-      {isStreaming && (
-        <div className="mystical-card rounded-2xl p-6 mt-4 fade-in-up">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-2xl float-anim">⭐</span>
-            <h3 className="font-cinzel text-lg text-yellow-300">
-              Horoscope {period === "jour" ? "du jour" : period === "semaine" ? "de la semaine" : "du mois"} — {selectedSign}
-            </h3>
+      {(isStreaming || reading) && (
+        <div className="luxe-card rounded-sm p-8 fade-in-up">
+          <div className="flex items-center gap-3 mb-5 pb-5 border-b border-[rgba(212,175,111,0.15)]">
+            <span className="font-serif-display text-3xl text-[#d4af6f]">{selectedSignData?.symbol}</span>
+            <div>
+              <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f]">
+                Horoscope {period === "jour" ? "du jour" : period === "semaine" ? "de la semaine" : "du mois"}
+              </div>
+              <div className="font-serif-display text-xl text-cream">{selectedSign}</div>
+            </div>
           </div>
-          <div className="text-purple-100/90 leading-relaxed whitespace-pre-wrap text-sm">
-            {reading}<span className="typing-cursor" />
+          <div className="font-serif-text text-[#e8dcc0] text-[16px] leading-relaxed whitespace-pre-wrap">
+            {reading}
+            {isStreaming && <span className="typing-cursor" />}
           </div>
-        </div>
-      )}
-
-      {!isStreaming && reading && (
-        <div className="mystical-card rounded-2xl p-6 mt-4 fade-in-up">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-2xl">{selectedSignData?.emoji}</span>
-            <h3 className="font-cinzel text-lg text-yellow-300">
-              Horoscope {period === "jour" ? "du jour" : period === "semaine" ? "de la semaine" : "du mois"} — {selectedSign}
-            </h3>
-          </div>
-          <div className="text-purple-100/90 leading-relaxed whitespace-pre-wrap text-sm">{reading}</div>
         </div>
       )}
     </div>

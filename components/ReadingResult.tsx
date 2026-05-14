@@ -1,21 +1,41 @@
 "use client";
 
+import { Sparkles } from "lucide-react";
+
 interface Props {
   text: string;
   isStreaming: boolean;
+}
+
+function formatLine(line: string) {
+  // Render **bold** and *italic*
+  return line
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-[#e8c875]">$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em class="italic text-[#d4af6f]">$1</em>');
 }
 
 export default function ReadingResult({ text, isStreaming }: Props) {
   if (!text && !isStreaming) return null;
 
   return (
-    <div className="mystical-card rounded-2xl p-6 md:p-8 mt-8 fade-in-up">
-      <div className="flex items-center gap-3 mb-5">
-        <span className="text-2xl float-anim">🔮</span>
-        <h3 className="font-cinzel text-lg text-yellow-300">La Lecture de Madame Céleste</h3>
+    <div className="luxe-card-premium rounded-sm p-8 md:p-10 mt-10 fade-in-up relative">
+      <div className="absolute top-3 left-3 w-7 h-7 border-t border-l border-[rgba(212,175,111,0.4)]" />
+      <div className="absolute top-3 right-3 w-7 h-7 border-t border-r border-[rgba(212,175,111,0.4)]" />
+      <div className="absolute bottom-3 left-3 w-7 h-7 border-b border-l border-[rgba(212,175,111,0.4)]" />
+      <div className="absolute bottom-3 right-3 w-7 h-7 border-b border-r border-[rgba(212,175,111,0.4)]" />
+
+      <div className="flex items-center gap-3 mb-6 pb-6 border-b border-[rgba(212,175,111,0.15)]">
+        <Sparkles size={18} className="text-[#d4af6f]" />
+        <div>
+          <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f]">La Lecture</div>
+          <div className="font-serif-display text-xl text-cream">Par Madame Céleste</div>
+        </div>
       </div>
-      <div className="text-purple-100/90 leading-relaxed whitespace-pre-wrap text-sm md:text-base">
-        {text}
+
+      <div className="font-serif-text text-[#e8dcc0] text-[16px] leading-[1.85] whitespace-pre-wrap">
+        {text.split("\n").map((line, i) => (
+          <div key={i} dangerouslySetInnerHTML={{ __html: formatLine(line) }} />
+        ))}
         {isStreaming && <span className="typing-cursor" />}
       </div>
     </div>

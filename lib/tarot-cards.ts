@@ -44,20 +44,24 @@ const SUIT_DATA = {
   Pentacles: { element: "Terre", emoji: "🌱", keywords: ["matériel", "travail", "santé", "finance"] },
 };
 
+import { MINOR_MEANINGS } from "./tarot-minor-meanings";
+
 function generateMinorArcana(): TarotCard[] {
   const cards: TarotCard[] = [];
   Object.entries(SUIT_DATA).forEach(([suit, data]) => {
     NUMBERS.forEach((num, i) => {
+      const id = `minor-${suit.toLowerCase()}-${i + 1}`;
+      const meaning = MINOR_MEANINGS[id];
       cards.push({
-        id: `minor-${suit.toLowerCase()}-${i + 1}`,
+        id,
         name: `${num} de ${suit}`,
         nameEn: `${num} of ${suit}`,
         suit,
         number: num,
         element: data.element,
-        keywords: data.keywords,
-        upright: `Le ${num} de ${suit} évoque ${data.keywords.slice(0, 2).join(" et ")} dans votre situation.`,
-        meaningReversed: `En position inversée, méfiez-vous de ${data.keywords[2] || "blocages"} et examinez votre rapport au ${data.keywords[3] || "quotidien"}.`,
+        keywords: meaning?.keywords ?? data.keywords,
+        upright: meaning?.upright ?? `Le ${num} de ${suit} évoque ${data.keywords.slice(0, 2).join(" et ")}.`,
+        meaningReversed: meaning?.reversed ?? `En position inversée, examinez votre rapport au ${data.keywords[3] || "quotidien"}.`,
         emoji: data.emoji,
       });
     });
@@ -67,11 +71,20 @@ function generateMinorArcana(): TarotCard[] {
 
 export const ALL_CARDS: TarotCard[] = [...MAJOR_ARCANA, ...generateMinorArcana()];
 
+// Fisher-Yates shuffle — distribution uniforme garantie
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export function drawCards(count: number): Array<TarotCard & { reversed: boolean; positionIndex: number }> {
-  const shuffled = [...ALL_CARDS].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count).map((card, i) => ({
+  return shuffle(ALL_CARDS).slice(0, count).map((card, i) => ({
     ...card,
-    reversed: Math.random() > 0.6,
+    reversed: Math.random() < 0.5,
     positionIndex: i,
   }));
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, Camera, Share2, Mail, MessageCircle } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const FOOTER_LINKS = {
   "Tarot & Cartomancie": [
@@ -22,6 +22,8 @@ const FOOTER_LINKS = {
     { href: "/tarifs", label: "Abonnements" },
     { href: "/mon-profil", label: "Mon Profil" },
     { href: "/blog", label: "Journal Mystique" },
+    { href: "/mentions-legales", label: "Mentions légales" },
+    { href: "/cgv", label: "Conditions générales" },
   ],
 };
 
@@ -44,19 +46,8 @@ export default function Footer() {
             <p className="font-serif-text italic text-[15px] text-[#c9b88a] leading-relaxed max-w-sm mb-6">
               &ldquo;Les astres murmurent leurs secrets à celui qui sait les écouter. Bienvenue dans un sanctuaire où l&apos;ancien et le moderne s&apos;unissent pour éclairer votre chemin.&rdquo;
             </p>
-            <div className="flex gap-3">
-              <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-full border border-[rgba(212,175,111,0.25)] flex items-center justify-center text-[#c9b88a] hover:text-[#d4af6f] hover:border-[#d4af6f] transition-all">
-                <Camera size={15} />
-              </a>
-              <a href="#" aria-label="Réseaux sociaux" className="w-9 h-9 rounded-full border border-[rgba(212,175,111,0.25)] flex items-center justify-center text-[#c9b88a] hover:text-[#d4af6f] hover:border-[#d4af6f] transition-all">
-                <Share2 size={15} />
-              </a>
-              <a href="#" aria-label="Email" className="w-9 h-9 rounded-full border border-[rgba(212,175,111,0.25)] flex items-center justify-center text-[#c9b88a] hover:text-[#d4af6f] hover:border-[#d4af6f] transition-all">
-                <Mail size={15} />
-              </a>
-              <a href="#" aria-label="Chat" className="w-9 h-9 rounded-full border border-[rgba(212,175,111,0.25)] flex items-center justify-center text-[#c9b88a] hover:text-[#d4af6f] hover:border-[#d4af6f] transition-all">
-                <MessageCircle size={15} />
-              </a>
+            <div className="text-[11px] tracking-widest uppercase text-[#8a6f3a]">
+              Sanctuaire numérique · Voyance personnalisée par IA
             </div>
           </div>
 

@@ -1,21 +1,24 @@
 "use client";
 import { useState, useCallback } from "react";
-import { drawCards, SPREAD_POSITIONS, TarotCard } from "@/lib/tarot-cards";
+import { drawCards, TarotCard } from "@/lib/tarot-cards";
 import { ALL_SPREADS, SPREAD_CATEGORIES, type Spread, type SpreadCategory } from "@/lib/spreads";
+import { getSpreadIcon, CATEGORY_ICONS } from "@/lib/spread-icons";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import TarotCardComponent from "@/components/TarotCard";
 import ReadingResult from "@/components/ReadingResult";
+import { Search, Sparkles, ArrowLeft, RotateCcw, Star, Layers } from "lucide-react";
 
 type DrawnCard = TarotCard & { reversed: boolean; positionIndex: number };
 type Step = "choose" | "question" | "draw" | "reading";
 
-const CATEGORY_COLORS: Record<SpreadCategory, string> = {
-  quotidien: "amber", temporel: "blue", amour: "pink",
-  professionnel: "green", spirituel: "violet", classique: "purple", special: "yellow",
+const DIFFICULTY_LABELS = {
+  facile: "Initiation",
+  intermédiaire: "Intermédiaire",
+  avancé: "Avancé",
 };
 
-const DIFFICULTY_COLORS = { facile: "text-green-400", intermédiaire: "text-yellow-400", avancé: "text-red-400" };
-
 export default function TiragePage() {
+  const { profile, addReading } = useUserProfile();
   const [step, setStep] = useState<Step>("choose");
   const [selectedSpread, setSelectedSpread] = useState<Spread | null>(null);
   const [activeCategory, setActiveCategory] = useState<SpreadCategory | "all">("all");
@@ -54,33 +57,30 @@ export default function TiragePage() {
     setIsStreaming(true);
     setReading("");
     setStep("reading");
-
-    // Use custom spread positions
     const positions = selectedSpread.positions;
     const cardData = cards.map((c, i) => ({
       name: c.name, suit: c.suit, number: c.number,
       position: positions[i] || `Position ${i + 1}`,
       reversed: c.reversed, keywords: c.keywords,
     }));
-
     try {
       const res = await fetch("/api/lecture", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cards: cardData, question,
-          spreadType: selectedSpread.id,
-          spreadName: selectedSpread.name,
-        }),
+        body: JSON.stringify({ cards: cardData, question, spreadType: selectedSpread.id, spreadName: selectedSpread.name, profile }),
       });
       if (!res.ok || !res.body) throw new Error();
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
+      let full = "";
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        setReading((p) => p + decoder.decode(value, { stream: true }));
+        const chunk = decoder.decode(value, { stream: true });
+        full += chunk;
+        setReading((p) => p + chunk);
       }
+      addReading({ type: "tarot", title: selectedSpread.name, content: full, meta: { question } });
     } catch {
       setReading("Les astres sont momentanément voilés... Veuillez réessayer.");
     } finally {
@@ -98,76 +98,112 @@ export default function TiragePage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-6 py-16">
       {/* Step 1: Choose spread */}
       {step === "choose" && (
         <div className="fade-in-up">
-          <div className="text-center mb-8">
-            <div className="text-5xl mb-3 float-anim">🃏</div>
-            <h1 className="text-3xl font-bold text-purple-100 mb-2">Tirage de Tarot</h1>
-            <p className="text-purple-400 text-sm">{ALL_SPREADS.length} tirages disponibles</p>
+          <div className="text-center mb-12">
+            <div className="badge-gold mb-5">
+              <Layers size={11} className="inline mr-2" />
+              Bibliothèque de tirages
+            </div>
+            <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-4">Tirage de Tarot</h1>
+            <p className="font-serif-text italic text-[#c9b88a] text-lg">
+              {ALL_SPREADS.length} tirages — choisissez celui qui résonne avec votre question
+            </p>
           </div>
 
           {/* Search */}
-          <div className="max-w-md mx-auto mb-6">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="🔍 Rechercher un tirage..."
-              className="w-full bg-purple-900/20 border border-purple-700/40 rounded-xl px-4 py-3 text-purple-100 placeholder-purple-500/50 focus:outline-none focus:border-purple-500 text-sm"
-            />
+          <div className="max-w-md mx-auto mb-8">
+            <div className="relative">
+              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a6f3a]" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Rechercher un tirage..."
+                className="luxe-input !pl-11"
+              />
+            </div>
           </div>
 
           {/* Category filter */}
-          <div className="flex flex-wrap gap-2 justify-center mb-8">
+          <div className="flex flex-wrap gap-2 justify-center mb-12">
             <button
               onClick={() => setActiveCategory("all")}
-              className={`px-4 py-2 rounded-full text-sm transition-all ${activeCategory === "all" ? "bg-purple-700 text-white" : "border border-purple-700/40 text-purple-400 hover:bg-purple-900/30"}`}
+              className={`px-4 py-2 text-[11px] tracking-[0.2em] uppercase transition-all border ${
+                activeCategory === "all"
+                  ? "bg-[rgba(212,175,111,0.12)] border-[#d4af6f] text-[#e8c875]"
+                  : "border-[rgba(212,175,111,0.2)] text-[#c9b88a] hover:border-[rgba(212,175,111,0.4)]"
+              }`}
             >
-              Tous ({ALL_SPREADS.length})
+              Tous · {ALL_SPREADS.length}
             </button>
-            {(Object.entries(SPREAD_CATEGORIES) as [SpreadCategory, typeof SPREAD_CATEGORIES[SpreadCategory]][]).map(([cat, data]) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm transition-all flex items-center gap-1.5 ${activeCategory === cat ? "bg-purple-700 text-white" : "border border-purple-700/40 text-purple-400 hover:bg-purple-900/30"}`}
-              >
-                <span>{data.emoji}</span>
-                <span>{data.label}</span>
-                <span className="opacity-60">({ALL_SPREADS.filter(s => s.category === cat).length})</span>
-              </button>
-            ))}
+            {(Object.entries(SPREAD_CATEGORIES) as [SpreadCategory, typeof SPREAD_CATEGORIES[SpreadCategory]][]).map(([cat, data]) => {
+              const Icon = CATEGORY_ICONS[cat];
+              const count = ALL_SPREADS.filter(s => s.category === cat).length;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-2 text-[11px] tracking-[0.2em] uppercase transition-all flex items-center gap-2 border ${
+                    activeCategory === cat
+                      ? "bg-[rgba(212,175,111,0.12)] border-[#d4af6f] text-[#e8c875]"
+                      : "border-[rgba(212,175,111,0.2)] text-[#c9b88a] hover:border-[rgba(212,175,111,0.4)]"
+                  }`}
+                >
+                  <Icon size={12} />
+                  <span>{data.label}</span>
+                  <span className="opacity-60">· {count}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Spreads grid */}
           {filteredSpreads.length === 0 ? (
-            <div className="text-center text-purple-400 py-12">Aucun tirage trouvé pour cette recherche.</div>
+            <div className="text-center text-[#c9b88a] py-16 font-serif-text italic">
+              Aucun tirage ne correspond à votre recherche
+            </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredSpreads.map((spread) => (
-                <button
-                  key={spread.id}
-                  onClick={() => handleSpreadSelect(spread)}
-                  className="mystical-card rounded-xl p-5 text-left hover:scale-[1.02] transition-all duration-300 hover:shadow-[0_0_25px_rgba(124,58,237,0.3)] group"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">{spread.emoji}</span>
-                      {spread.popular && <span className="text-[10px] bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-500/30">⭐ Populaire</span>}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredSpreads.map((spread) => {
+                const Icon = getSpreadIcon(spread.id, spread.category);
+                return (
+                  <button
+                    key={spread.id}
+                    onClick={() => handleSpreadSelect(spread)}
+                    className="luxe-card rounded-sm p-6 text-left group relative"
+                  >
+                    {spread.popular && (
+                      <div className="absolute top-3 right-3 flex items-center gap-1 text-[9px] tracking-[0.2em] uppercase text-[#d4af6f]">
+                        <Star size={10} className="fill-[#d4af6f]" />
+                        <span>Populaire</span>
+                      </div>
+                    )}
+
+                    <div className="flex items-start justify-between mb-5">
+                      <div className="w-11 h-11 rounded-sm bg-gradient-to-br from-[rgba(212,175,111,0.12)] to-transparent border border-[rgba(212,175,111,0.3)] flex items-center justify-center group-hover:border-[#d4af6f] transition-colors">
+                        <Icon size={18} className="text-[#d4af6f]" />
+                      </div>
+                      <div className="flex flex-col items-end gap-1.5 mt-1">
+                        <span className="badge-soft !text-[9px]">
+                          {spread.cardCount} {spread.cardCount === 1 ? "carte" : "cartes"}
+                        </span>
+                        <span className="text-[9px] tracking-widest uppercase text-[#8a6f3a]">
+                          {DIFFICULTY_LABELS[spread.difficulty]}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1">
-                      <span className="text-[10px] bg-purple-900/60 text-purple-300 px-2 py-0.5 rounded-full">
-                        {spread.cardCount} {spread.cardCount === 1 ? "carte" : "cartes"}
-                      </span>
-                      <span className={`text-[10px] ${DIFFICULTY_COLORS[spread.difficulty]}`}>{spread.difficulty}</span>
-                    </div>
-                  </div>
-                  <h3 className="font-cinzel font-bold text-yellow-300 text-sm mb-1">{spread.name}</h3>
-                  <p className="text-purple-400/70 text-xs mb-2">{spread.subtitle}</p>
-                  <p className="text-purple-300/60 text-xs leading-relaxed line-clamp-2">{spread.description}</p>
-                </button>
-              ))}
+
+                    <h3 className="font-serif-display text-lg text-cream group-hover:text-[#e8c875] transition-colors mb-1.5">
+                      {spread.name}
+                    </h3>
+                    <p className="text-[11px] tracking-wider text-[#d4af6f] uppercase mb-3">{spread.subtitle}</p>
+                    <p className="text-[13px] text-[#c9b88a] leading-relaxed line-clamp-2">{spread.description}</p>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -175,34 +211,56 @@ export default function TiragePage() {
 
       {/* Step 2: Question */}
       {step === "question" && selectedSpread && (
-        <div className="max-w-xl mx-auto text-center fade-in-up">
-          <div className="text-4xl mb-4">{selectedSpread.emoji}</div>
-          <h2 className="text-2xl font-bold text-purple-100 mb-1 font-cinzel">{selectedSpread.name}</h2>
-          <p className="text-purple-400 text-sm mb-2">{selectedSpread.cardCount} cartes · {selectedSpread.difficulty}</p>
-          <p className="text-purple-300/70 text-sm mb-8">{selectedSpread.description}</p>
+        <div className="max-w-2xl mx-auto fade-in-up">
+          <div className="text-center mb-10">
+            {(() => {
+              const Icon = getSpreadIcon(selectedSpread.id, selectedSpread.category);
+              return (
+                <div className="w-16 h-16 rounded-sm mx-auto mb-5 border border-[#d4af6f] flex items-center justify-center bg-[rgba(212,175,111,0.08)]">
+                  <Icon size={24} className="text-[#d4af6f]" />
+                </div>
+              );
+            })()}
+            <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-3">{selectedSpread.subtitle}</div>
+            <h2 className="font-serif-display text-4xl text-gradient-cream mb-3">{selectedSpread.name}</h2>
+            <p className="text-[#c9b88a] text-[15px] mb-2">
+              {selectedSpread.cardCount} {selectedSpread.cardCount === 1 ? "carte" : "cartes"} · {DIFFICULTY_LABELS[selectedSpread.difficulty]}
+            </p>
+            <p className="font-serif-text italic text-[#c9b88a] text-lg">{selectedSpread.description}</p>
+          </div>
 
-          {/* Positions preview */}
-          <div className="mystical-card rounded-xl p-4 mb-6 text-left">
-            <p className="text-xs text-purple-400 mb-3 font-cinzel">Positions du tirage :</p>
+          <div className="luxe-card rounded-sm p-6 mb-8">
+            <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-4">Positions du tirage</div>
             <div className="flex flex-wrap gap-2">
               {selectedSpread.positions.map((pos, i) => (
-                <span key={i} className="text-xs bg-purple-900/40 text-purple-300 px-2 py-1 rounded-lg border border-purple-700/30">
-                  {i + 1}. {pos}
+                <span key={i} className="badge-soft">
+                  <span className="text-[#d4af6f] mr-1.5">{i + 1}.</span>
+                  {pos}
                 </span>
               ))}
             </div>
           </div>
 
-          <textarea
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Votre question (optionnel) — Concentrez votre intention..."
-            rows={3}
-            className="w-full bg-purple-900/20 border border-purple-700/40 rounded-xl p-4 text-purple-100 placeholder-purple-500/50 focus:outline-none focus:border-purple-500 resize-none mb-6 text-sm"
-          />
-          <div className="flex gap-3 justify-center">
-            <button onClick={() => setStep("choose")} className="px-6 py-3 rounded-xl border border-purple-700/40 text-purple-300 hover:bg-purple-900/30 transition-all text-sm">← Retour</button>
-            <button onClick={handleDraw} className="gradient-btn glow-btn px-8 py-3 rounded-xl text-white font-semibold text-sm">Tirer les cartes ✦</button>
+          <div className="mb-8">
+            <label className="luxe-label">Votre question (optionnel)</label>
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Concentrez votre intention avant de tirer..."
+              rows={3}
+              className="luxe-input resize-none"
+            />
+          </div>
+
+          <div className="flex gap-3 justify-center flex-wrap">
+            <button onClick={() => setStep("choose")} className="btn-ghost">
+              <ArrowLeft size={13} className="inline mr-2" />
+              <span>Retour</span>
+            </button>
+            <button onClick={handleDraw} className="btn-gold">
+              <Sparkles size={14} />
+              <span>Tirer les cartes</span>
+            </button>
           </div>
         </div>
       )}
@@ -210,15 +268,16 @@ export default function TiragePage() {
       {/* Step 3 & 4: Draw + Reading */}
       {(step === "draw" || step === "reading") && selectedSpread && (
         <div className="fade-in-up">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-purple-100 mb-1 font-cinzel">{selectedSpread.name}</h2>
-            {question && <p className="text-purple-400 text-sm italic mt-1">"{question}"</p>}
+          <div className="text-center mb-10">
+            <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-2">{selectedSpread.subtitle}</div>
+            <h2 className="font-serif-display text-3xl text-gradient-cream mb-2">{selectedSpread.name}</h2>
+            {question && <p className="font-serif-text italic text-[#c9b88a] mt-2">&ldquo;{question}&rdquo;</p>}
             {step === "draw" && !allFlipped && (
-              <p className="text-purple-500 text-xs mt-2">✦ Cliquez sur chaque carte pour la révéler ✦</p>
+              <p className="text-[11px] tracking-[0.2em] uppercase text-[#d4af6f] mt-4">Cliquez sur chaque carte pour la révéler</p>
             )}
           </div>
 
-          <div className={`flex flex-wrap justify-center gap-4 md:gap-5 mb-8 ${selectedSpread.cardCount > 7 ? "max-w-5xl" : "max-w-3xl"} mx-auto`}>
+          <div className={`flex flex-wrap justify-center gap-5 md:gap-6 mb-10 ${selectedSpread.cardCount > 7 ? "max-w-6xl" : "max-w-4xl"} mx-auto`}>
             {cards.map((card, i) => (
               <TarotCardComponent
                 key={card.id} card={card}
@@ -233,17 +292,19 @@ export default function TiragePage() {
           {step === "draw" && (
             <div className="flex gap-3 justify-center flex-wrap">
               {!allFlipped && (
-                <button onClick={flipAll} className="px-6 py-3 rounded-xl border border-purple-600/40 text-purple-300 hover:bg-purple-900/30 transition-all text-sm">
-                  Révéler toutes
+                <button onClick={flipAll} className="btn-outline-gold">
+                  <span>Révéler toutes les cartes</span>
                 </button>
               )}
               {allFlipped && (
-                <button onClick={getLecture} className="gradient-btn glow-btn px-8 py-3 rounded-xl text-white font-semibold">
-                  🔮 Obtenir ma lecture
+                <button onClick={getLecture} className="btn-gold">
+                  <Sparkles size={14} />
+                  <span>Obtenir ma lecture</span>
                 </button>
               )}
-              <button onClick={reset} className="px-5 py-3 rounded-xl border border-purple-700/30 text-purple-400 hover:bg-purple-900/20 transition-all text-sm">
-                Recommencer
+              <button onClick={reset} className="btn-ghost">
+                <RotateCcw size={13} className="inline mr-2" />
+                <span>Recommencer</span>
               </button>
             </div>
           )}
@@ -251,8 +312,11 @@ export default function TiragePage() {
           <ReadingResult text={reading} isStreaming={isStreaming} />
 
           {step === "reading" && !isStreaming && reading && (
-            <div className="text-center mt-6 flex gap-3 justify-center">
-              <button onClick={reset} className="gradient-btn px-8 py-3 rounded-xl text-white text-sm">Nouveau tirage</button>
+            <div className="text-center mt-8">
+              <button onClick={reset} className="btn-outline-gold">
+                <RotateCcw size={13} className="inline mr-2" />
+                <span>Nouveau tirage</span>
+              </button>
             </div>
           )}
         </div>
