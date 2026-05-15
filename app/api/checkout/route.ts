@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   // ── Mode réel Stripe ──
   try {
     const stripe = new Stripe(stripeKey);
-    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "https://voyanceettarotsite.vercel.app";
+    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "https://celestevoyance.com";
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { BLOG_ARTICLES } from "@/lib/blog";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://voyanceettarotsite.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://celestevoyance.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
