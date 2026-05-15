@@ -36,7 +36,7 @@ const WANDS = [
   `${W}/a/a4/Wands04.jpg`, `${W}/9/9d/Wands05.jpg`, `${W}/3/3b/Wands06.jpg`,
   `${W}/e/e4/Wands07.jpg`, `${W}/6/6b/Wands08.jpg`, `${W}/4/4d/Tarot_Nine_of_Wands.jpg`,
   `${W}/0/0b/Wands10.jpg`, `${W}/6/6a/Wands11.jpg`, `${W}/1/16/Wands12.jpg`,
-  `${W}/0/0f/Wands13.jpg`, `${W}/1/1c/Wands14.jpg`,
+  `${W}/0/0d/Wands13.jpg`, `${W}/c/ce/Wands14.jpg`,
 ];
 
 const CUPS = [

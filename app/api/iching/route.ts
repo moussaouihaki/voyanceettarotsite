@@ -31,7 +31,7 @@ Structure :
 Style : Poétique, ancré dans la philosophie taoïste. Citez des métaphores naturelles (l'eau qui s'écoule, le tonnerre qui s'éveille, etc.).`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-3.0-flash" });
 
   const stream = new ReadableStream({
     async start(controller) {

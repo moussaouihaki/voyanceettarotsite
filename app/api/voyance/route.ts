@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: "gemini-3.0-flash",
     systemInstruction: MADAME_CELESTE_SYSTEM + personalContext,
   });
 

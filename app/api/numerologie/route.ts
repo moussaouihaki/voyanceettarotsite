@@ -45,7 +45,7 @@ Structure :
 Style mystique, précis et bienveillant. Mentionnez si des nombres maîtres ou karmiques sont présents.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-3.0-flash" });
 
   const stream = new ReadableStream({
     async start(controller) {
