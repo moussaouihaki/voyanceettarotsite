@@ -70,24 +70,29 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
     const unsub = onAuthStateChanged(auth, async (user) => {
       setFirebaseUser(user);
       if (user) {
+        const isAdmin = user.email === "info@celestevoyance.com";
         const fsUser = await getFirestoreUser(user.uid);
         if (fsUser) {
           const { uid: _uid, updatedAt: _updatedAt, ...profileData } = fsUser;
+          // Force VIP for admin account
+          if (isAdmin && (profileData as UserProfile).subscription !== "vip") {
+            await saveFirestoreUser(user.uid, { subscription: "vip" });
+            (profileData as UserProfile).subscription = "vip";
+          }
           setProfile(profileData as UserProfile);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(profileData));
         } else {
           // Firebase user exists but no Firestore doc — load from localStorage
           try {
             const raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) {
-              const localProfile = JSON.parse(raw) as UserProfile;
-              setProfile(localProfile);
-              // Sync local profile up to Firestore
-              await saveFirestoreUser(user.uid, {
-                ...localProfile,
-                email: user.email ?? localProfile.email,
-              });
-            }
+            const localProfile = raw ? JSON.parse(raw) as UserProfile : null;
+            const mergedProfile = {
+              ...(localProfile ?? {}),
+              email: user.email ?? localProfile?.email ?? "",
+              subscription: isAdmin ? "vip" as const : (localProfile?.subscription ?? "decouverte" as const),
+            };
+            setProfile(mergedProfile as UserProfile);
+            await saveFirestoreUser(user.uid, mergedProfile);
           } catch {}
         }
       } else {
