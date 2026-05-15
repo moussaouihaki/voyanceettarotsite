@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import CircleVideo from "@/components/CircleVideo";
 import {
   Sparkles,
   Moon,
@@ -108,16 +109,11 @@ export default function Home() {
         <div className="absolute top-1/3 left-1/4 w-1 h-1 rounded-full bg-[#d4af6f] opacity-60" />
 
         <div className="max-w-6xl mx-auto px-6 pt-20 pb-24 text-center relative z-10">
-          {/* Mandala orbiting ornament */}
-          <div className="relative w-32 h-32 mx-auto mb-10 fade-in">
-            <div className="absolute inset-0 rounded-full border border-[rgba(212,175,111,0.2)] mandala-spin" />
-            <div className="absolute inset-2 rounded-full border border-[rgba(212,175,111,0.1)]" style={{ animation: "orbit 40s linear infinite reverse" }} />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[rgba(212,175,111,0.15)] to-transparent border border-[rgba(212,175,111,0.4)] flex items-center justify-center backdrop-blur-sm">
-                <Moon size={28} className="text-[#d4af6f]" />
-              </div>
-            </div>
+          {/* Circle video hero */}
+          <div className="flex justify-center mb-10 fade-in">
+            <CircleVideo size="lg" glow />
           </div>
+
 
           <div className="badge-gold mb-6 fade-in-up-delay-1">
             <span>✦ Voyance Premium ✦</span>
@@ -255,8 +251,9 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="relative">
-            <div className="luxe-card-premium rounded-sm p-10 relative corner-ornament" style={{ position: 'relative' }}>
+          <div className="relative flex flex-col items-center gap-8">
+            <CircleVideo size="md" glow className="opacity-90" />
+            <div className="luxe-card-premium rounded-sm p-10 relative corner-ornament w-full" style={{ position: 'relative' }}>
               <div className="absolute top-3 left-3 w-7 h-7 border-t border-l border-[rgba(212,175,111,0.5)]" />
               <div className="absolute bottom-3 right-3 w-7 h-7 border-b border-r border-[rgba(212,175,111,0.5)]" />
 
@@ -284,15 +281,21 @@ export default function Home() {
       {/* ─────────── TESTIMONIALS ─────────── */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
-          <div className="divider-ornament max-w-sm mx-auto mb-6">
-            <span>Témoignages</span>
+          <div className="flex justify-center items-center gap-8 mb-8">
+            <CircleVideo size="xs" className="opacity-60" />
+            <div>
+              <div className="divider-ornament max-w-sm mx-auto mb-6">
+                <span>Témoignages</span>
+              </div>
+              <h2 className="font-serif-display text-4xl md:text-5xl mb-4 text-gradient-cream">
+                Ce qu&apos;elles en disent
+              </h2>
+              <p className="font-serif-text italic text-[#c9b88a] text-lg">
+                Des milliers de consultations, des destins éclairés.
+              </p>
+            </div>
+            <CircleVideo size="xs" className="opacity-60" />
           </div>
-          <h2 className="font-serif-display text-4xl md:text-5xl mb-4 text-gradient-cream">
-            Ce qu&apos;elles en disent
-          </h2>
-          <p className="font-serif-text italic text-[#c9b88a] text-lg">
-            Des milliers de consultations, des destins éclairés.
-          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">

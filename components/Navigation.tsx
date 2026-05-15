@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import { Sparkles, ChevronDown, User, Crown, Menu, X } from "lucide-react";
+import { ChevronDown, User, Crown, Menu, X } from "lucide-react";
 
 const NAV_GROUPS = [
   {
@@ -66,9 +67,7 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 flex-shrink-0 group" onClick={() => { setOpenGroup(null); setMobileOpen(false); }}>
-          <div className="relative w-9 h-9 rounded-full border border-[rgba(212,175,111,0.4)] flex items-center justify-center bg-gradient-to-br from-[rgba(45,10,62,0.6)] to-[rgba(13,8,32,0.8)]">
-            <Sparkles size={16} className="text-[#d4af6f] group-hover:text-[#e8c875] transition-colors" />
-          </div>
+          <Image src="/logo-celeste.svg" alt="Céleste Voyance" width={38} height={38} className="rounded-full group-hover:scale-105 transition-transform duration-300" />
           <div className="leading-tight">
             <div className="font-serif-display text-[15px] font-semibold tracking-wider text-gradient-cream">MADAME&nbsp;CÉLESTE</div>
             <div className="text-[9px] tracking-[0.3em] text-[#8a6f3a] uppercase">Arts Divinatoires</div>
