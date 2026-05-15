@@ -1,4 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import "./globals.css";
+import Navigation from "@/components/Navigation";
+import StarBackground from "@/components/StarBackground";
+import Footer from "@/components/Footer";
+import { UserProfileProvider } from "@/contexts/UserProfileContext";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://celestevoyance.com";
 
 export const viewport: Viewport = {
   themeColor: "#07040d",
@@ -7,13 +14,6 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
 };
-import "./globals.css";
-import Navigation from "@/components/Navigation";
-import StarBackground from "@/components/StarBackground";
-import Footer from "@/components/Footer";
-import { UserProfileProvider } from "@/contexts/UserProfileContext";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://celestevoyance.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

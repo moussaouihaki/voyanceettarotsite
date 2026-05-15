@@ -40,15 +40,17 @@ export default function MonProfilPage() {
   const [latNaissance, setLatNaissance] = useState<number | undefined>();
   const [lonNaissance, setLonNaissance] = useState<number | undefined>();
   const [genre, setGenre] = useState<"femme" | "homme" | "autre" | "">("");
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (profile) {
-      setPrenom(profile.prenom);
-      setNom(profile.nom);
+      setPrenom(profile.prenom || "");
+      setNom(profile.nom || "");
       setEmail(profile.email || "");
-      setDateNaissance(profile.dateNaissance);
+      setDateNaissance(profile.dateNaissance || "");
       setHeureNaissance(profile.heureNaissance || "");
-      setVilleNaissance(profile.villeNaissance);
+      setVilleNaissance(profile.villeNaissance || "");
       setLatNaissance(profile.latNaissance);
       setLonNaissance(profile.lonNaissance);
       setGenre(profile.genre || "");
@@ -64,13 +66,17 @@ export default function MonProfilPage() {
 
   if (!isHydrated || !firebaseUser) return null;
 
-  const showForm = !profile || editing;
+  // Show form if no profile yet, if profile has no prenom/dateNaissance, or if editing
+  const showForm = !profile || !profile.prenom || !profile.dateNaissance || editing;
 
   const handleSave = () => {
-    if (!prenom || !dateNaissance || !villeNaissance) return;
+    setSaveError(null);
+    setSaveSuccess(false);
+    if (!prenom.trim()) { setSaveError("Le prénom est requis."); return; }
+    if (!dateNaissance) { setSaveError("La date de naissance est requise."); return; }
     saveProfile({
-      prenom,
-      nom,
+      prenom: prenom.trim(),
+      nom: nom.trim(),
       email,
       dateNaissance,
       heureNaissance,
@@ -79,6 +85,7 @@ export default function MonProfilPage() {
       lonNaissance,
       genre: genre || undefined,
     });
+    setSaveSuccess(true);
     setEditing(false);
   };
 
@@ -225,13 +232,12 @@ export default function MonProfilPage() {
 
             <div className="pt-6 flex flex-wrap gap-3 justify-center">
               {profile && (
-                <button onClick={() => setEditing(false)} className="btn-ghost">
+                <button onClick={() => { setEditing(false); setSaveError(null); }} className="btn-ghost">
                   Annuler
                 </button>
               )}
               <button
                 onClick={handleSave}
-                disabled={!prenom || !dateNaissance || !villeNaissance}
                 className="btn-gold"
               >
                 <Sparkles size={14} />
@@ -239,8 +245,14 @@ export default function MonProfilPage() {
               </button>
             </div>
 
+            {saveError && (
+              <p className="text-center text-xs text-red-400 bg-[rgba(220,50,50,0.08)] border border-[rgba(220,50,50,0.2)] rounded-sm px-3 py-2 mt-2">
+                {saveError}
+              </p>
+            )}
+
             <p className="text-center text-[10px] text-[#8a6f3a] tracking-wider mt-4">
-              Vos données sont stockées localement et ne sont jamais partagées.
+              Vos données sont chiffrées et synchronisées de façon sécurisée.
             </p>
           </div>
         </div>

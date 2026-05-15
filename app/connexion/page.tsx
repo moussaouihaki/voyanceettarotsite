@@ -11,7 +11,7 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { saveFirestoreUser } from "@/lib/firebase-db";
+import { saveFirestoreUser, getFirestoreUser } from "@/lib/firebase-db";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Crown, Star, Eye, EyeOff } from "lucide-react";
 
@@ -96,19 +96,21 @@ export default function ConnexionPage() {
     try {
       const provider = new GoogleAuthProvider();
       const cred = await signInWithPopup(auth, provider);
-      // Upsert minimal profile for new Google users
-      await saveFirestoreUser(cred.user.uid, {
-        uid: cred.user.uid,
-        email: cred.user.email ?? "",
-        prenom: cred.user.displayName?.split(" ")[0] ?? "",
-        nom: cred.user.displayName?.split(" ").slice(1).join(" ") ?? "",
-        dateNaissance: "",
-        heureNaissance: "",
-        villeNaissance: "",
-        paysNaissance: "",
-        subscription: "decouverte",
-        createdAt: Date.now(),
-      });
+      // Only create profile if user doesn't already have one — never overwrite existing data
+      const existing = await getFirestoreUser(cred.user.uid);
+      if (!existing) {
+        await saveFirestoreUser(cred.user.uid, {
+          uid: cred.user.uid,
+          email: cred.user.email ?? "",
+          prenom: cred.user.displayName?.split(" ")[0] ?? "",
+          nom: cred.user.displayName?.split(" ").slice(1).join(" ") ?? "",
+          dateNaissance: "",
+          heureNaissance: "",
+          villeNaissance: "",
+          subscription: "decouverte",
+          createdAt: Date.now(),
+        });
+      }
       router.push(redirect);
     } catch {
       setError("Connexion Google annulée ou impossible.");
