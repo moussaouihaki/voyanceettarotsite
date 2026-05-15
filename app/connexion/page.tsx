@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { saveFirestoreUser } from "@/lib/firebase-db";
@@ -16,14 +17,43 @@ import { Crown, Star, Eye, EyeOff } from "lucide-react";
 
 export default function ConnexionPage() {
   const router = useRouter();
-  const { profile } = useUserProfile();
+  const searchParams = useSearchParams();
+  const { profile, firebaseUser, isHydrated } = useUserProfile();
+  const redirect = searchParams.get("redirect") || "/mon-profil";
   const [mode, setMode] = useState<"login" | "register">("login");
+
+  // Already logged in → redirect
+  useEffect(() => {
+    if (isHydrated && firebaseUser) {
+      router.replace(redirect);
+    }
+  }, [isHydrated, firebaseUser, redirect, router]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [prenom, setPrenom] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resetSent, setResetSent] = useState(false);
+
+  const handleResetPassword = async () => {
+    if (!email.trim()) {
+      setError("Entrez votre email pour recevoir le lien de réinitialisation.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      await sendPasswordResetEmail(auth, email, {
+        url: `${window.location.origin}/connexion`,
+      });
+      setResetSent(true);
+    } catch {
+      setError("Impossible d'envoyer l'email. Vérifiez l'adresse saisie.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +77,7 @@ export default function ConnexionPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push("/mon-profil");
+      router.push(redirect);
     } catch (err: unknown) {
       const msg = (err as { code?: string })?.code;
       if (msg === "auth/email-already-in-use") setError("Cet email est déjà utilisé.");
@@ -79,7 +109,7 @@ export default function ConnexionPage() {
         subscription: "decouverte",
         createdAt: Date.now(),
       });
-      router.push("/mon-profil");
+      router.push(redirect);
     } catch {
       setError("Connexion Google annulée ou impossible.");
     } finally {
@@ -202,19 +232,39 @@ export default function ConnexionPage() {
             </button>
           </form>
 
+          {/* Forgot password */}
+          {mode === "login" && (
+            <div className="text-center mt-4">
+              {resetSent ? (
+                <p className="text-[11px] text-[#d4af6f] tracking-wide">
+                  Un email de réinitialisation a été envoyé à {email}
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResetPassword}
+                  disabled={loading}
+                  className="text-[11px] text-[#8a6f3a] hover:text-[#c9b88a] transition-colors tracking-wide underline underline-offset-2"
+                >
+                  Mot de passe oublié ?
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Toggle mode */}
-          <p className="text-center mt-6 text-[#8a6f3a] text-xs tracking-wide">
+          <p className="text-center mt-5 text-[#8a6f3a] text-xs tracking-wide">
             {mode === "login" ? (
               <>
                 Pas encore de compte ?{" "}
-                <button onClick={() => { setMode("register"); setError(null); }} className="text-[#c9b88a] hover:text-[#f5ecd9] transition-colors underline underline-offset-2">
+                <button onClick={() => { setMode("register"); setError(null); setResetSent(false); }} className="text-[#c9b88a] hover:text-[#f5ecd9] transition-colors underline underline-offset-2">
                   Créer un compte
                 </button>
               </>
             ) : (
               <>
                 Déjà membre ?{" "}
-                <button onClick={() => { setMode("login"); setError(null); }} className="text-[#c9b88a] hover:text-[#f5ecd9] transition-colors underline underline-offset-2">
+                <button onClick={() => { setMode("login"); setError(null); setResetSent(false); }} className="text-[#c9b88a] hover:text-[#f5ecd9] transition-colors underline underline-offset-2">
                   Se connecter
                 </button>
               </>

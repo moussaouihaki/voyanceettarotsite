@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Crown, Loader2, Star, Briefcase, Heart, Globe, User, TableProperties } from "lucide-react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import PaywallGate from "@/components/PaywallGate";
@@ -139,7 +140,14 @@ function StreamSection({
 // ───── Main page ─────────────────────────────────────────────────────────────
 
 export default function MesAstresPage() {
-  const { profile } = useUserProfile();
+  const { profile, firebaseUser, isHydrated } = useUserProfile();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isHydrated && !firebaseUser) {
+      router.replace("/connexion?redirect=/mes-astres");
+    }
+  }, [isHydrated, firebaseUser, router]);
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabId>("portrait");

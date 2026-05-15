@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useUserProfile, TIER_LIMITS } from "@/contexts/UserProfileContext";
 import { getSunSign } from "@/lib/astrology";
 import { calculerProfil } from "@/lib/numerology";
@@ -26,7 +27,8 @@ import {
 
 
 export default function MonProfilPage() {
-  const { profile, saveProfile, clearProfile, history, clearHistory, isHydrated } = useUserProfile();
+  const { profile, firebaseUser, saveProfile, clearProfile, history, clearHistory, isHydrated } = useUserProfile();
+  const router = useRouter();
   const [editing, setEditing] = useState(false);
 
   const [prenom, setPrenom] = useState("");
@@ -53,7 +55,14 @@ export default function MonProfilPage() {
     }
   }, [profile]);
 
-  if (!isHydrated) return null;
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (isHydrated && !firebaseUser) {
+      router.replace("/connexion?redirect=/mon-profil");
+    }
+  }, [isHydrated, firebaseUser, router]);
+
+  if (!isHydrated || !firebaseUser) return null;
 
   const showForm = !profile || editing;
 
