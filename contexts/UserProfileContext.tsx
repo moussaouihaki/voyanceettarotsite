@@ -1,6 +1,9 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { getFirestoreUser, saveFirestoreUser } from "@/lib/firebase-db";
 import { getSunSign } from "@/lib/astrology";
 
 export type SubscriptionTier = "decouverte" | "mystique" | "vip";
@@ -20,7 +23,7 @@ export interface UserProfile {
 
 export interface ReadingHistory {
   id: string;
-  type: string; // "tarot" | "rune" | "iching" | etc.
+  type: string;
   title: string;
   date: number;
   content: string;
@@ -30,9 +33,11 @@ export interface ReadingHistory {
 interface UserProfileContextType {
   profile: UserProfile | null;
   history: ReadingHistory[];
+  firebaseUser: FirebaseUser | null;
   saveProfile: (p: Omit<UserProfile, "createdAt" | "subscription"> & Partial<Pick<UserProfile, "createdAt" | "subscription">>) => void;
   updateSubscription: (tier: SubscriptionTier) => void;
   clearProfile: () => void;
+  logout: () => Promise<void>;
   addReading: (r: Omit<ReadingHistory, "id" | "date">) => void;
   clearHistory: () => void;
   isHydrated: boolean;
@@ -47,22 +52,65 @@ const UserProfileContext = createContext<UserProfileContextType | null>(null);
 export function UserProfileProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [history, setHistory] = useState<ReadingHistory[]>([]);
+  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
+  // Load local history on mount
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setProfile(JSON.parse(raw));
       const histRaw = localStorage.getItem(HISTORY_KEY);
       if (histRaw) setHistory(JSON.parse(histRaw));
     } catch {}
-    setIsHydrated(true);
+  }, []);
+
+  // Firebase Auth listener — loads profile from Firestore when logged in
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      setFirebaseUser(user);
+      if (user) {
+        const fsUser = await getFirestoreUser(user.uid);
+        if (fsUser) {
+          const { uid: _uid, updatedAt: _updatedAt, ...profileData } = fsUser;
+          setProfile(profileData as UserProfile);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(profileData));
+        } else {
+          // Firebase user exists but no Firestore doc — load from localStorage
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+              const localProfile = JSON.parse(raw) as UserProfile;
+              setProfile(localProfile);
+              // Sync local profile up to Firestore
+              await saveFirestoreUser(user.uid, {
+                ...localProfile,
+                email: user.email ?? localProfile.email,
+              });
+            }
+          } catch {}
+        }
+      } else {
+        // Not logged in — load from localStorage
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) setProfile(JSON.parse(raw));
+        } catch {}
+      }
+      setIsHydrated(true);
+    });
+    return () => unsub();
   }, []);
 
   const persistProfile = (p: UserProfile | null) => {
     if (p) localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
     else localStorage.removeItem(STORAGE_KEY);
     setProfile(p);
+
+    if (firebaseUser && p) {
+      saveFirestoreUser(firebaseUser.uid, {
+        ...p,
+        email: firebaseUser.email ?? p.email,
+      }).catch(console.error);
+    }
   };
 
   const persistHistory = (h: ReadingHistory[]) => {
@@ -87,6 +135,11 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
 
   const clearProfile = () => persistProfile(null);
 
+  const logout = async () => {
+    await signOut(auth);
+    clearProfile();
+  };
+
   const addReading: UserProfileContextType["addReading"] = (r) => {
     const next: ReadingHistory = {
       ...r,
@@ -102,7 +155,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
 
   return (
     <UserProfileContext.Provider
-      value={{ profile, history, saveProfile, updateSubscription, clearProfile, addReading, clearHistory, isHydrated, sunSignName }}
+      value={{ profile, history, firebaseUser, saveProfile, updateSubscription, clearProfile, logout, addReading, clearHistory, isHydrated, sunSignName }}
     >
       {children}
     </UserProfileContext.Provider>

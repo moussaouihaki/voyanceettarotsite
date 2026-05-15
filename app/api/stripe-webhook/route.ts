@@ -1,10 +1,7 @@
 import { NextRequest } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
-
-// Stripe webhook — écoute checkout.session.completed pour valider les abonnements.
-// Variable d'env requise : STRIPE_WEBHOOK_SECRET (depuis le dashboard Stripe > Webhooks)
-// L'abonnement est validé côté serveur — plus fiable que le seul paramètre URL de succès.
+import { getUserByEmail, updateFirestoreSubscription } from "@/lib/firebase-db";
 
 export async function POST(req: NextRequest) {
   const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -29,17 +26,36 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const tier = session.metadata?.tier;
-    const prenom = session.metadata?.prenom;
-    // Le tier est validé. La page /tarifs/succes met à jour le profil localStorage
-    // via le paramètre tier dans l'URL de redirection Stripe (success_url).
-    console.log(`[Webhook] Abonnement activé — ${prenom} → ${tier}`);
+    const tier = session.metadata?.tier as string | undefined;
+    const customerEmail = session.customer_details?.email ?? session.metadata?.email;
+
+    if (tier && customerEmail) {
+      const user = await getUserByEmail(customerEmail);
+      if (user?.uid) {
+        await updateFirestoreSubscription(user.uid, tier);
+        console.log(`[Webhook] Abonnement activé — ${customerEmail} → ${tier}`);
+      } else {
+        console.warn(`[Webhook] Utilisateur introuvable pour email: ${customerEmail}`);
+      }
+    }
   }
 
   if (event.type === "customer.subscription.deleted") {
     const sub = event.data.object as Stripe.Subscription;
-    console.log(`[Webhook] Abonnement résilié — ${sub.metadata?.prenom}`);
-    // En production : mettre à jour la DB pour repasser l'utilisateur en "decouverte"
+    const stripe = new Stripe(stripeKey);
+    const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+    try {
+      const customer = await stripe.customers.retrieve(customerId);
+      if (!customer.deleted && customer.email) {
+        const user = await getUserByEmail(customer.email);
+        if (user?.uid) {
+          await updateFirestoreSubscription(user.uid, "decouverte");
+          console.log(`[Webhook] Abonnement résilié — ${customer.email} → decouverte`);
+        }
+      }
+    } catch (e) {
+      console.error("[Webhook] Erreur résiliation", e);
+    }
   }
 
   return new Response("OK", { status: 200 });

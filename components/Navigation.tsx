@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import { ChevronDown, User, Crown, Menu, X } from "lucide-react";
+import { ChevronDown, User, Crown, Menu, X, LogIn, LogOut } from "lucide-react";
 
 const NAV_GROUPS = [
   {
@@ -50,7 +50,7 @@ export default function Navigation() {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { profile } = useUserProfile();
+  const { profile, firebaseUser, logout } = useUserProfile();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -163,6 +163,24 @@ export default function Navigation() {
             </span>
           )}
 
+          {firebaseUser ? (
+            <button
+              onClick={() => logout()}
+              title="Se déconnecter"
+              className="hidden md:flex items-center gap-1.5 px-3 py-2 text-[11px] tracking-wider text-[#8a6f3a] hover:text-[#c9b88a] transition-colors"
+            >
+              <LogOut size={13} />
+            </button>
+          ) : (
+            <Link
+              href="/connexion"
+              className="hidden md:flex items-center gap-1.5 px-3 py-2 text-[11px] tracking-wider text-[#8a6f3a] hover:text-[#c9b88a] transition-colors"
+            >
+              <LogIn size={13} />
+              <span className="hidden xl:inline">Connexion</span>
+            </Link>
+          )}
+
           {/* Mobile menu toggle */}
           <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden text-[#c9b88a] p-2">
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -203,6 +221,20 @@ export default function Navigation() {
                 <Crown size={13} />
                 <span>Devenir membre</span>
               </Link>
+              {firebaseUser ? (
+                <button
+                  onClick={() => { logout(); setMobileOpen(false); }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 mt-2 border border-[rgba(212,175,111,0.2)] rounded-sm text-[#8a6f3a] text-[11px] tracking-widest uppercase hover:text-[#c9b88a] transition-colors"
+                >
+                  <LogOut size={13} />
+                  <span>Se déconnecter</span>
+                </button>
+              ) : (
+                <Link href="/connexion" onClick={() => setMobileOpen(false)} className="w-full flex items-center justify-center gap-2 px-4 py-3 mt-2 border border-[rgba(212,175,111,0.2)] rounded-sm text-[#8a6f3a] text-[11px] tracking-widest uppercase hover:text-[#c9b88a] transition-colors">
+                  <LogIn size={13} />
+                  <span>Connexion</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
