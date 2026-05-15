@@ -20,7 +20,7 @@ export default function MentionsLegalesPage() {
           <h2 className="font-serif-display text-2xl text-[#d4af6f] mb-3">Éditeur du site</h2>
           <p>
             Le site Madame Céleste est édité par Madame Céleste, sanctuaire numérique de voyance.<br />
-            Contact : contact@madameceleste.com
+            Contact : <a href="mailto:info@celestevoyance.com" className="text-[#d4af6f] hover:text-[#e8c875] transition-colors">info@celestevoyance.com</a>
           </p>
         </section>
 
@@ -43,13 +43,16 @@ export default function MentionsLegalesPage() {
         <section>
           <h2 className="font-serif-display text-2xl text-[#d4af6f] mb-3">Données personnelles (RGPD)</h2>
           <p className="mb-3">
-            Les informations que vous nous confiez (prénom, date de naissance, etc.) sont stockées localement
-            sur votre appareil (localStorage) et utilisées uniquement pour personnaliser vos lectures. Elles ne sont
-            jamais transmises à des tiers, sauf à Google (Gemini) pour la génération des interprétations IA.
+            Les informations que vous nous confiez (prénom, date de naissance, etc.) sont stockées sur votre appareil
+            (localStorage) et dans notre base de données sécurisée (Firebase/Firestore, Google Cloud) lorsque vous
+            créez un compte. Elles sont utilisées uniquement pour personnaliser vos lectures et gérer votre abonnement.
+            Elles ne sont jamais vendues ni transmises à des tiers commerciaux, sauf à Google (Gemini) pour la
+            génération des interprétations IA et à Stripe pour le traitement des paiements.
           </p>
           <p>
-            Conformément au RGPD, vous pouvez à tout moment supprimer vos données depuis la page « Mon profil »
-            ou en effaçant les données du site dans votre navigateur.
+            Conformément au RGPD, vous disposez d&apos;un droit d&apos;accès, de rectification et de suppression de vos données.
+            Vous pouvez supprimer votre profil depuis la page « Mon profil » ou en nous contactant à{" "}
+            <a href="mailto:info@celestevoyance.com" className="text-[#d4af6f] hover:text-[#e8c875] transition-colors">info@celestevoyance.com</a>.
           </p>
         </section>
 
