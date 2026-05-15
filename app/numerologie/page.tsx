@@ -1,12 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { calculerProfil, NUMBER_MEANINGS, type NumerologyProfile } from "@/lib/numerology";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
 import { Hash, Sparkles, Crown, AlertCircle } from "lucide-react";
 
 export default function NumerologiePage() {
-  const { profile, addReading } = useUserProfile();
+  const { profile, addReading, isHydrated } = useUserProfile();
   const [prenom, setPrenom] = useState(profile?.prenom || "");
   const [nom, setNom] = useState(profile?.nom || "");
   const [dateNaissance, setDateNaissance] = useState(profile?.dateNaissance || "");
@@ -86,6 +87,10 @@ export default function NumerologiePage() {
       </div>
     );
   };
+
+  if (!isHydrated) return null;
+
+  const hasPremium = canAccessFeature(profile?.subscription, "premium");
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-16">
@@ -191,11 +196,22 @@ export default function NumerologiePage() {
           </div>
 
           <div className="flex gap-3 justify-center flex-wrap mb-8">
-            {!reading && !isStreaming && (
+            {!reading && !isStreaming && hasPremium && (
               <button onClick={getInterpretation} className="btn-gold">
                 <Sparkles size={14} />
                 <span>Interprétation IA complète</span>
               </button>
+            )}
+            {!reading && !isStreaming && !hasPremium && (
+              <div className="luxe-card rounded-sm px-6 py-4 flex items-center gap-4 max-w-sm mx-auto">
+                <Crown size={20} className="text-[#d4af6f] flex-shrink-0" />
+                <p className="text-[13px] text-[#c9b88a] leading-snug">
+                  Déverrouillez l&apos;interprétation IA avec Mystique
+                </p>
+                <Link href="/tarifs" className="btn-gold !py-1.5 !px-3 !text-[11px] flex-shrink-0">
+                  <span>Voir</span>
+                </Link>
+              </div>
             )}
             <button onClick={() => { setStep("form"); setNumProfile(null); setReading(""); }} className="btn-ghost">
               <span>Nouveau calcul</span>

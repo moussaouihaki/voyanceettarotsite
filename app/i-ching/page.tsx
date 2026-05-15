@@ -1,14 +1,30 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { HEXAGRAMS, consultIChing, type Hexagram } from "@/lib/iching";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
-import { Coins, BookOpen, Sparkles, ArrowLeft, Compass } from "lucide-react";
+import { Coins, BookOpen, Sparkles, ArrowLeft, Compass, Crown } from "lucide-react";
+
+function PremiumWall({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="max-w-lg mx-auto text-center px-6 py-20">
+      <Crown size={40} className="text-[#d4af6f] mx-auto mb-6" />
+      <div className="badge-gold mb-5">Premium</div>
+      <h2 className="font-serif-display text-3xl text-gradient-cream mb-4">{title}</h2>
+      <p className="font-serif-text italic text-[#c9b88a] mb-8">{message}</p>
+      <div className="flex gap-3 justify-center flex-wrap">
+        <Link href="/tarifs" className="btn-gold"><Crown size={14} /><span>Voir les offres</span></Link>
+        <Link href="/mon-profil" className="btn-outline-gold"><span>Mon profil</span></Link>
+      </div>
+    </div>
+  );
+}
 
 type Step = "intro" | "question" | "toss" | "result";
 
 export default function IChingPage() {
-  const { profile, addReading } = useUserProfile();
+  const { profile, addReading, isHydrated } = useUserProfile();
   const [step, setStep] = useState<Step>("intro");
   const [question, setQuestion] = useState("");
   const [hexagram, setHexagram] = useState<Hexagram | null>(null);
@@ -70,6 +86,16 @@ export default function IChingPage() {
   };
 
   const reset = () => { setStep("intro"); setQuestion(""); setHexagram(null); setTossResults([]); setReading(""); };
+
+  if (!isHydrated) return null;
+
+  if (!profile) {
+    return <PremiumWall title="I-Ching" message="Le Livre des Mutations et son interprétation IA sont réservés aux membres Mystique." />;
+  }
+
+  if (!canAccessFeature(profile.subscription, "premium")) {
+    return <PremiumWall title="I-Ching" message="Le Livre des Mutations et son interprétation IA sont réservés aux membres Mystique." />;
+  }
 
   const renderLine = (isYang: boolean, index: number) => (
     <div key={index} className="flex items-center justify-center gap-2 h-4">

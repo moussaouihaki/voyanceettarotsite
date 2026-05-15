@@ -1,12 +1,14 @@
 "use client";
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import { drawCards, TarotCard } from "@/lib/tarot-cards";
 import { ALL_SPREADS, SPREAD_CATEGORIES, type Spread, type SpreadCategory } from "@/lib/spreads";
 import { getSpreadIcon, CATEGORY_ICONS } from "@/lib/spread-icons";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useUserProfile, canAccessFeature, TIER_LIMITS } from "@/contexts/UserProfileContext";
+import { canUse, increment, remaining } from "@/lib/daily-limits";
 import TarotCardComponent from "@/components/TarotCard";
 import ReadingResult from "@/components/ReadingResult";
-import { Search, Sparkles, ArrowLeft, RotateCcw, Star, Layers } from "lucide-react";
+import { Search, Sparkles, ArrowLeft, RotateCcw, Star, Layers, Lock, Crown } from "lucide-react";
 
 type DrawnCard = TarotCard & { reversed: boolean; positionIndex: number };
 type Step = "choose" | "question" | "draw" | "reading";
@@ -28,6 +30,10 @@ export default function TiragePage() {
   const [reading, setReading] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [limitReached, setLimitReached] = useState(false);
+  const [noProfileHint, setNoProfileHint] = useState<string | null>(null);
+
+  const tier = profile?.subscription;
 
   const filteredSpreads = ALL_SPREADS.filter((s) => {
     const matchCat = activeCategory === "all" || s.category === activeCategory;
@@ -36,27 +42,60 @@ export default function TiragePage() {
   });
 
   const handleSpreadSelect = (spread: Spread) => {
+    if (!profile) {
+      setNoProfileHint(spread.id);
+      return;
+    }
+    if (tier === "decouverte" && spread.cardCount > 3) {
+      // Redirect hint handled via overlay click — no state needed, Link used inline
+      return;
+    }
+    setNoProfileHint(null);
     setSelectedSpread(spread);
     setStep("question");
   };
 
   const handleDraw = useCallback(() => {
     if (!selectedSpread) return;
+    if (!profile) return;
+    const currentTier = profile.subscription;
+    if (!canUse("tirages", currentTier)) {
+      setLimitReached(true);
+      setStep("draw");
+      setCards(drawCards(selectedSpread.cardCount));
+      setFlippedCards(new Set());
+      setReading("");
+      return;
+    }
+    setLimitReached(false);
     setCards(drawCards(selectedSpread.cardCount));
     setFlippedCards(new Set());
     setReading("");
     setStep("draw");
-  }, [selectedSpread]);
+  }, [selectedSpread, profile]);
 
   const flipCard = (i: number) => setFlippedCards((p) => new Set([...p, i]));
   const flipAll = () => setFlippedCards(new Set(cards.map((_, i) => i)));
   const allFlipped = flippedCards.size === cards.length && cards.length > 0;
 
   const getLecture = async () => {
-    if (!selectedSpread) return;
+    if (!selectedSpread || !profile) return;
+
+    const currentTier = profile.subscription;
+
+    // Decouverte tier: show paywall instead of calling API
+    if (currentTier === "decouverte") {
+      setStep("reading");
+      setReading("__PAYWALL_IA__");
+      return;
+    }
+
+    // mystique / vip: full access, increment counter
     setIsStreaming(true);
     setReading("");
     setStep("reading");
+    increment("tirages");
+
     const positions = selectedSpread.positions;
     const cardData = cards.map((c, i) => ({
       name: c.name, suit: c.suit, number: c.number,
@@ -67,7 +106,21 @@ export default function TiragePage() {
       const res = await fetch("/api/lecture", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cards: cardData, question, spreadType: selectedSpread.id, spreadName: selectedSpread.name, profile }),
+        body: JSON.stringify({
+          cards: cardData,
+          question,
+          spreadType: selectedSpread.id,
+          spreadName: selectedSpread.name,
+          profile: {
+            prenom: profile.prenom,
+            nom: profile.nom,
+            dateNaissance: profile.dateNaissance,
+            heureNaissance: profile.heureNaissance,
+            villeNaissance: profile.villeNaissance,
+            genre: profile.genre,
+            subscription: profile.subscription,
+          },
+        }),
       });
       if (!res.ok || !res.body) throw new Error();
       const reader = res.body.getReader();
@@ -95,6 +148,8 @@ export default function TiragePage() {
     setReading("");
     setQuestion("");
     setSelectedSpread(null);
+    setLimitReached(false);
+    setNoProfileHint(null);
   };
 
   return (
@@ -112,6 +167,19 @@ export default function TiragePage() {
               {ALL_SPREADS.length} tirages — choisissez celui qui résonne avec votre question
             </p>
           </div>
+
+          {/* No-profile banner */}
+          {!profile && (
+            <div className="luxe-card rounded-sm p-4 mb-8 max-w-xl mx-auto flex items-center gap-3">
+              <Lock size={16} className="text-[#d4af6f] shrink-0" />
+              <p className="text-[13px] text-[#c9b88a] font-serif-text italic flex-1">
+                Inscrivez-vous pour accéder aux tirages personnalisés
+              </p>
+              <Link href="/mon-profil" className="btn-ghost !py-1.5 !px-3 !text-[11px] shrink-0">
+                Créer mon profil
+              </Link>
+            </div>
+          )}
 
           {/* Search */}
           <div className="max-w-md mx-auto mb-8">
@@ -169,39 +237,80 @@ export default function TiragePage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredSpreads.map((spread) => {
                 const Icon = getSpreadIcon(spread.id, spread.category);
+                const isPremiumLocked = tier === "decouverte" && spread.cardCount > 3;
+                const isNoProfileHinted = noProfileHint === spread.id;
+
                 return (
-                  <button
-                    key={spread.id}
-                    onClick={() => handleSpreadSelect(spread)}
-                    className="luxe-card rounded-sm p-6 text-left group relative"
-                  >
-                    {spread.popular && (
-                      <div className="absolute top-3 right-3 flex items-center gap-1 text-[9px] tracking-[0.2em] uppercase text-[#d4af6f]">
-                        <Star size={10} className="fill-[#d4af6f]" />
-                        <span>Populaire</span>
+                  <div key={spread.id} className="flex flex-col">
+                    <button
+                      onClick={() => {
+                        if (isPremiumLocked) return; // overlay handles this
+                        handleSpreadSelect(spread);
+                      }}
+                      className={`luxe-card rounded-sm p-6 text-left group relative flex-1 ${
+                        isPremiumLocked ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                    >
+                      {spread.popular && !isPremiumLocked && (
+                        <div className="absolute top-3 right-3 flex items-center gap-1 text-[9px] tracking-[0.2em] uppercase text-[#d4af6f]">
+                          <Star size={10} className="fill-[#d4af6f]" />
+                          <span>Populaire</span>
+                        </div>
+                      )}
+
+                      {isPremiumLocked && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-10">
+                          <Lock size={16} className="text-[#d4af6f]" />
+                          <Link
+                            href="/tarifs"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-[10px] tracking-[0.2em] uppercase text-[#d4af6f] underline underline-offset-2 hover:text-[#e8c875]"
+                          >
+                            Voir les offres
+                          </Link>
+                        </div>
+                      )}
+
+                      <div className="flex items-start justify-between mb-5">
+                        <div className="w-11 h-11 rounded-sm bg-gradient-to-br from-[rgba(212,175,111,0.12)] to-transparent border border-[rgba(212,175,111,0.3)] flex items-center justify-center group-hover:border-[#d4af6f] transition-colors">
+                          <Icon size={18} className="text-[#d4af6f]" />
+                        </div>
+                        <div className="flex flex-col items-end gap-1.5 mt-1">
+                          <span className="badge-soft !text-[9px]">
+                            {spread.cardCount} {spread.cardCount === 1 ? "carte" : "cartes"}
+                          </span>
+                          <span className="text-[9px] tracking-widest uppercase text-[#8a6f3a]">
+                            {DIFFICULTY_LABELS[spread.difficulty]}
+                          </span>
+                          {isPremiumLocked && (
+                            <span className="text-[9px] tracking-widest uppercase text-[#d4af6f] flex items-center gap-1">
+                              <Crown size={9} />
+                              Mystique
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <h3 className="font-serif-display text-lg text-cream group-hover:text-[#e8c875] transition-colors mb-1.5">
+                        {spread.name}
+                      </h3>
+                      <p className="text-[11px] tracking-wider text-[#d4af6f] uppercase mb-3">{spread.subtitle}</p>
+                      <p className="text-[13px] text-[#c9b88a] leading-relaxed line-clamp-2">{spread.description}</p>
+                    </button>
+
+                    {/* No-profile inline hint */}
+                    {isNoProfileHinted && (
+                      <div className="luxe-card rounded-sm px-4 py-3 mt-1 flex items-center gap-2">
+                        <Lock size={13} className="text-[#d4af6f] shrink-0" />
+                        <p className="text-[12px] text-[#c9b88a] flex-1">
+                          Créez d&apos;abord votre{" "}
+                          <Link href="/mon-profil" className="text-[#d4af6f] underline underline-offset-2 hover:text-[#e8c875]">
+                            profil gratuit
+                          </Link>
+                        </p>
                       </div>
                     )}
-
-                    <div className="flex items-start justify-between mb-5">
-                      <div className="w-11 h-11 rounded-sm bg-gradient-to-br from-[rgba(212,175,111,0.12)] to-transparent border border-[rgba(212,175,111,0.3)] flex items-center justify-center group-hover:border-[#d4af6f] transition-colors">
-                        <Icon size={18} className="text-[#d4af6f]" />
-                      </div>
-                      <div className="flex flex-col items-end gap-1.5 mt-1">
-                        <span className="badge-soft !text-[9px]">
-                          {spread.cardCount} {spread.cardCount === 1 ? "carte" : "cartes"}
-                        </span>
-                        <span className="text-[9px] tracking-widest uppercase text-[#8a6f3a]">
-                          {DIFFICULTY_LABELS[spread.difficulty]}
-                        </span>
-                      </div>
-                    </div>
-
-                    <h3 className="font-serif-display text-lg text-cream group-hover:text-[#e8c875] transition-colors mb-1.5">
-                      {spread.name}
-                    </h3>
-                    <p className="text-[11px] tracking-wider text-[#d4af6f] uppercase mb-3">{spread.subtitle}</p>
-                    <p className="text-[13px] text-[#c9b88a] leading-relaxed line-clamp-2">{spread.description}</p>
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -272,52 +381,107 @@ export default function TiragePage() {
             <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-2">{selectedSpread.subtitle}</div>
             <h2 className="font-serif-display text-3xl text-gradient-cream mb-2">{selectedSpread.name}</h2>
             {question && <p className="font-serif-text italic text-[#c9b88a] mt-2">&ldquo;{question}&rdquo;</p>}
-            {step === "draw" && !allFlipped && (
+            {step === "draw" && !allFlipped && !limitReached && (
               <p className="text-[11px] tracking-[0.2em] uppercase text-[#d4af6f] mt-4">Cliquez sur chaque carte pour la révéler</p>
             )}
           </div>
 
-          <div className={`flex flex-wrap justify-center gap-5 md:gap-6 mb-10 ${selectedSpread.cardCount > 7 ? "max-w-6xl" : "max-w-4xl"} mx-auto`}>
-            {cards.map((card, i) => (
-              <TarotCardComponent
-                key={card.id} card={card}
-                position={selectedSpread.positions[i] || `Position ${i + 1}`}
-                isFlipped={flippedCards.has(i)}
-                onClick={() => !flippedCards.has(i) && flipCard(i)}
-                index={i}
-              />
-            ))}
-          </div>
-
-          {step === "draw" && (
-            <div className="flex gap-3 justify-center flex-wrap">
-              {!allFlipped && (
-                <button onClick={flipAll} className="btn-outline-gold">
-                  <span>Révéler toutes les cartes</span>
-                </button>
-              )}
-              {allFlipped && (
-                <button onClick={getLecture} className="btn-gold">
+          {/* Daily limit reached paywall */}
+          {step === "draw" && limitReached && (
+            <div className="max-w-md mx-auto mb-10">
+              <div className="luxe-card rounded-sm p-8 text-center">
+                <Crown size={32} className="text-[#d4af6f] mx-auto mb-4" />
+                <h3 className="font-serif-display text-2xl text-gradient-cream mb-3">Limite quotidienne atteinte</h3>
+                <p className="font-serif-text italic text-[#c9b88a] mb-6">
+                  Les membres Mystique bénéficient de tirages illimités.
+                </p>
+                <Link href="/tarifs" className="btn-gold inline-flex items-center gap-2">
                   <Sparkles size={14} />
-                  <span>Obtenir ma lecture</span>
+                  <span>Voir les offres</span>
+                </Link>
+              </div>
+              <div className="text-center mt-4">
+                <button onClick={reset} className="btn-ghost">
+                  <ArrowLeft size={13} className="inline mr-2" />
+                  <span>Retour aux tirages</span>
                 </button>
-              )}
-              <button onClick={reset} className="btn-ghost">
-                <RotateCcw size={13} className="inline mr-2" />
-                <span>Recommencer</span>
-              </button>
+              </div>
             </div>
           )}
 
-          <ReadingResult text={reading} isStreaming={isStreaming} />
+          {!limitReached && (
+            <>
+              <div className={`flex flex-wrap justify-center gap-5 md:gap-6 mb-10 ${selectedSpread.cardCount > 7 ? "max-w-6xl" : "max-w-4xl"} mx-auto`}>
+                {cards.map((card, i) => (
+                  <TarotCardComponent
+                    key={card.id} card={card}
+                    position={selectedSpread.positions[i] || `Position ${i + 1}`}
+                    isFlipped={flippedCards.has(i)}
+                    onClick={() => !flippedCards.has(i) && flipCard(i)}
+                    index={i}
+                  />
+                ))}
+              </div>
 
-          {step === "reading" && !isStreaming && reading && (
-            <div className="text-center mt-8">
-              <button onClick={reset} className="btn-outline-gold">
-                <RotateCcw size={13} className="inline mr-2" />
-                <span>Nouveau tirage</span>
-              </button>
-            </div>
+              {step === "draw" && (
+                <div className="flex gap-3 justify-center flex-wrap">
+                  {!allFlipped && (
+                    <button onClick={flipAll} className="btn-outline-gold">
+                      <span>Révéler toutes les cartes</span>
+                    </button>
+                  )}
+                  {allFlipped && (
+                    <button onClick={getLecture} className="btn-gold">
+                      <Sparkles size={14} />
+                      <span>Obtenir ma lecture</span>
+                    </button>
+                  )}
+                  <button onClick={reset} className="btn-ghost">
+                    <RotateCcw size={13} className="inline mr-2" />
+                    <span>Recommencer</span>
+                  </button>
+                </div>
+              )}
+
+              {/* IA Paywall for decouverte tier */}
+              {step === "reading" && reading === "__PAYWALL_IA__" && (
+                <div className="max-w-md mx-auto mt-10">
+                  <div className="luxe-card rounded-sm p-8 text-center">
+                    <Crown size={32} className="text-[#d4af6f] mx-auto mb-4" />
+                    <h3 className="font-serif-display text-2xl text-gradient-cream mb-3">
+                      Interprétation IA réservée aux membres Mystique
+                    </h3>
+                    <p className="font-serif-text italic text-[#c9b88a] mb-6">
+                      Accédez à des lectures personnalisées et approfondies en rejoignant l&apos;offre Mystique.
+                    </p>
+                    <Link href="/tarifs" className="btn-gold inline-flex items-center gap-2">
+                      <Sparkles size={14} />
+                      <span>Voir les offres</span>
+                    </Link>
+                  </div>
+                  <div className="text-center mt-4">
+                    <button onClick={reset} className="btn-ghost">
+                      <RotateCcw size={13} className="inline mr-2" />
+                      <span>Nouveau tirage</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Normal reading result */}
+              {!(step === "reading" && reading === "__PAYWALL_IA__") && (
+                <ReadingResult text={reading} isStreaming={isStreaming} />
+              )}
+
+              {step === "reading" && !isStreaming && reading && reading !== "__PAYWALL_IA__" && (
+                <div className="text-center mt-8">
+                  <button onClick={reset} className="btn-outline-gold">
+                    <RotateCcw size={13} className="inline mr-2" />
+                    <span>Nouveau tirage</span>
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

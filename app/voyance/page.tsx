@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import { Sparkles, Send, User, MessageCircle } from "lucide-react";
+import { Sparkles, Send, User, MessageCircle, Crown, Lock } from "lucide-react";
+import Link from "next/link";
+import { canUse, increment, remaining } from "@/lib/daily-limits";
 
 interface Message {
   role: "user" | "assistant";
@@ -16,6 +18,8 @@ const SUGGESTIONS = [
   "Y a-t-il des obstacles dans mon avenir proche ?",
 ];
 
+const ANON_LIMIT = 3;
+
 function getGreeting(prenom?: string) {
   const hour = new Date().getHours();
   const time = hour < 6 ? "douce nuit" : hour < 12 ? "bonjour" : hour < 18 ? "bel après-midi" : "bonsoir";
@@ -26,24 +30,41 @@ function getGreeting(prenom?: string) {
 }
 
 export default function VoyancePage() {
-  const { profile } = useUserProfile();
+  const { profile, isHydrated } = useUserProfile();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [continueAnon, setContinueAnon] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const tier = profile?.subscription ?? "decouverte";
+  const isUnlimited = tier === "mystique" || tier === "vip";
+
+  // Count only user messages sent (excluding the initial greeting)
+  const userMessageCount = messages.filter((m) => m.role === "user").length;
+
+  // For anonymous users, limit to ANON_LIMIT total user messages
+  const anonLimitReached = !profile && continueAnon && userMessageCount >= ANON_LIMIT;
+
+  // For decouverte tier, use daily-limits
+  const decouverteLimitReached = !!profile && tier === "decouverte" && !canUse("voyanceMessages", tier);
+  const decouverteRemaining = profile && tier === "decouverte" ? remaining("voyanceMessages", tier) : null;
+
+  const limitReached = anonLimitReached || decouverteLimitReached;
+
   useEffect(() => {
-    if (messages.length === 0) {
+    if (messages.length === 0 && (profile || continueAnon)) {
       setMessages([{ role: "assistant", content: getGreeting(profile?.prenom) }]);
     }
-  }, [profile?.prenom, messages.length]);
+  }, [profile?.prenom, messages.length, profile, continueAnon]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = async (text: string) => {
-    if (!text.trim() || isStreaming) return;
+    if (!text.trim() || isStreaming || limitReached) return;
+
     const userMessage: Message = { role: "user", content: text.trim() };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
@@ -83,8 +104,53 @@ export default function VoyancePage() {
       ]);
     } finally {
       setIsStreaming(false);
+      // Increment daily counter for decouverte tier after successful send
+      if (profile && tier === "decouverte") {
+        increment("voyanceMessages");
+      }
     }
   };
+
+  // Wait for hydration before rendering gate logic
+  if (!isHydrated) {
+    return (
+      <div className="max-w-4xl mx-auto px-6 py-8 flex items-center justify-center" style={{ height: "calc(100vh - 100px)" }}>
+        <Sparkles size={24} className="text-[#d4af6f] animate-pulse" />
+      </div>
+    );
+  }
+
+  // Paywall / profile gate
+  if (!profile && !continueAnon) {
+    return (
+      <div className="max-w-4xl mx-auto px-6 py-8 flex items-center justify-center" style={{ height: "calc(100vh - 100px)" }}>
+        <div className="luxe-card p-10 max-w-md w-full text-center space-y-6">
+          <div className="w-16 h-16 rounded-full border border-[#d4af6f] bg-[rgba(212,175,111,0.08)] flex items-center justify-center mx-auto">
+            <Sparkles size={24} className="text-[#d4af6f]" />
+          </div>
+          <div>
+            <h2 className="font-serif-display text-2xl text-gradient-cream mb-3">Créez votre profil</h2>
+            <p className="font-serif-text text-[#c9b88a] text-sm leading-relaxed">
+              Madame Céleste vous appellera par votre prénom et adaptera ses lectures à votre thème natal.
+            </p>
+          </div>
+          <Link href="/mon-profil" className="btn-gold w-full flex items-center justify-center gap-2">
+            <Crown size={14} />
+            <span>Créer mon profil</span>
+          </Link>
+          <div className="pt-2 border-t border-[rgba(212,175,111,0.1)]">
+            <p className="text-[11px] text-[#8a6f3a] mb-3">Vous pouvez aussi continuer en anonyme</p>
+            <button
+              onClick={() => setContinueAnon(true)}
+              className="btn-outline-gold text-xs w-full"
+            >
+              Continuer sans profil ({ANON_LIMIT} messages)
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col" style={{ height: "calc(100vh - 100px)" }}>
@@ -150,6 +216,50 @@ export default function VoyancePage() {
         </div>
       )}
 
+      {/* Limit reached — inline paywall card */}
+      {limitReached && (
+        <div className="luxe-card px-5 py-4 mb-3 flex flex-col sm:flex-row items-start sm:items-center gap-4 fade-in-up">
+          <Lock size={18} className="text-[#d4af6f] flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-[#e8dcc0] font-serif-text text-sm leading-relaxed">
+              {anonLimitReached
+                ? `Vous avez utilisé vos ${ANON_LIMIT} messages anonymes. Créez un profil ou passez en Mystique pour continuer.`
+                : "Vous avez utilisé vos 3 consultations gratuites aujourd'hui. Revenez demain ou passez en Mystique."}
+            </p>
+          </div>
+          <div className="flex gap-2 flex-shrink-0">
+            <Link href="/tarifs" className="btn-gold !text-[11px] !py-2 !px-4 flex items-center gap-1.5">
+              <Crown size={11} />
+              <span>Mystique</span>
+            </Link>
+            {!anonLimitReached && (
+              <span className="btn-outline-gold !text-[11px] !py-2 !px-4 cursor-default opacity-60">Demain</span>
+            )}
+            {anonLimitReached && (
+              <Link href="/mon-profil" className="btn-outline-gold !text-[11px] !py-2 !px-4">Mon profil</Link>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Daily counter for decouverte */}
+      {!limitReached && profile && tier === "decouverte" && decouverteRemaining !== null && (
+        <div className="text-center mb-2">
+          <span className="text-[10px] tracking-[0.2em] uppercase text-[#8a6f3a]">
+            {decouverteRemaining}/{3} consultations aujourd'hui
+          </span>
+        </div>
+      )}
+
+      {/* Anonymous counter */}
+      {!limitReached && !profile && continueAnon && (
+        <div className="text-center mb-2">
+          <span className="text-[10px] tracking-[0.2em] uppercase text-[#8a6f3a]">
+            {ANON_LIMIT - userMessageCount}/{ANON_LIMIT} messages anonymes restants
+          </span>
+        </div>
+      )}
+
       {/* Input */}
       <div className="flex gap-3 items-stretch">
         <input
@@ -157,13 +267,13 @@ export default function VoyancePage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage(input)}
-          placeholder="Posez votre question aux astres..."
-          disabled={isStreaming}
+          placeholder={limitReached ? "Limite atteinte pour aujourd'hui..." : "Posez votre question aux astres..."}
+          disabled={isStreaming || limitReached}
           className="luxe-input flex-1 disabled:opacity-50"
         />
         <button
           onClick={() => sendMessage(input)}
-          disabled={isStreaming || !input.trim()}
+          disabled={isStreaming || !input.trim() || limitReached}
           className="btn-gold !px-6"
         >
           <Send size={13} />

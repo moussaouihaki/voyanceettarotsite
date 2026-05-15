@@ -41,14 +41,21 @@ export async function POST(req: NextRequest) {
 
   let personalContext = "";
   if (profile?.prenom) {
-    personalContext += `\nLe consultant s'appelle ${profile.prenom}.`;
+    let sunSign = "";
     if (profile.dateNaissance) {
       try {
-        const sun = getSunSign(profile.dateNaissance);
-        personalContext += ` Signe solaire : ${sun.name}.`;
+        sunSign = getSunSign(profile.dateNaissance).name;
       } catch {}
     }
-    personalContext += " Adressez-vous à lui/elle directement et personnalisez la lecture en tenant compte de son signe.";
+
+    const birthParts: string[] = [];
+    if (profile.dateNaissance) birthParts.push(profile.dateNaissance);
+    if (profile.heureNaissance) birthParts.push(profile.heureNaissance);
+    const birthDesc = birthParts.length > 0 ? ` née le ${birthParts.join(" à ")}` : "";
+    const cityDesc = profile.villeNaissance ? ` à ${profile.villeNaissance}` : "";
+    const sunDesc = sunSign ? `, signe ${sunSign}` : "";
+
+    personalContext = `\nCette lecture est pour ${profile.prenom},${birthDesc}${cityDesc}${sunDesc}. Adresse-toi à elle/lui par son prénom tout au long de la lecture. Commence par adresser ${profile.prenom} directement.`;
   }
 
   const userPrompt = `${MADAME_CELESTE_SYSTEM}

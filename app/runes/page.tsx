@@ -1,15 +1,31 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { ELDER_FUTHARK, RUNE_SPREADS, drawRunes, type RuneSpread } from "@/lib/runes";
 import { getRuneSpreadIcon } from "@/lib/spread-icons";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
-import { Sparkles, ArrowLeft, RotateCcw, Flame } from "lucide-react";
+import { Sparkles, ArrowLeft, RotateCcw, Flame, Crown } from "lucide-react";
 
 type DrawnRune = typeof ELDER_FUTHARK[0] & { isReversed: boolean };
 
+function PremiumWall({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="max-w-lg mx-auto text-center px-6 py-20">
+      <Crown size={40} className="text-[#d4af6f] mx-auto mb-6" />
+      <div className="badge-gold mb-5">Premium</div>
+      <h2 className="font-serif-display text-3xl text-gradient-cream mb-4">{title}</h2>
+      <p className="font-serif-text italic text-[#c9b88a] mb-8">{message}</p>
+      <div className="flex gap-3 justify-center flex-wrap">
+        <Link href="/tarifs" className="btn-gold"><Crown size={14} /><span>Voir les offres</span></Link>
+        <Link href="/mon-profil" className="btn-outline-gold"><span>Mon profil</span></Link>
+      </div>
+    </div>
+  );
+}
+
 export default function RunesPage() {
-  const { profile, addReading } = useUserProfile();
+  const { profile, addReading, isHydrated } = useUserProfile();
   const [step, setStep] = useState<"choose" | "question" | "draw" | "reading">("choose");
   const [selectedSpread, setSelectedSpread] = useState<RuneSpread | null>(null);
   const [question, setQuestion] = useState("");
@@ -68,6 +84,16 @@ export default function RunesPage() {
   };
 
   const reset = () => { setStep("choose"); setRunes([]); setRevealedRunes(new Set()); setReading(""); setQuestion(""); setSelectedSpread(null); };
+
+  if (!isHydrated) return null;
+
+  if (!profile) {
+    return <PremiumWall title="Lectures de Runes" message="Inscrivez-vous gratuitement pour des lectures de runes personnalisées." />;
+  }
+
+  if (!canAccessFeature(profile.subscription, "premium")) {
+    return <PremiumWall title="Runes — Abonnement requis" message="Les lectures de runes avec interprétation IA sont réservées aux membres Mystique." />;
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-16">

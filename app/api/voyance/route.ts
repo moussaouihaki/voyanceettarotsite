@@ -39,16 +39,23 @@ export async function POST(req: NextRequest) {
   // Build personalized system prompt with user profile
   let personalContext = "";
   if (profile?.prenom) {
-    personalContext += `\n\nContexte sur le consultant :\n- Prénom : ${profile.prenom}`;
+    let sunSign = "";
     if (profile.dateNaissance) {
       try {
-        const sun = getSunSign(profile.dateNaissance);
-        personalContext += `\n- Signe solaire : ${sun.name} (né(e) le ${profile.dateNaissance})`;
+        sunSign = getSunSign(profile.dateNaissance).name;
       } catch {}
     }
-    if (profile.heureNaissance) personalContext += `\n- Heure de naissance : ${profile.heureNaissance}`;
-    if (profile.villeNaissance) personalContext += `\n- Lieu de naissance : ${profile.villeNaissance}`;
-    personalContext += `\n\nUtilise ces informations pour personnaliser ta voyance. Adresse-toi à ${profile.prenom} par son prénom de temps en temps.`;
+
+    const birthParts: string[] = [];
+    if (profile.dateNaissance) birthParts.push(`née le ${profile.dateNaissance}`);
+    if (profile.heureNaissance) birthParts.push(`à ${profile.heureNaissance}`);
+    if (profile.villeNaissance) birthParts.push(`à ${profile.villeNaissance}`);
+    const birthDesc = birthParts.length > 0 ? `, ${birthParts.join(" ")}` : "";
+    const sunDesc = sunSign ? `, signe solaire ${sunSign}` : "";
+
+    personalContext = `\n\nTu parles avec ${profile.prenom}${birthDesc}${sunDesc}. Appelle-la/le toujours par son prénom ${profile.prenom}.`;
+  } else {
+    personalContext = "\n\nTu parles avec un(e) visiteur(se) anonyme. Sois chaleureux(se) et accueillant(e), même sans connaître son prénom.";
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);

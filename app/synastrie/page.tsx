@@ -2,14 +2,28 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import { getSunSign, ZODIAC_SIGNS } from "@/lib/astrology";
 import ReadingResult from "@/components/ReadingResult";
 import { Heart, User, Calendar, Crown, Lock, Sparkles } from "lucide-react";
 
+function PremiumWall({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="max-w-lg mx-auto text-center px-6 py-20">
+      <Crown size={40} className="text-[#d4af6f] mx-auto mb-6" />
+      <div className="badge-gold mb-5">Premium</div>
+      <h2 className="font-serif-display text-3xl text-gradient-cream mb-4">{title}</h2>
+      <p className="font-serif-text italic text-[#c9b88a] mb-8">{message}</p>
+      <div className="flex gap-3 justify-center flex-wrap">
+        <Link href="/tarifs" className="btn-gold"><Crown size={14} /><span>Voir les offres</span></Link>
+        <Link href="/mon-profil" className="btn-outline-gold"><span>Mon profil</span></Link>
+      </div>
+    </div>
+  );
+}
+
 export default function SynastriePage() {
-  const { profile, addReading } = useUserProfile();
-  const isVIP = profile?.subscription === "vip";
+  const { profile, addReading, isHydrated } = useUserProfile();
 
   const [person1Prenom, setPerson1Prenom] = useState(profile?.prenom || "");
   const [person1Date, setPerson1Date] = useState(profile?.dateNaissance || "");
@@ -23,41 +37,14 @@ export default function SynastriePage() {
   const sign1 = person1Date ? getSunSign(person1Date) : null;
   const sign2 = person2Date ? getSunSign(person2Date) : null;
 
-  if (!isVIP) {
-    return (
-      <div className="max-w-3xl mx-auto px-6 py-20 text-center fade-in-up">
-        <Crown size={48} className="text-[#d4af6f] mx-auto mb-6" />
-        <div className="badge-premium mb-6">Fonctionnalité VIP</div>
-        <h1 className="font-serif-display text-5xl text-gradient-cream mb-5">Synastrie</h1>
-        <p className="font-serif-text italic text-xl text-[#c9b88a] mb-3">
-          La compatibilité astrale en profondeur
-        </p>
-        <p className="text-[#c9b88a] max-w-xl mx-auto mb-10 leading-relaxed">
-          Comparez deux thèmes astraux pour révéler les dynamiques karmiques, les forces et
-          les défis d&apos;une union. Une lecture réservée aux membres Voyante VIP.
-        </p>
-        <div className="luxe-card-premium rounded-sm p-8 mb-10">
-          <div className="flex items-center justify-center gap-6 mb-6">
-            <div className="text-center">
-              <Heart size={32} className="text-[#d4af6f] mx-auto mb-2" />
-              <div className="font-serif-display text-[#cream]">Vous</div>
-            </div>
-            <div className="text-[#d4af6f] text-3xl">+</div>
-            <div className="text-center">
-              <Heart size={32} className="text-[#d4af6f] mx-auto mb-2" />
-              <div className="font-serif-display text-[#cream]">L&apos;autre</div>
-            </div>
-          </div>
-          <p className="font-serif-text italic text-[#c9b88a]">
-            &ldquo;Deux âmes qui s&apos;entrelacent dans la danse des étoiles&rdquo;
-          </p>
-        </div>
-        <Link href="/tarifs" className="btn-gold">
-          <Crown size={14} />
-          <span>Devenir VIP</span>
-        </Link>
-      </div>
-    );
+  if (!isHydrated) return null;
+
+  if (!profile) {
+    return <PremiumWall title="Synastrie & Compatibilité" message="Comparez deux thèmes astraux avec une analyse IA approfondie. Réservé aux membres Mystique." />;
+  }
+
+  if (!canAccessFeature(profile.subscription, "premium")) {
+    return <PremiumWall title="Synastrie & Compatibilité" message="Comparez deux thèmes astraux avec une analyse IA approfondie. Réservé aux membres Mystique." />;
   }
 
   const handleAnalyze = async () => {
@@ -108,9 +95,9 @@ export default function SynastriePage() {
       {step === "form" ? (
         <div className="fade-in-up">
           <div className="text-center mb-12">
-            <div className="badge-premium mb-6">
+            <div className="badge-gold mb-6">
               <Crown size={11} className="inline mr-2" />
-              Synastrie VIP
+              Synastrie Premium
             </div>
             <h1 className="font-serif-display text-5xl text-gradient-cream mb-4">Compatibilité Astrale</h1>
             <p className="font-serif-text italic text-xl text-[#c9b88a]">
