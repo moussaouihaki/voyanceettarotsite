@@ -29,15 +29,19 @@ const NAV_GROUPS = [
   {
     label: "Traditions",
     items: [
-      { href: "/runes", label: "Runes Nordiques", desc: "Elder Futhark · 24 runes" },
-      { href: "/i-ching", label: "I-Ching", desc: "Livre des Transformations" },
+      { href: "/runes", label: "Runes Nordiques", desc: "Elder Futhark · 24 runes", premium: true },
+      { href: "/i-ching", label: "I-Ching", desc: "Livre des Transformations", premium: true },
+      { href: "/lenormand", label: "Oracle Lenormand", desc: "36 cartes · Tradition française", premium: true },
+      { href: "/ogham", label: "Ogham Celtique", desc: "25 staves · Tradition druidique", premium: true },
     ],
   },
   {
     label: "Énergies",
     items: [
-      { href: "/chakras", label: "Chakras", desc: "Bilan énergétique" },
+      { href: "/chakras", label: "Chakras", desc: "Bilan énergétique", premium: true },
       { href: "/numerologie", label: "Numérologie", desc: "Profil numérologique" },
+      { href: "/lithotherapie", label: "Lithothérapie", desc: "30 cristaux · Guérison vibratoire", premium: true },
+      { href: "/aura", label: "Lecture d'Aura", desc: "Couleurs vibratoires · Énergie subtile", premium: true },
     ],
   },
 ];
@@ -177,10 +181,10 @@ export default function Navigation() {
           ) : (
             <Link
               href="/connexion"
-              className="hidden md:flex items-center gap-1.5 px-3 py-2 text-[11px] tracking-wider text-[#8a6f3a] hover:text-[#c9b88a] transition-colors"
+              className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 text-[11px] tracking-[0.15em] uppercase font-medium border border-[rgba(212,175,111,0.45)] text-[#d4af6f] hover:bg-[rgba(212,175,111,0.1)] hover:border-[rgba(212,175,111,0.7)] transition-all rounded-sm"
             >
               <LogIn size={13} />
-              <span className="hidden xl:inline">Connexion</span>
+              <span>Connexion</span>
             </Link>
           )}
 
@@ -233,7 +237,7 @@ export default function Navigation() {
                   <span>Se déconnecter</span>
                 </button>
               ) : (
-                <Link href="/connexion" onClick={() => setMobileOpen(false)} className="w-full flex items-center justify-center gap-2 px-4 py-3 mt-2 border border-[rgba(212,175,111,0.2)] rounded-sm text-[#8a6f3a] text-[11px] tracking-widest uppercase hover:text-[#c9b88a] transition-colors">
+                <Link href="/connexion" onClick={() => setMobileOpen(false)} className="w-full flex items-center justify-center gap-2 px-4 py-3 mt-2 border border-[rgba(212,175,111,0.45)] rounded-sm text-[#d4af6f] text-[11px] tracking-widest uppercase hover:bg-[rgba(212,175,111,0.1)] transition-colors">
                   <LogIn size={13} />
                   <span>Connexion</span>
                 </Link>

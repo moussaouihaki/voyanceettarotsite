@@ -1,4 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = {
+  themeColor: "#07040d",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import StarBackground from "@/components/StarBackground";
@@ -9,6 +17,13 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://celestevoyance.com
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Céleste Voyance",
+  },
+  formatDetection: { telephone: false },
   title: {
     default: "Céleste Voyance — Arts Divinatoires Premium",
     template: "%s · Madame Céleste",

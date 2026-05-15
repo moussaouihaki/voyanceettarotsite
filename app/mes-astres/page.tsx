@@ -7,6 +7,7 @@ import { Crown, Loader2, Star, Briefcase, Heart, Globe, User, TableProperties } 
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import PaywallGate from "@/components/PaywallGate";
 import { cleanAIText } from "@/lib/format-ai-text";
+import NatalChartSVG from "@/components/NatalChartSVG";
 import {
   computeNatalChart,
   computeAspects,
@@ -572,122 +573,26 @@ function MesAstresContent({
 
             {!hasTime && (
               <p className="text-xs px-4 py-3 rounded" style={{ color: "#c9b88a", background: "rgba(212,175,111,0.06)", border: "1px solid rgba(212,175,111,0.15)" }}>
-                Heure de naissance requise pour les maisons et l&apos;ascendant exact
+                Ajoutez votre heure de naissance dans votre profil pour afficher les maisons et l&apos;ascendant exact.
               </p>
             )}
 
-            <div className="flex justify-center">
-              <svg
-                viewBox="-180 -180 360 360"
-                style={{ width: "100%", maxWidth: 380 }}
-                role="img"
-                aria-label="Thème natal"
-              >
-                {/* Zodiac sectors — outer ring r=160..170 */}
-                {ZODIAC_NAMES.map((sign, i) => {
-                  const startLon = i * 30;
-                  const endLon   = startLon + 30;
-                  const aStart = svgAngle(startLon);
-                  const aEnd   = svgAngle(endLon);
-                  const x1o = 170 * Math.cos(aStart), y1o = 170 * Math.sin(aStart);
-                  const x2o = 170 * Math.cos(aEnd),   y2o = 170 * Math.sin(aEnd);
-                  const x1i = 160 * Math.cos(aStart), y1i = 160 * Math.sin(aStart);
-                  const x2i = 160 * Math.cos(aEnd),   y2i = 160 * Math.sin(aEnd);
-                  const midLon = startLon + 15;
-                  const midA   = svgAngle(midLon);
-                  const tx = 153 * Math.cos(midA), ty = 153 * Math.sin(midA);
-                  const color = ELEMENT_COLORS[sign] ?? "rgba(100,100,100,0.2)";
-                  return (
-                    <g key={sign}>
-                      <path
-                        d={`M ${x1i} ${y1i} L ${x1o} ${y1o} A 170 170 0 0 0 ${x2o} ${y2o} L ${x2i} ${y2i} A 160 160 0 0 1 ${x1i} ${y1i} Z`}
-                        fill={color}
-                        stroke="rgba(212,175,111,0.2)"
-                        strokeWidth="0.5"
-                      />
-                      <text
-                        x={tx} y={ty}
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                        fontSize="9"
-                        fill="rgba(245,236,217,0.7)"
-                      >
-                        {ZODIAC_SYMBOLS[i]}
-                      </text>
-                    </g>
-                  );
-                })}
-
-                {/* Inner ring border at r=140 */}
-                <circle cx={0} cy={0} r={140} fill="none" stroke="white" strokeWidth="0.5" opacity="0.3" />
-
-                {/* House cusp lines */}
-                {hasTime && chart.houses.map((house, i) => {
-                  const a = svgAngle(house.longitude);
-                  return (
-                    <line
-                      key={i}
-                      x1={0} y1={0}
-                      x2={140 * Math.cos(a)}
-                      y2={140 * Math.sin(a)}
-                      stroke="rgba(212,175,111,0.3)"
-                      strokeWidth="0.5"
-                    />
-                  );
-                })}
-
-                {/* Aspect lines */}
-                <clipPath id="inner-circle">
-                  <circle cx={0} cy={0} r={140} />
-                </clipPath>
-                {svgAspects.map((asp, i) => (
-                  <line
-                    key={i}
-                    x1={asp.x1} y1={asp.y1}
-                    x2={asp.x2} y2={asp.y2}
-                    stroke={ASPECT_COLORS[asp.type] ?? "#ffffff"}
-                    strokeWidth="0.8"
-                    opacity="0.4"
-                    clipPath="url(#inner-circle)"
-                  />
-                ))}
-
-                {/* Planets */}
-                {svgPlanets.map(({ name, pos, x, y }) => (
-                  <g key={name} transform={`translate(${x},${y})`}>
-                    <circle cx={0} cy={0} r={8} fill="rgba(26,18,52,0.9)" stroke="rgba(212,175,111,0.5)" strokeWidth="0.8" />
-                    <text
-                      x={0} y={0}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      fontSize="8"
-                      fill="#d4af6f"
-                    >
-                      {PLANET_SYMBOLS[name] ?? name[0]}
-                    </text>
-                  </g>
-                ))}
-
-                {/* Ascendant marker */}
-                {hasTime && (
-                  <polygon
-                    points={`${ascTip.x},${ascTip.y} ${ascLeft.x},${ascLeft.y} ${ascRight.x},${ascRight.y}`}
-                    fill="#d4af6f"
-                    opacity="0.9"
-                  />
-                )}
-
-                {/* Center dot */}
-                <circle cx={0} cy={0} r={3} fill="rgba(212,175,111,0.4)" />
-              </svg>
+            <div className="w-full max-w-lg mx-auto">
+              <NatalChartSVG chart={chart} aspects={aspects} hasTime={hasTime} />
             </div>
 
             {/* Legend */}
-            <div className="flex flex-wrap gap-4 justify-center text-xs" style={{ color: "#c9b88a" }}>
-              {Object.entries(ASPECT_COLORS).map(([type, color]) => (
-                <span key={type} className="flex items-center gap-1">
-                  <span style={{ display: "inline-block", width: 20, height: 2, background: color, opacity: 0.8 }} />
-                  <span className="capitalize">{type}</span>
+            <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center text-xs" style={{ color: "#c9b88a" }}>
+              {([
+                ["conjonction","rgba(255,255,255,0.55)"],
+                ["sextile","rgba(80,200,80,0.55)"],
+                ["carré","rgba(244,80,80,0.55)"],
+                ["trigone","rgba(60,160,244,0.55)"],
+                ["opposition","rgba(255,165,40,0.55)"],
+              ] as [string,string][]).map(([type, color]) => (
+                <span key={type} className="flex items-center gap-1.5">
+                  <span style={{ display: "inline-block", width: 22, height: 2, background: color, borderRadius: 1 }} />
+                  <span className="capitalize tracking-wide">{type}</span>
                 </span>
               ))}
             </div>
