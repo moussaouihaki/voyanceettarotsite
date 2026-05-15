@@ -121,7 +121,7 @@ export default function TarotCardComponent({ card, position, isFlipped, onClick,
       {expanded && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-[#07040d]/90 backdrop-blur-sm p-6"
-          onClick={() => setExpanded(false)}
+          onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
         >
           <div
             className="relative max-w-sm w-full"

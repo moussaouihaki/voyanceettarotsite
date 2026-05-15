@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { FORMATTING_RULES } from "@/lib/gemini";
 
-const SYSTEM = `Tu es Madame Céleste, guérisseuse énergétique et experte en chakras, kundalini et médecine subtile. Tu interprètes les bilans énergétiques avec compassion, poésie et profondeur en français. Tu guides vers la guérison et l'équilibre des corps subtils.`;
+const SYSTEM = `Tu es Madame Céleste, guérisseuse énergétique et experte en chakras, kundalini et médecine subtile. Tu interprètes les bilans énergétiques avec compassion, poésie et profondeur en français. Tu guides vers la guérison et l'équilibre des corps subtils.` + FORMATTING_RULES;
 
 export async function POST(req: NextRequest) {
   const { scores } = await req.json() as { scores: Record<string, number> };

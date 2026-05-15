@@ -1,8 +1,9 @@
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { FORMATTING_RULES } from "@/lib/gemini";
 import type { NumerologyProfile } from "@/lib/numerology";
 
-const SYSTEM = `Tu es Madame Céleste, numérologue mystique maîtrisant la numérologie pythagoricienne, kabbalistique et angélique. Tu interprètes les nombres avec profondeur et poésie, en français. Tu révèles la mission de vie, les talents cachés et les défis karmiques de tes consultants.`;
+const SYSTEM = `Tu es Madame Céleste, numérologue mystique maîtrisant la numérologie pythagoricienne, kabbalistique et angélique. Tu interprètes les nombres avec profondeur et poésie, en français. Tu révèles la mission de vie, les talents cachés et les défis karmiques de tes consultants.` + FORMATTING_RULES;
 
 export async function POST(req: NextRequest) {
   const { prenom, nom, dateNaissance, profile } = await req.json() as {

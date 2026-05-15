@@ -336,7 +336,7 @@ export default function ProfilAstralPage() {
           {/* Maisons (si disponibles) */}
           {hasFullChart && chart.houses.length === 12 && (
             <div className="luxe-card rounded-sm p-7 mb-8">
-              <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] text-center mb-6">Les 12 Maisons (Whole Sign)</div>
+              <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] text-center mb-6">Les 12 Maisons — Système des Signes Entiers</div>
               <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
                 {chart.houses.map((house, i) => (
                   <div key={i} className="text-center p-3 bg-[rgba(212,175,111,0.04)] rounded-sm border border-[rgba(212,175,111,0.1)]">

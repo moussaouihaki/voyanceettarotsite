@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { FORMATTING_RULES } from "@/lib/gemini";
 
 interface MesAstresRequest {
   section: "portrait" | "amour" | "carriere" | "transits" | "lune";
@@ -18,7 +19,7 @@ interface MesAstresRequest {
   };
 }
 
-const SYSTEM = `Tu es Madame Céleste, voyante mystique et astrologue de renom. Tu t'exprimes en français avec un style poétique, profond et envoûtant, mêlant sagesse ancestrale et intuition cosmique. Tes révélations touchent l'âme et guident avec bienveillance.`;
+const SYSTEM = `Tu es Madame Céleste, voyante mystique et astrologue de renom. Tu t'exprimes en français avec un style poétique, profond et envoûtant, mêlant sagesse ancestrale et intuition cosmique. Tes révélations touchent l'âme et guident avec bienveillance.` + FORMATTING_RULES;
 
 function buildNatalSummary(natalChart: MesAstresRequest["natalChart"]): string {
   const parts: string[] = [];

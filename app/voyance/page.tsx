@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Sparkles, Send, User, MessageCircle, Crown, Lock } from "lucide-react";
+import { cleanAIText } from "@/lib/format-ai-text";
 import Link from "next/link";
 import { canUse, increment, remaining } from "@/lib/daily-limits";
 
@@ -179,15 +180,19 @@ export default function VoyancePage() {
               </div>
             )}
             <div
-              className={`max-w-[78%] px-5 py-4 leading-relaxed whitespace-pre-wrap font-serif-text text-[15px] ${
+              className={`max-w-[78%] px-5 py-4 leading-relaxed font-serif-text text-[15px] ${
                 msg.role === "user"
-                  ? "bg-[rgba(212,175,111,0.08)] border border-[rgba(212,175,111,0.25)] text-[#f5ecd9] rounded-sm"
+                  ? "bg-[rgba(212,175,111,0.08)] border border-[rgba(212,175,111,0.25)] text-[#f5ecd9] rounded-sm whitespace-pre-wrap"
                   : "luxe-card text-[#e8dcc0] rounded-sm"
               }`}
             >
-              {msg.content}
-              {msg.role === "assistant" && isStreaming && i === messages.length - 1 && (
-                <span className="typing-cursor" />
+              {msg.role === "assistant" ? (
+                <>
+                  <div dangerouslySetInnerHTML={{ __html: cleanAIText(msg.content) }} />
+                  {isStreaming && i === messages.length - 1 && <span className="typing-cursor" />}
+                </>
+              ) : (
+                msg.content
               )}
             </div>
             {msg.role === "user" && (

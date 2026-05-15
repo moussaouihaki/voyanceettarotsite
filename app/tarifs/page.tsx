@@ -116,7 +116,7 @@ const FAQ = [
   },
   {
     q: "Y a-t-il une période d'essai ?",
-    a: "La formule Découverte est gratuite à vie. Pour Mystique et VIP, vous bénéficiez de 7 jours d'essai sans engagement.",
+    a: "La formule Découverte est gratuite à vie. Les formules Mystique et VIP sont des abonnements mensuels ou annuels sans période d'essai.",
   },
 ];
 
@@ -289,8 +289,8 @@ export default function TarifsPage() {
       <div className="grid md:grid-cols-4 gap-6 mb-20">
         {[
           { icon: Shield, label: "Paiement sécurisé Stripe" },
-          { icon: InfinityIcon, label: "Sans engagement" },
-          { icon: Heart, label: "Satisfaction garantie 7j" },
+          { icon: InfinityIcon, label: "Résiliable à tout moment" },
+          { icon: Heart, label: "Support bienveillant" },
           { icon: Zap, label: "Activation immédiate" },
         ].map(({ icon: Icon, label }) => (
           <div key={label} className="luxe-card rounded-sm p-5 text-center">

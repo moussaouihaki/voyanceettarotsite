@@ -1,17 +1,11 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
+import { cleanAIText } from "@/lib/format-ai-text";
 
 interface Props {
   text: string;
   isStreaming: boolean;
-}
-
-function formatLine(line: string) {
-  // Render **bold** and *italic*
-  return line
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-[#e8c875]">$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em class="italic text-[#d4af6f]">$1</em>');
 }
 
 export default function ReadingResult({ text, isStreaming }: Props) {
@@ -32,12 +26,11 @@ export default function ReadingResult({ text, isStreaming }: Props) {
         </div>
       </div>
 
-      <div className="font-serif-text text-[#e8dcc0] text-[16px] leading-[1.85] whitespace-pre-wrap">
-        {text.split("\n").map((line, i) => (
-          <div key={i} dangerouslySetInnerHTML={{ __html: formatLine(line) }} />
-        ))}
-        {isStreaming && <span className="typing-cursor" />}
-      </div>
+      <div
+        className="font-serif-text text-[#e8dcc0] text-[16px] leading-[1.85]"
+        dangerouslySetInnerHTML={{ __html: cleanAIText(text) }}
+      />
+      {isStreaming && <span className="typing-cursor" />}
     </div>
   );
 }

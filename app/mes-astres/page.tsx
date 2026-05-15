@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Crown, Loader2, Star, Briefcase, Heart, Globe, User, TableProperties } from "lucide-react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import PaywallGate from "@/components/PaywallGate";
+import { cleanAIText } from "@/lib/format-ai-text";
 import {
   computeNatalChart,
   computeAspects,
@@ -78,11 +79,7 @@ const SUBSCRIPTION_LABELS: Record<string, string> = {
 
 // ───── Helpers ────────────────────────────────────────────────────────────────
 
-function renderMarkdown(text: string): string {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>");
-}
+// renderMarkdown replaced by cleanAIText from @/lib/format-ai-text
 
 function svgAngle(lon: number): number {
   return (-lon - 90) * (Math.PI / 180);
@@ -123,9 +120,9 @@ function StreamSection({
 
       {text && (
         <div
-          className="luxe-card rounded-sm p-6 font-serif-text text-base leading-relaxed"
-          style={{ color: "#e8dcc0", whiteSpace: "pre-wrap" }}
-          dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }}
+          className="luxe-card rounded-sm p-6 font-serif-text text-base leading-[1.85]"
+          style={{ color: "#e8dcc0" }}
+          dangerouslySetInnerHTML={{ __html: cleanAIText(text) }}
         />
       )}
 

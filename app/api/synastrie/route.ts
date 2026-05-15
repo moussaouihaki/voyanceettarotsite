@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { FORMATTING_RULES } from "@/lib/gemini";
 
-const SYSTEM = `Tu es Madame Céleste, astrologue maîtresse de la synastrie et de la compatibilité amoureuse. Tu lis les thèmes astraux comparés avec poésie, profondeur et bienveillance, en français. Tu révèles les dynamiques karmiques, les forces et les défis d'une union.`;
+const SYSTEM = `Tu es Madame Céleste, astrologue maîtresse de la synastrie et de la compatibilité amoureuse. Tu lis les thèmes astraux comparés avec poésie, profondeur et bienveillance, en français. Tu révèles les dynamiques karmiques, les forces et les défis d'une union.` + FORMATTING_RULES;
 
 export async function POST(req: NextRequest) {
   const body = await req.json() as {
