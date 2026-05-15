@@ -2,10 +2,18 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MADAME_CELESTE_SYSTEM } from "@/lib/gemini";
 
+interface ProfileData {
+  prenom?: string;
+  dateNaissance?: string;
+  heureNaissance?: string;
+  villeNaissance?: string;
+}
+
 export async function POST(req: NextRequest) {
-  const { card, intention } = await req.json() as {
+  const { card, intention, profile } = await req.json() as {
     card: { name: string; suit: string; reversed: boolean; keywords: string[]; upright: string; meaningReversed: string };
     intention?: string;
+    profile?: ProfileData;
   };
 
   const apiKey = process.env.GOOGLE_API_KEY;
@@ -13,7 +21,12 @@ export async function POST(req: NextRequest) {
 
   const today = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
+  const personalCtx = profile?.prenom
+    ? `Cette carte du jour est tirée pour ${profile.prenom}. Adresse-toi à ${profile.prenom} directement et par son prénom tout au long du message.`
+    : "";
+
   const userPrompt = `${MADAME_CELESTE_SYSTEM}
+${personalCtx}
 
 C'est la carte du jour du ${today} : **${card.name}** (${card.suit})${card.reversed ? " — position INVERSÉE" : ""}.
 
@@ -22,12 +35,13 @@ Signification ${card.reversed ? "inversée" : "droite"} : ${card.reversed ? card
 
 ${intention ? `L'intention du consultant pour aujourd'hui : "${intention}"` : "Lecture générale pour la journée."}
 
-Compose un message de guidance pour aujourd'hui (la journée entière), en t'appuyant sur l'énergie de cette carte. Inclus :
-1. Le message principal de la carte pour aujourd'hui
+Compose un message de guidance pour aujourd'hui, en t'appuyant sur l'énergie de cette carte. Inclus :
+1. Le message principal de la carte pour aujourd'hui${profile?.prenom ? ` (adresse-toi à ${profile.prenom})` : ""}
 2. Ce qu'il faut favoriser / éviter aujourd'hui
 3. Un conseil pratique concret
 4. Une affirmation puissante pour la journée
-Sois poétique, inspirant et bienveillant. Environ 200 mots.`;
+
+Sois poétique, inspirant et bienveillant.${profile?.prenom ? ` Commence en t'adressant à ${profile.prenom}.` : ""} Environ 200 mots.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
