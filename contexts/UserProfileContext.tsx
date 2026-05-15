@@ -16,6 +16,8 @@ export interface UserProfile {
   heureNaissance: string; // HH:MM
   villeNaissance: string;
   paysNaissance: string;
+  latNaissance?: number;
+  lonNaissance?: number;
   genre?: "femme" | "homme" | "autre";
   subscription: SubscriptionTier;
   createdAt: number;
