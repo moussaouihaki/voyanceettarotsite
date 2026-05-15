@@ -8,7 +8,8 @@ import { useUserProfile, canAccessFeature, TIER_LIMITS } from "@/contexts/UserPr
 import { canUse, increment, remaining } from "@/lib/daily-limits";
 import TarotCardComponent from "@/components/TarotCard";
 import ReadingResult from "@/components/ReadingResult";
-import { Search, Sparkles, ArrowLeft, RotateCcw, Star, Layers, Lock, Crown } from "lucide-react";
+import CityAutocomplete from "@/components/CityAutocomplete";
+import { Search, Sparkles, ArrowLeft, RotateCcw, Star, Layers, Lock, Crown, Heart, ChevronDown, Calendar, Clock, MapPin } from "lucide-react";
 
 type DrawnCard = TarotCard & { reversed: boolean; positionIndex: number };
 type Step = "choose" | "question" | "draw" | "reading";
@@ -32,6 +33,13 @@ export default function TiragePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [limitReached, setLimitReached] = useState(false);
   const [noProfileHint, setNoProfileHint] = useState<string | null>(null);
+  const [conjointPrenom, setConjointPrenom] = useState("");
+  const [conjointDateNaissance, setConjointDateNaissance] = useState("");
+  const [conjointHeureNaissance, setConjointHeureNaissance] = useState("");
+  const [conjointVille, setConjointVille] = useState("");
+  const [conjointLat, setConjointLat] = useState<number | undefined>();
+  const [conjointLon, setConjointLon] = useState<number | undefined>();
+  const [showConjoint, setShowConjoint] = useState(false);
 
   const tier = profile?.subscription;
 
@@ -120,6 +128,14 @@ export default function TiragePage() {
             genre: profile.genre,
             subscription: profile.subscription,
           },
+          conjoint: showConjoint && conjointPrenom ? {
+            prenom: conjointPrenom,
+            dateNaissance: conjointDateNaissance,
+            heureNaissance: conjointHeureNaissance,
+            villeNaissance: conjointVille,
+            lat: conjointLat,
+            lon: conjointLon,
+          } : undefined,
         }),
       });
       if (!res.ok || !res.body) throw new Error();
@@ -150,6 +166,13 @@ export default function TiragePage() {
     setSelectedSpread(null);
     setLimitReached(false);
     setNoProfileHint(null);
+    setConjointPrenom("");
+    setConjointDateNaissance("");
+    setConjointHeureNaissance("");
+    setConjointVille("");
+    setConjointLat(undefined);
+    setConjointLon(undefined);
+    setShowConjoint(false);
   };
 
   return (
@@ -361,7 +384,51 @@ export default function TiragePage() {
             />
           </div>
 
-          <div className="flex gap-3 justify-center flex-wrap">
+          {tier !== "decouverte" && selectedSpread?.category === "amour" && (
+            <div className="luxe-card rounded-sm p-6 mt-6">
+              <button
+                type="button"
+                onClick={() => setShowConjoint(!showConjoint)}
+                className="flex items-center gap-2 text-[12px] tracking-[0.15em] uppercase text-[#c9b88a] hover:text-[#f5ecd9] transition-colors w-full"
+              >
+                <Heart size={14} className="text-[#d4af6f]" />
+                <span>Ajouter les infos de votre conjoint(e)</span>
+                <ChevronDown size={12} className={`ml-auto transition-transform ${showConjoint ? "rotate-180" : ""}`} />
+              </button>
+
+              {showConjoint && (
+                <div className="mt-5 space-y-4 pt-4 border-t border-[rgba(212,175,111,0.12)]">
+                  <p className="text-[11px] text-[#8a6f3a] tracking-wide font-serif-text italic">
+                    Ces informations permettent à Madame Céleste d&apos;affiner la lecture amoureuse avec une analyse de compatibilité.
+                  </p>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="luxe-label">Prénom du/de la conjoint(e)</label>
+                      <input type="text" value={conjointPrenom} onChange={(e) => setConjointPrenom(e.target.value)} placeholder="Prénom" className="luxe-input" />
+                    </div>
+                    <div>
+                      <label className="luxe-label flex items-center gap-1"><Calendar size={10} /> Date de naissance</label>
+                      <input type="date" value={conjointDateNaissance} onChange={(e) => setConjointDateNaissance(e.target.value)} className="luxe-input" />
+                    </div>
+                    <div>
+                      <label className="luxe-label flex items-center gap-1"><Clock size={10} /> Heure (optionnel)</label>
+                      <input type="time" value={conjointHeureNaissance} onChange={(e) => setConjointHeureNaissance(e.target.value)} className="luxe-input" />
+                    </div>
+                    <div>
+                      <label className="luxe-label flex items-center gap-1"><MapPin size={10} /> Ville de naissance</label>
+                      <CityAutocomplete
+                        value={conjointVille}
+                        onChange={(city, lat, lon) => { setConjointVille(city); setConjointLat(lat); setConjointLon(lon); }}
+                        placeholder="Ville, Pays"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex gap-3 justify-center flex-wrap mt-8">
             <button onClick={() => setStep("choose")} className="btn-ghost">
               <ArrowLeft size={13} className="inline mr-2" />
               <span>Retour</span>

@@ -19,15 +19,24 @@ interface UserProfile {
   villeNaissance?: string;
 }
 
+interface ConjointInfo {
+  prenom?: string;
+  dateNaissance?: string;
+  heureNaissance?: string;
+  villeNaissance?: string;
+  lat?: number;
+  lon?: number;
+}
+
 export async function POST(req: NextRequest) {
-  let body: { cards?: CardData[]; question?: string; spreadType?: string; spreadName?: string; profile?: UserProfile };
+  let body: { cards?: CardData[]; question?: string; spreadType?: string; spreadName?: string; profile?: UserProfile; conjoint?: ConjointInfo };
   try {
     body = await req.json();
   } catch {
     return new Response("Requête invalide", { status: 400 });
   }
 
-  const { cards, question, spreadName, profile } = body;
+  const { cards, question, spreadName, profile, conjoint } = body;
   if (!Array.isArray(cards) || cards.length === 0) {
     return new Response("Cartes requises", { status: 400 });
   }
@@ -58,10 +67,18 @@ export async function POST(req: NextRequest) {
     personalContext = `\nCette lecture est pour ${profile.prenom},${birthDesc}${cityDesc}${sunDesc}. Adresse-toi à elle/lui par son prénom tout au long de la lecture. Commence par adresser ${profile.prenom} directement.`;
   }
 
+  let conjointContext = "";
+  if (conjoint?.prenom && conjoint?.dateNaissance) {
+    let conjointSun = "";
+    try { conjointSun = getSunSign(conjoint.dateNaissance).name; } catch {}
+    const sunDesc = conjointSun ? `, signe ${conjointSun}` : "";
+    conjointContext = `\n\nInformations sur le/la partenaire : ${conjoint.prenom}, né(e) le ${conjoint.dateNaissance}${conjoint.heureNaissance ? ` à ${conjoint.heureNaissance}` : ""}${conjoint.villeNaissance ? ` à ${conjoint.villeNaissance}` : ""}${sunDesc}. Intègre une analyse de compatibilité entre ${profile?.prenom || "le/la consultant(e)"} et ${conjoint.prenom} dans ta lecture.`;
+  }
+
   const userPrompt = `${MADAME_CELESTE_SYSTEM}
 
 Tirage consulté : ${spreadName || "Tirage de Tarot"}
-${personalContext}
+${personalContext}${conjointContext}
 
 Cartes tirées :
 ${cardsList}

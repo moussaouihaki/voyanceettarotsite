@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useUserProfile, TIER_LIMITS } from "@/contexts/UserProfileContext";
 import { getSunSign } from "@/lib/astrology";
 import { calculerProfil } from "@/lib/numerology";
+import { computeNatalChart, formatPosition, ZODIAC_SYMBOLS, estimateTimezone } from "@/lib/astro-engine";
+import CityAutocomplete from "@/components/CityAutocomplete";
 import {
   User,
   Calendar,
@@ -22,14 +24,6 @@ import {
   ScrollText,
 } from "lucide-react";
 
-const POPULAR_CITIES = [
-  "Paris, France", "Lyon, France", "Marseille, France", "Bordeaux, France",
-  "Toulouse, France", "Nice, France", "Nantes, France", "Strasbourg, France",
-  "Lille, France", "Rennes, France", "Montpellier, France",
-  "Bruxelles, Belgique", "Genève, Suisse", "Lausanne, Suisse",
-  "Montréal, Canada", "Casablanca, Maroc", "Alger, Algérie", "Tunis, Tunisie",
-  "Dakar, Sénégal", "Abidjan, Côte d'Ivoire",
-];
 
 export default function MonProfilPage() {
   const { profile, saveProfile, clearProfile, history, clearHistory, isHydrated } = useUserProfile();
@@ -41,7 +35,8 @@ export default function MonProfilPage() {
   const [dateNaissance, setDateNaissance] = useState("");
   const [heureNaissance, setHeureNaissance] = useState("");
   const [villeNaissance, setVilleNaissance] = useState("");
-  const [paysNaissance, setPaysNaissance] = useState("");
+  const [latNaissance, setLatNaissance] = useState<number | undefined>();
+  const [lonNaissance, setLonNaissance] = useState<number | undefined>();
   const [genre, setGenre] = useState<"femme" | "homme" | "autre" | "">("");
 
   useEffect(() => {
@@ -52,7 +47,8 @@ export default function MonProfilPage() {
       setDateNaissance(profile.dateNaissance);
       setHeureNaissance(profile.heureNaissance || "");
       setVilleNaissance(profile.villeNaissance);
-      setPaysNaissance(profile.paysNaissance || "");
+      setLatNaissance(profile.latNaissance);
+      setLonNaissance(profile.lonNaissance);
       setGenre(profile.genre || "");
     }
   }, [profile]);
@@ -70,7 +66,8 @@ export default function MonProfilPage() {
       dateNaissance,
       heureNaissance,
       villeNaissance,
-      paysNaissance,
+      latNaissance,
+      lonNaissance,
       genre: genre || undefined,
     });
     setEditing(false);
@@ -204,29 +201,17 @@ export default function MonProfilPage() {
               <label className="luxe-label flex items-center gap-2">
                 <MapPin size={11} /> Ville de naissance *
               </label>
-              <input
-                type="text"
+              <CityAutocomplete
                 value={villeNaissance}
-                onChange={(e) => setVilleNaissance(e.target.value)}
-                placeholder="Ex: Paris, France"
-                list="cities"
-                className="luxe-input"
+                onChange={(city, lat, lon) => {
+                  setVilleNaissance(city);
+                  if (lat !== undefined) setLatNaissance(lat);
+                  if (lon !== undefined) setLonNaissance(lon);
+                }}
+                placeholder="Ex: Paris, Lyon, Genève..."
+                required
               />
-              <datalist id="cities">
-                {POPULAR_CITIES.map((c) => <option key={c} value={c} />)}
-              </datalist>
-              <p className="text-[10px] text-[#8a6f3a] mt-1.5 tracking-wide">Précisez la ville et le pays</p>
-            </div>
-
-            <div>
-              <label className="luxe-label">Pays de naissance (si différent)</label>
-              <input
-                type="text"
-                value={paysNaissance}
-                onChange={(e) => setPaysNaissance(e.target.value)}
-                placeholder="France, Belgique, Maroc..."
-                className="luxe-input"
-              />
+              <p className="text-[10px] text-[#8a6f3a] mt-1.5 tracking-wide">Tapez pour rechercher parmi toutes les villes du monde</p>
             </div>
 
             <div className="pt-6 flex flex-wrap gap-3 justify-center">
@@ -350,6 +335,86 @@ export default function MonProfilPage() {
                 <Link href="/numerologie" className="text-[12px] tracking-widest uppercase text-[#d4af6f] hover:text-[#e8c875] transition-colors">
                   Voir le profil complet →
                 </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Natal chart quick view */}
+          {profile?.dateNaissance && (() => {
+            try {
+              const chart = computeNatalChart({
+                date: profile.dateNaissance,
+                time: profile.heureNaissance || undefined,
+                latitude: profile.latNaissance,
+                longitude: profile.lonNaissance,
+                timezoneOffset: estimateTimezone(profile.lonNaissance),
+              });
+              const sun = chart.planets["Soleil"];
+              const moon = chart.planets["Lune"];
+              const asc = chart.ascendant;
+              return (
+                <div className="luxe-card rounded-sm p-6 mb-6">
+                  <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-4 flex items-center gap-2">
+                    <Star size={11} /> Votre Ciel Natal
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    {[
+                      { label: "Soleil", symbol: "☉", position: sun },
+                      { label: "Lune", symbol: "☽", position: moon },
+                      { label: "Ascendant", symbol: "AC", position: profile.heureNaissance ? asc : null },
+                    ].map(({ label, symbol, position }) => (
+                      <div key={label} className="space-y-1">
+                        <div className="text-2xl text-[#d4af6f]">{symbol}</div>
+                        <div className="text-[10px] tracking-widest uppercase text-[#8a6f3a]">{label}</div>
+                        {position ? (
+                          <>
+                            <div className="text-[14px] text-cream font-serif-display">{position.sign}</div>
+                            <div className="text-[11px] text-[#8a6f3a]">{Math.floor(position.degreeInSign)}°</div>
+                          </>
+                        ) : (
+                          <div className="text-[11px] text-[#5a4a2a] italic">Heure requise</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 text-center">
+                    <Link href="/mes-astres" className="text-[11px] tracking-widest uppercase text-[#d4af6f] hover:text-[#e8c875] transition-colors">
+                      Voir ma carte du ciel complète →
+                    </Link>
+                  </div>
+                </div>
+              );
+            } catch { return null; }
+          })()}
+
+          {/* Reading stats */}
+          {history.length > 0 && (
+            <div className="luxe-card rounded-sm p-6 mb-6">
+              <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-4">Vos statistiques</div>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="font-serif-display text-3xl text-gradient-gold">{history.length}</div>
+                  <div className="text-[10px] tracking-widest uppercase text-[#8a6f3a] mt-1">Tirages</div>
+                </div>
+                <div>
+                  <div className="font-serif-display text-3xl text-gradient-gold">
+                    {(() => {
+                      const days = new Set(history.map(r => new Date(r.date).toDateString())).size;
+                      return days;
+                    })()}
+                  </div>
+                  <div className="text-[10px] tracking-widest uppercase text-[#8a6f3a] mt-1">Jours actifs</div>
+                </div>
+                <div>
+                  <div className="font-serif-display text-3xl text-gradient-gold">
+                    {(() => {
+                      const counts: Record<string, number> = {};
+                      history.forEach(r => { counts[r.type] = (counts[r.type] || 0) + 1; });
+                      return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0]?.slice(0, 5) || "—";
+                    })()}
+                  </div>
+                  <div className="text-[10px] tracking-widest uppercase text-[#8a6f3a] mt-1">Favori</div>
+                </div>
               </div>
             </div>
           )}

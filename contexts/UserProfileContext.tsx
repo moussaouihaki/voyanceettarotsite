@@ -15,7 +15,7 @@ export interface UserProfile {
   dateNaissance: string; // YYYY-MM-DD
   heureNaissance: string; // HH:MM
   villeNaissance: string;
-  paysNaissance: string;
+  paysNaissance?: string;
   latNaissance?: number;
   lonNaissance?: number;
   genre?: "femme" | "homme" | "autre";
