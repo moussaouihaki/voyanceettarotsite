@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { ChevronDown, User, Crown, Menu, X, LogIn, LogOut } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 
 const NAV_GROUPS = [
   {
@@ -19,6 +20,7 @@ const NAV_GROUPS = [
   {
     label: "Astrologie",
     items: [
+      { href: "/mes-astres", label: "Mes Astres", desc: "Votre ciel personnel", premium: true },
       { href: "/horoscope", label: "Horoscope", desc: "Jour / Semaine / Mois" },
       { href: "/profil-astral", label: "Profil Astral", desc: "Thème natal complet" },
       { href: "/synastrie", label: "Synastrie", desc: "Compatibilité amoureuse", premium: true },
@@ -136,7 +138,8 @@ export default function Navigation() {
         </div>
 
         {/* Profile + CTA */}
-        <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <NotificationBell />
           <Link
             href="/mon-profil"
             className={`hidden md:flex items-center gap-2 px-3 py-2 text-[12px] tracking-wider transition-all ${
