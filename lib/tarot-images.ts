@@ -51,7 +51,7 @@ const SWORDS = [
   `${W}/1/1a/Swords01.jpg`, `${W}/9/9e/Swords02.jpg`, `${W}/0/02/Swords03.jpg`,
   `${W}/b/bf/Swords04.jpg`, `${W}/2/23/Swords05.jpg`, `${W}/2/29/Swords06.jpg`,
   `${W}/3/34/Swords07.jpg`, `${W}/a/a7/Swords08.jpg`, `${W}/2/2f/Swords09.jpg`,
-  `${W}/d/d4/Swords10.jpg`, `${W}/4/4b/Swords11.jpg`, `${W}/b/b0/Swords12.jpg`,
+  `${W}/d/d4/Swords10.jpg`, `${W}/4/4c/Swords11.jpg`, `${W}/b/b0/Swords12.jpg`,
   `${W}/d/d4/Swords13.jpg`, `${W}/3/33/Swords14.jpg`,
 ];
 
