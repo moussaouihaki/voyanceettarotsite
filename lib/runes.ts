@@ -37,6 +37,14 @@ export const ELDER_FUTHARK: Rune[] = [
   { id: "ingwaz", symbol: "ᛜ", name: "Ingwaz", phonetic: "Ng", number: 22, element: "Terre", deity: "Ing/Freyr", keywords: ["gestation", "potentiel", "fertilité", "nouveau cycle"], upright: "Un nouveau cycle commence. Gestation d'une idée ou d'un projet important.", meaningReversed: "Ingwaz n'a pas de forme inversée — la gestation ne peut être stoppée.", meaning: "La rune du dieu Ing. Symbolise la gestation, le potentiel en développement." },
   { id: "dagaz", symbol: "ᛞ", name: "Dagaz", phonetic: "D", number: 23, element: "Feu", deity: "Odin", keywords: ["éveil", "percée", "transformation", "aube"], upright: "Percée, éveil, transformation radicale, l'aube d'une nouvelle ère.", meaningReversed: "Dagaz n'a pas de forme inversée — l'aube est inévitable.", meaning: "La rune du jour. Symbolise l'éveil, la percée et la transformation totale." },
   { id: "othala", symbol: "ᛟ", name: "Othala", phonetic: "O", number: 24, element: "Terre", deity: "Odin", keywords: ["héritage", "demeure", "ancêtres", "appartenance"], upright: "Héritage ancestral, demeure, racines profondes, appartenance et tradition.", meaningReversed: "Déracinement, conflits familiaux, refus de l'héritage.", meaning: "La rune de l'héritage. Symbolise les racines, les ancêtres et le patrimoine sacré." },
+  {
+    id: "wyrd", symbol: "⊡", name: "Wyrd", phonetic: "", number: 25,
+    element: "Esprit", deity: "Les Nornes",
+    keywords: ["destin", "mystère", "inconnu", "le voile"],
+    upright: "Ce qui est caché ne peut être révélé. Le destin est en œuvre. Acceptez l'inconnu avec confiance.",
+    meaningReversed: "Wyrd ne se renverse pas — son mystère reste entier.",
+    meaning: "La rune vierge symbolise ce qui dépasse la compréhension humaine. Elle invite à faire confiance au flux de la vie et à lâcher le contrôle."
+  },
 ];
 
 export interface RuneSpread {

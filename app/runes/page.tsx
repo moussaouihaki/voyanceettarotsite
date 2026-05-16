@@ -42,7 +42,7 @@ export default function RunesPage() {
   const handleSpreadSelect = (spread: RuneSpread) => { setSelectedSpread(spread); setStep("question"); };
 
   const handleShuffleDone = () => {
-    const indices = Array.from({ length: 24 }, (_, i) => i);
+    const indices = Array.from({ length: 25 }, (_, i) => i);
     for (let i = indices.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [indices[i], indices[j]] = [indices[j], indices[i]];
@@ -234,7 +234,7 @@ export default function RunesPage() {
 
       {step === "pick" && selectedSpread && (
         <GenericDeckPick
-          deckSize={24}
+          deckSize={25}
           count={selectedSpread.count}
           onPickDone={handlePickDone}
           cardLabel="rune"

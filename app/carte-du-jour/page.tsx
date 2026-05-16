@@ -1,6 +1,7 @@
 "use client";
 import { authFetch } from '@/lib/api-client';
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { ALL_CARDS } from "@/lib/tarot-cards";
 import { getTarotImage } from "@/lib/tarot-images";
@@ -187,6 +188,13 @@ export default function CarteDuJourPage() {
             </div>
 
             <ReadingResult text={reading} isStreaming={isStreaming} />
+
+            <div className="text-center mt-6">
+              <Link href="/tirage" className="btn-outline-gold gap-2 text-[12px]">
+                <Sparkles size={12} />
+                Approfondir avec un tirage complet
+              </Link>
+            </div>
 
             <div className="luxe-card rounded-sm p-6 w-full max-w-2xl text-center">
               <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-3">Affirmation du jour</div>

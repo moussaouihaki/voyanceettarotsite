@@ -122,6 +122,13 @@ ${cardsList}
 ${question ? `Question du consultant : « ${question} »` : "Lecture générale (pas de question spécifique)."}
 ${transitsContext ? `\nTransits planétaires du jour : ${transitsContext}. Si pertinent, fais le lien entre ces influences célestes actuelles et les cartes tirées pour une lecture encore plus précise.` : ""}
 
+Instructions de lecture professionnelle :
+- Dignités élémentaires : note si les éléments des cartes adjacentes se renforcent (Feu/Air) ou s'affaiblissent (Feu/Eau)
+- Figures (Valet, Cavalier, Reine, Roi) : analyse-les comme archétypes psychologiques, pas seulement comme personnages
+- Cartes inversées : explore le blocage intérieur ou l'énergie refoulée, pas seulement la signification opposée
+- Numéologie des cartes : les numéros ont leur propre signification cyclique (1=début, 10=achèvement, etc.)
+- Synthèse finale : dégage le thème dominant du tirage et une action concrète pour les 7 prochains jours
+
 Donne une lecture complète, poétique et profonde. Pour chaque carte, explique sa signification dans sa position et son interaction avec les autres cartes. Termine par une synthèse globale, un message d'espoir et un conseil pratique actionnable. Environ 600-800 mots.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);

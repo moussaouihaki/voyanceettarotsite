@@ -371,6 +371,24 @@ export default function MonProfilPage() {
                 </button>
               </div>
 
+              {(() => {
+                const fields = [profile?.prenom, profile?.dateNaissance, profile?.heureNaissance, profile?.villeNaissance, (profile as unknown as Record<string, unknown>)?.gender];
+                const filled = fields.filter(Boolean).length;
+                const pct = Math.round((filled / fields.length) * 100);
+                return (
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] tracking-widest uppercase text-[#8a6f3a]">Profil complété</span>
+                      <span className="text-[11px] text-[#d4af6f]">{pct}%{pct === 100 ? " ✦" : ""}</span>
+                    </div>
+                    <div className="h-1 bg-[rgba(212,175,111,0.1)] rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-[#8a6f3a] to-[#d4af6f] rounded-full transition-all" style={{ width: `${pct}%` }} />
+                    </div>
+                    {pct < 100 && <p className="text-[10px] text-[#8a6f3a] mt-1.5">Complétez votre profil pour des lectures plus précises</p>}
+                  </div>
+                );
+              })()}
+
               <div className="grid grid-cols-2 gap-y-5 gap-x-8 text-[14px]">
                 <div>
                   <div className="text-[10px] tracking-wider uppercase text-[#8a6f3a] mb-1">Date de naissance</div>

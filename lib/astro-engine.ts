@@ -195,6 +195,7 @@ export interface PlanetPosition {
   symbol: string;
   signIndex: number;
   degreeInSign: number;
+  retrograde?: boolean;
 }
 
 function toPosition(lon: number): PlanetPosition {
@@ -300,8 +301,8 @@ export function computeNatalChart(birth: BirthData): NatalChart {
     const { ascendant, mc: midhVal } = calculateAscendant(jd, birth.latitude, birth.longitude);
     asc = toPosition(ascendant);
     mc = toPosition(midhVal);
-    // Whole sign houses : maison I = signe de l'ascendant en entier
-    houses = Array.from({ length: 12 }, (_, i) => toPosition((asc.signIndex + i) * 30 + asc.degreeInSign));
+    // Whole sign houses : maison I = 0° du signe de l'ascendant
+    houses = Array.from({ length: 12 }, (_, i) => toPosition((asc.signIndex + i) * 30));
   } else {
     asc = toPosition(0);
     mc = toPosition(0);

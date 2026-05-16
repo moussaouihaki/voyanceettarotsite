@@ -297,6 +297,23 @@ export const LENORMAND_SPREADS: LenormandSpread[] = [
     positions: ["Amour & Relations", "Travail & Carrière", "Finances & Abondance", "Santé & Vitalité", "Famille & Foyer", "Amis & Entourage", "Projets & Créativité", "Blocage principal", "Conseil Lenormand"],
     description: "Les 9 maisons de vie révèlent les grandes sphères de votre existence avec les messages des cartes.",
   },
+  {
+    id: "grand-tableau",
+    name: "Le Grand Tableau",
+    count: 9,
+    positions: [
+      "Position 1 (A) — Vous-même",
+      "Position 8 (H) — Situation principale",
+      "Position 9 (I) — Environnement immédiat",
+      "Position 15 (O) — Ce qui vient vers vous",
+      "Position 16 (P) — Passé récent",
+      "Position 22 (V) — Votre maison & foyer",
+      "Position 29 (AC) — Le futur",
+      "Position 35 (AI) — Influences cachées",
+      "Position 36 (AJ) — Résultat final",
+    ],
+    description: "Neuf cartes-clés extraites du Grand Tableau traditionnel — une vision panoramique de toutes les sphères de votre vie.",
+  },
 ];
 
 export function drawLenormand(count: number): LenormandCard[] {

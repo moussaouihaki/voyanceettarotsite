@@ -82,7 +82,32 @@ export function getHexagram(number: number): Hexagram {
   return HEXAGRAMS[number - 1] || HEXAGRAMS[0];
 }
 
+/** @deprecated kept for backward compatibility */
 export function consultIChing(): Hexagram {
   const n = Math.floor(Math.random() * 64) + 1;
   return getHexagram(n);
+}
+
+// Returns a single line value from 3-coin toss (6=old yin, 7=young yang, 8=young yin, 9=old yang)
+export function tossCoins(): 6 | 7 | 8 | 9 {
+  const sum = [0,1,2].reduce((acc) => acc + (Math.random() < 0.5 ? 2 : 3), 0);
+  return sum as 6 | 7 | 8 | 9;
+}
+
+// Find hexagram from 6 binary line values (0=yin, 1=yang), bottom to top
+export function hexagramFromLines(lines: (0|1)[]): Hexagram {
+  return HEXAGRAMS.find(h => h.lines.every((l, i) => l === lines[i])) ?? HEXAGRAMS[0];
+}
+
+// Build primary + secondary hexagram from 6 toss values
+export function buildHexagrams(tosses: (6|7|8|9)[]): { primary: Hexagram; secondary: Hexagram | null; changingLines: number[] } {
+  const primaryLines = tosses.map(t => (t === 7 || t === 9) ? 1 : 0) as (0|1)[];
+  const changingLines = tosses.map((t, i) => t === 6 || t === 9 ? i : -1).filter(i => i >= 0);
+  const primary = hexagramFromLines(primaryLines);
+  let secondary: Hexagram | null = null;
+  if (changingLines.length > 0) {
+    const secondaryLines = primaryLines.map((l, i) => changingLines.includes(i) ? (l === 1 ? 0 : 1) : l) as (0|1)[];
+    secondary = hexagramFromLines(secondaryLines);
+  }
+  return { primary, secondary, changingLines };
 }

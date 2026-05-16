@@ -2,7 +2,7 @@
 import { authFetch } from '@/lib/api-client';
 import { useState } from "react";
 import Link from "next/link";
-import { HEXAGRAMS, consultIChing, type Hexagram } from "@/lib/iching";
+import { HEXAGRAMS, tossCoins, buildHexagrams, type Hexagram } from "@/lib/iching";
 import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
 import { Coins, BookOpen, Sparkles, ArrowLeft, Compass, Crown } from "lucide-react";
@@ -30,8 +30,10 @@ export default function IChingPage() {
   const [step, setStep] = useState<Step>("intro");
   const [question, setQuestion] = useState("");
   const [hexagram, setHexagram] = useState<Hexagram | null>(null);
-  const [tossResults, setTossResults] = useState<number[]>([]);
+  const [tossResults, setTossResults] = useState<(6|7|8|9)[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [changingLines, setChangingLines] = useState<number[]>([]);
+  const [secondaryHexagram, setSecondaryHexagram] = useState<Hexagram | null>(null);
   const [reading, setReading] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
 
@@ -39,22 +41,26 @@ export default function IChingPage() {
     if (tossResults.length >= 6 || isAnimating) return;
     setIsAnimating(true);
     await new Promise((r) => setTimeout(r, 500));
-    const result = consultIChing();
-    const newResults = [...tossResults, result.lines[tossResults.length] ?? 1];
+    const value = tossCoins();
+    const newResults = [...tossResults, value] as (6|7|8|9)[];
     setTossResults(newResults);
     setIsAnimating(false);
     if (newResults.length === 6) {
-      setTimeout(() => {
-        setHexagram(result);
-        setStep("result");
-      }, 700);
+      const { primary, secondary, changingLines: cl } = buildHexagrams(newResults);
+      setHexagram(primary);
+      setChangingLines(cl);
+      if (secondary) setSecondaryHexagram(secondary);
+      setTimeout(() => setStep("result"), 700);
     }
   };
 
   const tossAll = () => {
-    const result = consultIChing();
-    setTossResults(result.lines);
-    setHexagram(result);
+    const tosses = Array.from({ length: 6 }, () => tossCoins()) as (6|7|8|9)[];
+    const { primary, secondary, changingLines: cl } = buildHexagrams(tosses);
+    setTossResults(tosses);
+    setHexagram(primary);
+    setChangingLines(cl);
+    if (secondary) setSecondaryHexagram(secondary);
     setTimeout(() => setStep("result"), 400);
   };
 
@@ -66,7 +72,7 @@ export default function IChingPage() {
       const res = await authFetch("/api/iching", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hexagram, question, profile }),
+        body: JSON.stringify({ hexagram, question, profile, secondaryHexagram: secondaryHexagram ?? undefined, changingLines }),
       });
       if (!res.ok || !res.body) throw new Error();
       const reader = res.body.getReader();
@@ -87,7 +93,7 @@ export default function IChingPage() {
     }
   };
 
-  const reset = () => { setStep("intro"); setQuestion(""); setHexagram(null); setTossResults([]); setReading(""); };
+  const reset = () => { setStep("intro"); setQuestion(""); setHexagram(null); setTossResults([]); setReading(""); setChangingLines([]); setSecondaryHexagram(null); };
 
   if (!isHydrated) return null;
 
@@ -217,16 +223,22 @@ export default function IChingPage() {
               {Array.from({ length: 6 }).map((_, i) => {
                 const lineIndex = 5 - i;
                 const filled = lineIndex < tossResults.length;
-                const isYang = filled ? tossResults[lineIndex] === 1 : null;
+                const lineVal = filled ? tossResults[lineIndex] : null;
+                const isYang = lineVal === 7 || lineVal === 9;
+                const isMoving = lineVal === 6 || lineVal === 9;
                 return (
                   <div key={i} className={`flex items-center justify-center gap-2 h-4 transition-all ${filled ? "opacity-100" : "opacity-15"}`}>
-                    {filled && isYang !== null ? (
+                    {filled && lineVal !== null ? (
                       isYang ? (
-                        <div className="h-1.5 w-24 bg-[#d4af6f] rounded-full" />
+                        <>
+                          <div className="h-1.5 w-24 bg-[#d4af6f] rounded-full" />
+                          {isMoving && <span className="text-[#d4af6f] text-[10px] mx-1">○</span>}
+                        </>
                       ) : (
                         <>
                           <div className="h-1.5 w-10 bg-[#d4af6f]/70 rounded-full" />
-                          <div className="w-2" />
+                          {isMoving && <span className="text-[#d4af6f] text-[10px] mx-1">✕</span>}
+                          {!isMoving && <div className="w-2" />}
                           <div className="h-1.5 w-10 bg-[#d4af6f]/70 rounded-full" />
                         </>
                       )
@@ -319,6 +331,21 @@ export default function IChingPage() {
               </div>
             </div>
           </div>
+
+          {changingLines.length > 0 && secondaryHexagram && (
+            <div className="mt-6 pt-6 border-t border-[rgba(212,175,111,0.15)]">
+              <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-3 text-center">Hexagramme de transformation</div>
+              <div className="text-center">
+                <div className="font-serif-display text-4xl text-[#c9b88a] mb-2">{secondaryHexagram.symbol}</div>
+                <div className="font-serif-display text-xl text-gradient-cream">{secondaryHexagram.number}. {secondaryHexagram.name}</div>
+                <div className="text-[12px] text-[#8a6f3a] mt-1">{secondaryHexagram.nameZh}</div>
+                <p className="text-[13px] text-[#c9b88a] mt-3 font-serif-text italic max-w-md mx-auto">{secondaryHexagram.advice}</p>
+              </div>
+              <p className="text-center text-[11px] text-[#8a6f3a] mt-3">
+                {changingLines.length} ligne{changingLines.length > 1 ? "s" : ""} en mouvement — transformation en cours
+              </p>
+            </div>
+          )}
 
           <div className="flex gap-3 justify-center flex-wrap mb-8">
             {!reading && !isStreaming && (

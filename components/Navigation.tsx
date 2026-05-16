@@ -48,7 +48,7 @@ const NAV_GROUPS = [
     ],
   },
   {
-    label: "Vision IA",
+    label: "Outils & Rituels",
     items: [
       { href: "/chiromancie", label: "Chiromancie", desc: "Lignes de la main · Analyse photo", premium: true },
       { href: "/reves", label: "Analyse des Rêves", desc: "Oniromancie · Symbolisme jungien" },
