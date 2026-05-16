@@ -5,6 +5,8 @@ import { CARTOMANCIE_DECK, drawCartomancie, type CartomancieCard } from "@/lib/c
 import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import Link from "next/link";
 import ReadingResult from "@/components/ReadingResult";
+import DeckShuffle from "@/components/DeckShuffle";
+import GenericDeckPick from "@/components/GenericDeckPick";
 import { Sparkles, ArrowLeft, RotateCcw, Star } from "lucide-react";
 
 const SPREADS = [
@@ -18,13 +20,8 @@ type CartomancieSpread = typeof SPREADS[number];
 type DrawnCartomancieCard = CartomancieCard & { position: string };
 
 function CarteJeu32({ card, revealed, size = "lg" }: { card: CartomancieCard; revealed: boolean; size?: "sm" | "lg" }) {
-  const isRed = card.red;
-  const suitColor = isRed ? "#c0392b" : "#1a1020";
   const w = size === "lg" ? "w-[90px]" : "w-[60px]";
   const h = size === "lg" ? "h-[130px]" : "h-[90px]";
-  const rankSize = size === "lg" ? "text-[14px]" : "text-[9px]";
-  const suitBigSize = size === "lg" ? "text-[44px]" : "text-[28px]";
-  const nameSize = "text-[6px]";
 
   if (!revealed) {
     return (
@@ -37,35 +34,16 @@ function CarteJeu32({ card, revealed, size = "lg" }: { card: CartomancieCard; re
     );
   }
 
+  const rankMap: Record<string, string> = { "10": "0", "V": "J", "D": "Q", "R": "K" };
+  const suitMap: Record<string, string> = { coeur: "H", carreau: "D", trefle: "C", pique: "S" };
+  const apiRank = rankMap[card.rank] ?? card.rank;
+  const apiSuit = suitMap[card.suit];
+  const imgUrl = `https://deckofcardsapi.com/static/img/${apiRank}${apiSuit}.png`;
+
   return (
-    <div
-      className={`${w} ${h} rounded-sm border-2 border-[#d4af6f] bg-[#f5f0e8] relative flex flex-col select-none`}
-      style={{ boxShadow: "0 0 12px rgba(212,175,111,0.2)" }}
-    >
-      {/* Top-left rank + suit */}
-      <div className={`absolute top-1 left-1.5 flex flex-col items-center leading-none`} style={{ color: suitColor }}>
-        <span className={`${rankSize} font-bold leading-none`}>{card.rank}</span>
-        <span className={`${size === "lg" ? "text-[10px]" : "text-[7px]"} leading-none`}>{card.suitSymbol}</span>
-      </div>
-
-      {/* Bottom-right rank + suit (rotated) */}
-      <div
-        className={`absolute bottom-1 right-1.5 flex flex-col items-center leading-none rotate-180`}
-        style={{ color: suitColor }}
-      >
-        <span className={`${rankSize} font-bold leading-none`}>{card.rank}</span>
-        <span className={`${size === "lg" ? "text-[10px]" : "text-[7px]"} leading-none`}>{card.suitSymbol}</span>
-      </div>
-
-      {/* Center suit symbol */}
-      <div className="flex-1 flex items-center justify-center">
-        <span className={suitBigSize} style={{ color: suitColor }}>{card.suitSymbol}</span>
-      </div>
-
-      {/* Card name */}
-      <div className={`text-center pb-1.5 px-1`}>
-        <span className={`${nameSize} text-[#6b5a3a] tracking-tight leading-none`}>{card.name}</span>
-      </div>
+    <div className={`${w} ${h} rounded-sm overflow-hidden border border-[rgba(212,175,111,0.3)]`}
+      style={{ boxShadow: "0 0 12px rgba(212,175,111,0.2)" }}>
+      <img src={imgUrl} alt={card.name} className="w-full h-full object-cover" />
     </div>
   );
 }
@@ -81,7 +59,8 @@ function Spinner() {
 
 export default function CartomanciePage() {
   const { profile, addReading, isHydrated } = useUserProfile();
-  const [step, setStep] = useState<"choose" | "question" | "draw" | "reading">("choose");
+  const [step, setStep] = useState<"choose" | "question" | "shuffle" | "pick" | "draw" | "reading">("choose");
+  const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
   const [selectedSpread, setSelectedSpread] = useState<CartomancieSpread | null>(null);
   const [question, setQuestion] = useState("");
   const [cards, setCards] = useState<DrawnCartomancieCard[]>([]);
@@ -92,6 +71,28 @@ export default function CartomanciePage() {
   const handleSpreadSelect = (spread: CartomancieSpread) => {
     setSelectedSpread(spread);
     setStep("question");
+  };
+
+  const handleShuffleDone = () => {
+    const indices = Array.from({ length: 32 }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    setShuffledIndices(indices);
+    setStep("pick");
+  };
+
+  const handlePickDone = (indices: number[]) => {
+    if (!selectedSpread) return;
+    const drawn: DrawnCartomancieCard[] = indices.map((idx, posIdx) => ({
+      ...CARTOMANCIE_DECK[idx],
+      position: selectedSpread.positions[posIdx],
+    }));
+    setCards(drawn);
+    setRevealedCards(new Set());
+    setReading("");
+    setStep("draw");
   };
 
   const handleDraw = () => {
@@ -161,6 +162,7 @@ export default function CartomanciePage() {
     setReading("");
     setQuestion("");
     setSelectedSpread(null);
+    setShuffledIndices([]);
   };
 
   if (!isHydrated) return <Spinner />;
@@ -255,12 +257,25 @@ export default function CartomanciePage() {
               <ArrowLeft size={13} className="inline mr-2" />
               <span>Retour</span>
             </button>
-            <button onClick={handleDraw} className="btn-gold">
+            <button onClick={() => setStep("shuffle")} className="btn-gold">
               <Sparkles size={14} />
-              <span>Tirer les cartes</span>
+              <span>Mélanger et tirer</span>
             </button>
           </div>
         </div>
+      )}
+
+      {step === "shuffle" && selectedSpread && (
+        <DeckShuffle onShuffleDone={handleShuffleDone} spreadName={selectedSpread.name} />
+      )}
+
+      {step === "pick" && selectedSpread && (
+        <GenericDeckPick
+          deckSize={32}
+          count={selectedSpread.count}
+          onPickDone={handlePickDone}
+          cardLabel="carte"
+        />
       )}
 
       {(step === "draw" || step === "reading") && selectedSpread && (

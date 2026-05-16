@@ -7,6 +7,8 @@ import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext"
 import ReadingResult from "@/components/ReadingResult";
 import OghamCardArt from "@/components/OghamCardArt";
 import { Sparkles, ArrowLeft, RotateCcw, Leaf, Crown, Hourglass, Plus } from "lucide-react";
+import DeckShuffle from "@/components/DeckShuffle";
+import GenericDeckPick from "@/components/GenericDeckPick";
 
 function getOghamSpreadIcon(id: string) {
   const icons: Record<string, typeof Leaf> = {
@@ -34,7 +36,8 @@ function PremiumWall({ title, message }: { title: string; message: string }) {
 
 export default function OghamPage() {
   const { profile, addReading, isHydrated } = useUserProfile();
-  const [step, setStep] = useState<"choose" | "question" | "draw" | "reading">("choose");
+  const [step, setStep] = useState<"choose" | "question" | "shuffle" | "pick" | "draw" | "reading">("choose");
+  const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
   const [selectedSpread, setSelectedSpread] = useState<OghamSpread | null>(null);
   const [question, setQuestion] = useState("");
   const [staves, setStaves] = useState<OghamStave[]>([]);
@@ -47,6 +50,24 @@ export default function OghamPage() {
   const handleDraw = () => {
     if (!selectedSpread) return;
     setStaves(drawOgham(selectedSpread.count));
+    setRevealedStaves(new Set());
+    setReading("");
+    setStep("draw");
+  };
+
+  const handleShuffleDone = () => {
+    const indices = Array.from({ length: 25 }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    setShuffledIndices(indices);
+    setStep("pick");
+  };
+
+  const handlePickDone = (indices: number[]) => {
+    if (!selectedSpread) return;
+    setStaves(indices.map((idx) => OGHAM_STAVES[idx]));
     setRevealedStaves(new Set());
     setReading("");
     setStep("draw");
@@ -101,6 +122,7 @@ export default function OghamPage() {
     setReading("");
     setQuestion("");
     setSelectedSpread(null);
+    setShuffledIndices([]);
   };
 
   if (!isHydrated) return null;
@@ -211,12 +233,25 @@ export default function OghamPage() {
               <ArrowLeft size={13} className="inline mr-2" />
               <span>Retour</span>
             </button>
-            <button onClick={handleDraw} className="btn-gold">
+            <button onClick={() => setStep("shuffle")} className="btn-gold">
               <Sparkles size={14} />
-              <span>Tirer les staves</span>
+              <span>Mélanger et tirer</span>
             </button>
           </div>
         </div>
+      )}
+
+      {step === "shuffle" && selectedSpread && (
+        <DeckShuffle onShuffleDone={handleShuffleDone} spreadName={selectedSpread.name} />
+      )}
+
+      {step === "pick" && selectedSpread && (
+        <GenericDeckPick
+          deckSize={25}
+          count={selectedSpread.count}
+          onPickDone={handlePickDone}
+          cardLabel="stave"
+        />
       )}
 
       {(step === "draw" || step === "reading") && selectedSpread && (

@@ -6,6 +6,7 @@ import { HEXAGRAMS, consultIChing, type Hexagram } from "@/lib/iching";
 import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
 import { Coins, BookOpen, Sparkles, ArrowLeft, Compass, Crown } from "lucide-react";
+import DeckShuffle from "@/components/DeckShuffle";
 
 function PremiumWall({ title, message }: { title: string; message: string }) {
   return (
@@ -22,7 +23,7 @@ function PremiumWall({ title, message }: { title: string; message: string }) {
   );
 }
 
-type Step = "intro" | "question" | "toss" | "result";
+type Step = "intro" | "question" | "shuffle" | "toss" | "result";
 
 export default function IChingPage() {
   const { profile, addReading, isHydrated } = useUserProfile();
@@ -189,12 +190,16 @@ export default function IChingPage() {
               <ArrowLeft size={13} className="inline mr-2" />
               <span>Retour</span>
             </button>
-            <button onClick={() => setStep("toss")} className="btn-gold">
+            <button onClick={() => setStep("shuffle")} className="btn-gold">
               <Coins size={14} />
-              <span>Lancer les pièces</span>
+              <span>Mélanger les monnaies</span>
             </button>
           </div>
         </div>
+      )}
+
+      {step === "shuffle" && (
+        <DeckShuffle onShuffleDone={() => setStep("toss")} spreadName="I-Ching — Oracle des Mutations" />
       )}
 
       {step === "toss" && (

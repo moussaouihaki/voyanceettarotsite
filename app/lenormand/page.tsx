@@ -3,6 +3,8 @@ import { authFetch } from '@/lib/api-client';
 import { useState } from "react";
 import Link from "next/link";
 import { LENORMAND_DECK, LENORMAND_SPREADS, drawLenormand, type LenormandSpread, type LenormandCard } from "@/lib/lenormand";
+import DeckShuffle from "@/components/DeckShuffle";
+import GenericDeckPick from "@/components/GenericDeckPick";
 import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
 import LenormandCardArt from "@/components/LenormandCardArt";
@@ -35,7 +37,8 @@ function Spinner() {
 
 export default function LenormandPage() {
   const { profile, addReading, isHydrated } = useUserProfile();
-  const [step, setStep] = useState<"choose" | "question" | "draw" | "reading">("choose");
+  const [step, setStep] = useState<"choose" | "question" | "shuffle" | "pick" | "draw" | "reading">("choose");
+  const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
   const [selectedSpread, setSelectedSpread] = useState<LenormandSpread | null>(null);
   const [question, setQuestion] = useState("");
   const [cards, setCards] = useState<DrawnCard[]>([]);
@@ -46,6 +49,28 @@ export default function LenormandPage() {
   const handleSpreadSelect = (spread: LenormandSpread) => {
     setSelectedSpread(spread);
     setStep("question");
+  };
+
+  const handleShuffleDone = () => {
+    const indices = Array.from({ length: 36 }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    setShuffledIndices(indices);
+    setStep("pick");
+  };
+
+  const handlePickDone = (indices: number[]) => {
+    if (!selectedSpread) return;
+    const drawn: DrawnCard[] = indices.map((idx, posIdx) => ({
+      ...LENORMAND_DECK[idx],
+      position: selectedSpread.positions[posIdx],
+    }));
+    setCards(drawn);
+    setRevealedCards(new Set());
+    setReading("");
+    setStep("draw");
   };
 
   const handleDraw = () => {
@@ -109,6 +134,7 @@ export default function LenormandPage() {
     setReading("");
     setQuestion("");
     setSelectedSpread(null);
+    setShuffledIndices([]);
   };
 
   if (!isHydrated) return <Spinner />;
@@ -211,12 +237,25 @@ export default function LenormandPage() {
               <ArrowLeft size={13} className="inline mr-2" />
               <span>Retour</span>
             </button>
-            <button onClick={handleDraw} className="btn-gold">
+            <button onClick={() => setStep("shuffle")} className="btn-gold">
               <Sparkles size={14} />
-              <span>Tirer les cartes</span>
+              <span>Mélanger et tirer</span>
             </button>
           </div>
         </div>
+      )}
+
+      {step === "shuffle" && selectedSpread && (
+        <DeckShuffle onShuffleDone={handleShuffleDone} spreadName={selectedSpread.name} />
+      )}
+
+      {step === "pick" && selectedSpread && (
+        <GenericDeckPick
+          deckSize={36}
+          count={selectedSpread.count}
+          onPickDone={handlePickDone}
+          cardLabel="carte"
+        />
       )}
 
       {(step === "draw" || step === "reading") && selectedSpread && (

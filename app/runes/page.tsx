@@ -3,6 +3,8 @@ import { authFetch } from '@/lib/api-client';
 import { useState } from "react";
 import Link from "next/link";
 import { ELDER_FUTHARK, RUNE_SPREADS, drawRunes, type RuneSpread } from "@/lib/runes";
+import DeckShuffle from "@/components/DeckShuffle";
+import GenericDeckPick from "@/components/GenericDeckPick";
 import { getRuneSpreadIcon } from "@/lib/spread-icons";
 import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
@@ -28,7 +30,8 @@ function PremiumWall({ title, message }: { title: string; message: string }) {
 
 export default function RunesPage() {
   const { profile, addReading, isHydrated } = useUserProfile();
-  const [step, setStep] = useState<"choose" | "question" | "draw" | "reading">("choose");
+  const [step, setStep] = useState<"choose" | "question" | "shuffle" | "pick" | "draw" | "reading">("choose");
+  const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
   const [selectedSpread, setSelectedSpread] = useState<RuneSpread | null>(null);
   const [question, setQuestion] = useState("");
   const [runes, setRunes] = useState<DrawnRune[]>([]);
@@ -37,6 +40,28 @@ export default function RunesPage() {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const handleSpreadSelect = (spread: RuneSpread) => { setSelectedSpread(spread); setStep("question"); };
+
+  const handleShuffleDone = () => {
+    const indices = Array.from({ length: 24 }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    setShuffledIndices(indices);
+    setStep("pick");
+  };
+
+  const handlePickDone = (indices: number[]) => {
+    if (!selectedSpread) return;
+    const drawn: DrawnRune[] = indices.map((idx) => ({
+      ...ELDER_FUTHARK[idx],
+      isReversed: Math.random() > 0.65,
+    }));
+    setRunes(drawn);
+    setRevealedRunes(new Set());
+    setReading("");
+    setStep("draw");
+  };
 
   const handleDraw = () => {
     if (!selectedSpread) return;
@@ -85,7 +110,7 @@ export default function RunesPage() {
     }
   };
 
-  const reset = () => { setStep("choose"); setRunes([]); setRevealedRunes(new Set()); setReading(""); setQuestion(""); setSelectedSpread(null); };
+  const reset = () => { setStep("choose"); setRunes([]); setRevealedRunes(new Set()); setReading(""); setQuestion(""); setSelectedSpread(null); setShuffledIndices([]); };
 
   if (!isHydrated) return null;
 
@@ -195,12 +220,25 @@ export default function RunesPage() {
               <ArrowLeft size={13} className="inline mr-2" />
               <span>Retour</span>
             </button>
-            <button onClick={handleDraw} className="btn-gold">
+            <button onClick={() => setStep("shuffle")} className="btn-gold">
               <Sparkles size={14} />
-              <span>Tirer les runes</span>
+              <span>Mélanger et tirer</span>
             </button>
           </div>
         </div>
+      )}
+
+      {step === "shuffle" && selectedSpread && (
+        <DeckShuffle onShuffleDone={handleShuffleDone} spreadName={selectedSpread.name} />
+      )}
+
+      {step === "pick" && selectedSpread && (
+        <GenericDeckPick
+          deckSize={24}
+          count={selectedSpread.count}
+          onPickDone={handlePickDone}
+          cardLabel="rune"
+        />
       )}
 
       {(step === "draw" || step === "reading") && selectedSpread && (
