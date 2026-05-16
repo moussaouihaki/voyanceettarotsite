@@ -19,15 +19,11 @@ export async function getFirestoreUser(uid: string): Promise<FirestoreUser | nul
 }
 
 export async function saveFirestoreUser(uid: string, data: Partial<FirestoreUser>): Promise<void> {
-  try {
-    await setDoc(doc(db, "users", uid), {
-      ...data,
-      uid,
-      updatedAt: serverTimestamp(),
-    }, { merge: true });
-  } catch (e) {
-    console.error("[Firestore] saveUser error", e);
-  }
+  await setDoc(doc(db, "users", uid), {
+    ...data,
+    uid,
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
 }
 
 export async function updateFirestoreSubscription(uid: string, tier: string): Promise<void> {

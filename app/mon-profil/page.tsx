@@ -42,6 +42,7 @@ export default function MonProfilPage() {
   const [genre, setGenre] = useState<"femme" | "homme" | "autre" | "">("");
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -69,12 +70,13 @@ export default function MonProfilPage() {
   // Show form if no profile yet, if profile has no prenom/dateNaissance, or if editing
   const showForm = !profile || !profile.prenom || !profile.dateNaissance || editing;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaveError(null);
     setSaveSuccess(false);
     if (!prenom.trim()) { setSaveError("Le prénom est requis."); return; }
     if (!dateNaissance) { setSaveError("La date de naissance est requise."); return; }
-    saveProfile({
+    setSaving(true);
+    const result = await saveProfile({
       prenom: prenom.trim(),
       nom: nom.trim(),
       email,
@@ -85,6 +87,11 @@ export default function MonProfilPage() {
       lonNaissance,
       genre: genre || undefined,
     });
+    setSaving(false);
+    if (!result.ok) {
+      setSaveError(result.error ?? "Erreur de sauvegarde. Réessayez.");
+      return;
+    }
     setSaveSuccess(true);
     setEditing(false);
   };
@@ -238,10 +245,15 @@ export default function MonProfilPage() {
               )}
               <button
                 onClick={handleSave}
-                className="btn-gold"
+                disabled={saving}
+                className="btn-gold disabled:opacity-60"
               >
-                <Sparkles size={14} />
-                <span>{profile ? "Mettre à jour" : "Créer mon profil"}</span>
+                {saving ? (
+                  <span className="inline-block w-4 h-4 border border-current border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Sparkles size={14} />
+                )}
+                <span>{saving ? "Sauvegarde…" : profile ? "Mettre à jour" : "Créer mon profil"}</span>
               </button>
             </div>
 

@@ -5,7 +5,7 @@ const PYTHAGOREAN: Record<string, number> = {
   S:1,T:2,U:3,V:4,W:5,X:6,Y:7,Z:8,
 };
 
-const VOWELS = new Set(["A","E","I","O","U","Y"]);
+const VOWELS = new Set(["A","E","I","O","U"]); // Y = consonne en numérologie française
 
 function reduceNumber(n: number, keepMaster = true): number {
   while (n > 9) {

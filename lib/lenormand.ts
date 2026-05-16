@@ -64,7 +64,7 @@ export const LENORMAND_DECK: LenormandCard[] = [
     combined: "Embellit et positivise les cartes voisines ; annonce cadeaux, compliments ou moments de joie.",
   },
   {
-    id: "faux", number: 10, name: "La Faux", symbol: "🌾",
+    id: "faux", number: 10, name: "La Faux", symbol: "⚔️",
     keywords: ["danger", "décision", "séparation", "récolte"],
     upright: "Une décision tranchante s'impose ou un danger soudain apparaît. La récolte arrive, mais une séparation peut en découler.",
     combined: "Coupe, termine ou sépare les énergies des cartes voisines ; décision irréversible proche.",
@@ -245,7 +245,7 @@ export const LENORMAND_SPREADS: LenormandSpread[] = [
   },
   {
     id: "grand-jeu",
-    name: "Le Grand Jeu",
+    name: "Tirage Rapide",
     count: 3,
     positions: ["Situation — Le présent", "Obstacle — Ce qui bloque", "Conseil — La voie à suivre"],
     description: "Un tirage en 3 cartes pour cerner rapidement une situation, identifier l'obstacle et recevoir un conseil.",

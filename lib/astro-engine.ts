@@ -328,7 +328,7 @@ export function formatPosition(p: PlanetPosition): string {
 export interface Aspect {
   planet1: string;
   planet2: string;
-  type: "conjonction" | "sextile" | "carré" | "trigone" | "opposition";
+  type: "conjonction" | "sextile" | "carré" | "trigone" | "opposition" | "quinconce";
   exactness: number; // orbe en degrés
 }
 
@@ -338,6 +338,7 @@ const ASPECT_TYPES = [
   { angle: 90,  type: "carré" as const, orb: 6 },
   { angle: 120, type: "trigone" as const, orb: 6 },
   { angle: 180, type: "opposition" as const, orb: 8 },
+  { angle: 150, type: "quinconce" as const, orb: 3 },
 ];
 
 export function computeAspects(planets: Record<string, PlanetPosition>): Aspect[] {

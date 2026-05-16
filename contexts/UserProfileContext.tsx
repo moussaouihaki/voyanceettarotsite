@@ -36,7 +36,7 @@ interface UserProfileContextType {
   profile: UserProfile | null;
   history: ReadingHistory[];
   firebaseUser: FirebaseUser | null;
-  saveProfile: (p: Omit<UserProfile, "createdAt" | "subscription"> & Partial<Pick<UserProfile, "createdAt" | "subscription">>) => void;
+  saveProfile: (p: Omit<UserProfile, "createdAt" | "subscription"> & Partial<Pick<UserProfile, "createdAt" | "subscription">>) => Promise<{ ok: boolean; error?: string }>;
   updateSubscription: (tier: SubscriptionTier) => void;
   clearProfile: () => void;
   logout: () => Promise<void>;
@@ -71,29 +71,59 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
       setFirebaseUser(user);
       if (user) {
         const isAdmin = user.email === "info@celestevoyance.com";
+
+        // Always try to read local data first
+        let localProfile: UserProfile | null = null;
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) localProfile = JSON.parse(raw) as UserProfile;
+        } catch {}
+
         const fsUser = await getFirestoreUser(user.uid);
         if (fsUser) {
-          const { uid: _uid, updatedAt: _updatedAt, ...profileData } = fsUser;
-          // Force VIP for admin account
-          if (isAdmin && (profileData as UserProfile).subscription !== "vip") {
-            await saveFirestoreUser(user.uid, { subscription: "vip" });
-            (profileData as UserProfile).subscription = "vip";
+          const { uid: _uid, updatedAt: _updatedAt, ...fsData } = fsUser;
+          const fs = fsData as UserProfile;
+
+          // Merge: prefer non-empty values — Firestore wins for filled fields,
+          // localStorage fills gaps (handles case where Firestore write failed previously)
+          const merged: UserProfile = {
+            ...fs,
+            prenom: fs.prenom || localProfile?.prenom || "",
+            nom: fs.nom || localProfile?.nom || "",
+            dateNaissance: fs.dateNaissance || localProfile?.dateNaissance || "",
+            heureNaissance: fs.heureNaissance || localProfile?.heureNaissance || "",
+            villeNaissance: fs.villeNaissance || localProfile?.villeNaissance || "",
+            latNaissance: fs.latNaissance ?? localProfile?.latNaissance,
+            lonNaissance: fs.lonNaissance ?? localProfile?.lonNaissance,
+            genre: fs.genre || localProfile?.genre,
+            subscription: isAdmin ? "vip" : (fs.subscription || localProfile?.subscription || "decouverte"),
+          };
+
+          // If localStorage had data that Firestore was missing, sync it back
+          const needsSync = (!fs.prenom && merged.prenom) || (!fs.dateNaissance && merged.dateNaissance);
+          if (needsSync || (isAdmin && fs.subscription !== "vip")) {
+            saveFirestoreUser(user.uid, merged).catch(console.error);
           }
-          setProfile(profileData as UserProfile);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(profileData));
+
+          setProfile(merged);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
         } else {
-          // Firebase user exists but no Firestore doc — load from localStorage
-          try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            const localProfile = raw ? JSON.parse(raw) as UserProfile : null;
-            const mergedProfile = {
-              ...(localProfile ?? {}),
-              email: user.email ?? localProfile?.email ?? "",
-              subscription: isAdmin ? "vip" as const : (localProfile?.subscription ?? "decouverte" as const),
-            };
-            setProfile(mergedProfile as UserProfile);
-            await saveFirestoreUser(user.uid, mergedProfile);
-          } catch {}
+          // No Firestore doc — create one from local data or defaults
+          const mergedProfile: UserProfile = {
+            prenom: localProfile?.prenom ?? "",
+            nom: localProfile?.nom ?? "",
+            email: user.email ?? localProfile?.email ?? "",
+            dateNaissance: localProfile?.dateNaissance ?? "",
+            heureNaissance: localProfile?.heureNaissance ?? "",
+            villeNaissance: localProfile?.villeNaissance ?? "",
+            latNaissance: localProfile?.latNaissance,
+            lonNaissance: localProfile?.lonNaissance,
+            genre: localProfile?.genre,
+            subscription: isAdmin ? "vip" : (localProfile?.subscription ?? "decouverte"),
+            createdAt: localProfile?.createdAt ?? Date.now(),
+          };
+          setProfile(mergedProfile);
+          await saveFirestoreUser(user.uid, mergedProfile);
         }
       } else {
         // Not logged in — load from localStorage
@@ -107,17 +137,27 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
     return () => unsub();
   }, []);
 
-  const persistProfile = (p: UserProfile | null) => {
+  const persistProfile = async (p: UserProfile | null): Promise<{ ok: boolean; error?: string }> => {
     if (p) localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
     else localStorage.removeItem(STORAGE_KEY);
     setProfile(p);
 
     if (firebaseUser && p) {
-      saveFirestoreUser(firebaseUser.uid, {
-        ...p,
-        email: firebaseUser.email ?? p.email,
-      }).catch(console.error);
+      try {
+        await saveFirestoreUser(firebaseUser.uid, {
+          ...p,
+          email: firebaseUser.email ?? p.email,
+        });
+        return { ok: true };
+      } catch (e) {
+        const msg = (e as { code?: string; message?: string })?.code === "permission-denied"
+          ? "Accès Firestore refusé. Vérifiez les règles de sécurité Firebase."
+          : "Erreur de sauvegarde sur le serveur. Réessayez.";
+        console.error("[Firestore] persistProfile error", e);
+        return { ok: false, error: msg };
+      }
     }
+    return { ok: true };
   };
 
   const persistHistory = (h: ReadingHistory[]) => {
@@ -132,15 +172,15 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
       subscription: p.subscription ?? profile?.subscription ?? "decouverte",
       createdAt: profile?.createdAt ?? Date.now(),
     };
-    persistProfile(full);
+    return persistProfile(full);
   };
 
   const updateSubscription = (tier: SubscriptionTier) => {
     if (!profile) return;
-    persistProfile({ ...profile, subscription: tier });
+    persistProfile({ ...profile, subscription: tier }).catch(console.error);
   };
 
-  const clearProfile = () => persistProfile(null);
+  const clearProfile = () => { persistProfile(null).catch(console.error); };
 
   const logout = async () => {
     await signOut(auth);

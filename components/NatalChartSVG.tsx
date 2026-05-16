@@ -31,6 +31,7 @@ const ASPECT_COLORS: Record<string, string> = {
   carré: "rgba(240,70,70,0.60)",
   trigone: "rgba(50,150,240,0.65)",
   opposition: "rgba(255,160,30,0.60)",
+  quinconce:  "rgba(255,200,0,0.45)",
 };
 
 const PLANET_ORDER = ["Soleil","Lune","Mercure","Vénus","Mars","Jupiter","Saturne","Uranus","Neptune","Pluton"];

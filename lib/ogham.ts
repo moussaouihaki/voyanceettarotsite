@@ -173,11 +173,11 @@ export interface OghamSpread {
 
 export const OGHAM_SPREADS: OghamSpread[] = [
   {
-    id: "stave-unique",
+    id: "fid-unique",
     name: "Le Stave du Druide",
     count: 1,
     positions: ["Guidance du moment"],
-    description: "Un seul stave oghamique pour une guidance directe de la sagesse druidique.",
+    description: "Un seul fid oghamique pour une guidance directe de la sagesse druidique.",
   },
   {
     id: "triades-celtiques",
@@ -191,7 +191,7 @@ export const OGHAM_SPREADS: OghamSpread[] = [
     name: "La Croix Celtique",
     count: 5,
     positions: ["Centre — La situation", "Croix — L'obstacle ou aide", "Dessus — Le ciel (idéal)", "Dessous — La terre (fondation)", "Futur — Le chemin"],
-    description: "La croix celtique en 5 staves — vision complète selon la tradition druidique.",
+    description: "La croix celtique en 5 feadha — vision complète selon la tradition druidique.",
   },
 ];
 
