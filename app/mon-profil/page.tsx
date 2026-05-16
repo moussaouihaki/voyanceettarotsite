@@ -23,11 +23,81 @@ import {
   Moon,
   Heart,
   ScrollText,
+  PenLine,
+  Check,
+  X,
 } from "lucide-react";
+import { ReadingHistory } from "@/contexts/UserProfileContext";
+
+function HistoryItem({ reading: r, onSaveNotes }: { reading: ReadingHistory; onSaveNotes: (notes: string) => void }) {
+  const [editingNotes, setEditingNotes] = useState(false);
+  const [draft, setDraft] = useState(r.notes ?? "");
+
+  const TYPE_LABELS: Record<string, string> = {
+    tarot: "Tarot", runes: "Runes", lenormand: "Lenormand", ogham: "Ogham",
+    chakras: "Chakras", numerologie: "Numérologie", horoscope: "Horoscope",
+    iching: "I-Ching", chiromancie: "Chiromancie", reves: "Rêves",
+    aura: "Aura", lithotherapie: "Lithothérapie",
+  };
+
+  return (
+    <div className="p-4 rounded-sm bg-[rgba(13,8,32,0.5)] border border-[rgba(212,175,111,0.1)] hover:border-[rgba(212,175,111,0.2)] transition-colors">
+      <div className="flex items-start gap-3">
+        <div className="text-[#d4af6f] mt-0.5"><Star size={12} /></div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 mb-0.5">
+            <span className="text-[10px] tracking-widest uppercase text-[#d4af6f]">{TYPE_LABELS[r.type] ?? r.type}</span>
+            <span className="text-[10px] text-[#8a6f3a]">{new Date(r.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}</span>
+          </div>
+          <div className="text-[14px] text-cream mb-2">{r.title}</div>
+
+          {!editingNotes ? (
+            <div className="flex items-start gap-2">
+              {r.notes ? (
+                <p className="text-[12px] text-[#c9b88a] italic flex-1 leading-relaxed">📝 {r.notes}</p>
+              ) : (
+                <p className="text-[11px] text-[#8a6f3a] flex-1">Ajoutez vos impressions ou ce qui s&apos;est passé...</p>
+              )}
+              <button
+                onClick={() => { setDraft(r.notes ?? ""); setEditingNotes(true); }}
+                className="text-[#8a6f3a] hover:text-[#d4af6f] transition-colors shrink-0 p-1"
+                title="Modifier la note"
+              >
+                <PenLine size={11} />
+              </button>
+            </div>
+          ) : (
+            <div className="mt-2">
+              <textarea
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                placeholder="Ce qui s'est passé, ce que j'ai ressenti, si la prédiction s'est réalisée..."
+                rows={3}
+                className="luxe-input w-full resize-none text-[12px] !py-2"
+                autoFocus
+              />
+              <div className="flex gap-2 mt-2 justify-end">
+                <button onClick={() => setEditingNotes(false)} className="text-[#8a6f3a] hover:text-[#c9b88a] transition-colors p-1">
+                  <X size={12} />
+                </button>
+                <button
+                  onClick={() => { onSaveNotes(draft); setEditingNotes(false); }}
+                  className="text-[#d4af6f] hover:text-[#e8c875] transition-colors p-1 flex items-center gap-1 text-[11px] tracking-wide"
+                >
+                  <Check size={12} /> Sauvegarder
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 
 export default function MonProfilPage() {
-  const { profile, firebaseUser, saveProfile, clearProfile, history, clearHistory, isHydrated } = useUserProfile();
+  const { profile, firebaseUser, saveProfile, clearProfile, history, clearHistory, updateReadingNotes, isHydrated } = useUserProfile();
   const router = useRouter();
   const [editing, setEditing] = useState(false);
 
@@ -521,17 +591,8 @@ export default function MonProfilPage() {
                 </button>
               </div>
               <div className="space-y-3">
-                {history.slice(0, 10).map((r) => (
-                  <div key={r.id} className="flex items-start gap-4 p-4 rounded-sm bg-[rgba(13,8,32,0.5)] border border-[rgba(212,175,111,0.1)]">
-                    <div className="text-[#d4af6f] mt-1"><Star size={12} /></div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="text-[10px] tracking-widest uppercase text-[#d4af6f]">{r.type}</span>
-                        <span className="text-[10px] text-[#8a6f3a]">{new Date(r.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}</span>
-                      </div>
-                      <div className="text-[14px] text-cream">{r.title}</div>
-                    </div>
-                  </div>
+                {history.slice(0, 15).map((r) => (
+                  <HistoryItem key={r.id} reading={r} onSaveNotes={(notes) => updateReadingNotes(r.id, notes)} />
                 ))}
               </div>
             </div>

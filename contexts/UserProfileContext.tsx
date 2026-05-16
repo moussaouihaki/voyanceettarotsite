@@ -30,6 +30,7 @@ export interface ReadingHistory {
   date: number;
   content: string;
   meta?: Record<string, unknown>;
+  notes?: string;
 }
 
 interface UserProfileContextType {
@@ -41,6 +42,7 @@ interface UserProfileContextType {
   clearProfile: () => void;
   logout: () => Promise<void>;
   addReading: (r: Omit<ReadingHistory, "id" | "date">) => void;
+  updateReadingNotes: (id: string, notes: string) => void;
   clearHistory: () => void;
   isHydrated: boolean;
   sunSignName: string | null;
@@ -223,11 +225,16 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateReadingNotes: UserProfileContextType["updateReadingNotes"] = (id, notes) => {
+    const updated = history.map((r) => r.id === id ? { ...r, notes } : r);
+    persistHistory(updated);
+  };
+
   const sunSignName = profile?.dateNaissance ? getSunSign(profile.dateNaissance).name : null;
 
   return (
     <UserProfileContext.Provider
-      value={{ profile, history, firebaseUser, saveProfile, updateSubscription, clearProfile, logout, addReading, clearHistory, isHydrated, sunSignName }}
+      value={{ profile, history, firebaseUser, saveProfile, updateSubscription, clearProfile, logout, addReading, updateReadingNotes, clearHistory, isHydrated, sunSignName }}
     >
       {children}
     </UserProfileContext.Provider>

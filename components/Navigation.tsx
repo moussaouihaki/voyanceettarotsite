@@ -44,6 +44,13 @@ const NAV_GROUPS = [
       { href: "/aura", label: "Lecture d'Aura", desc: "Couleurs vibratoires · Énergie subtile", premium: true },
     ],
   },
+  {
+    label: "Vision IA",
+    items: [
+      { href: "/chiromancie", label: "Chiromancie", desc: "Lignes de la main · Analyse photo", premium: true },
+      { href: "/reves", label: "Analyse des Rêves", desc: "Oniromancie · Symbolisme jungien" },
+    ],
+  },
 ];
 
 const SECONDARY_LINKS = [

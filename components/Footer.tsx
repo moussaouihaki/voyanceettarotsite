@@ -18,6 +18,10 @@ const FOOTER_LINKS = {
     { href: "/chakras", label: "Chakras" },
     { href: "/numerologie", label: "Numérologie" },
   ],
+  "Vision IA": [
+    { href: "/chiromancie", label: "Chiromancie" },
+    { href: "/reves", label: "Analyse des Rêves" },
+  ],
   "Le Sanctuaire": [
     { href: "/tarifs", label: "Abonnements" },
     { href: "/mon-profil", label: "Mon Profil" },
