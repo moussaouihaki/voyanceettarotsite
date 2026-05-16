@@ -89,6 +89,40 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={`h-full ${playfair.variable} ${cormorant.variable} ${inter.variable}`}>
       <body className="min-h-full flex flex-col relative">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": `${SITE_URL}/#website`,
+                  "url": SITE_URL,
+                  "name": "Madame Céleste — Arts Divinatoires",
+                  "description": "Sanctuaire numérique de voyance, tarot et arts divinatoires personnalisés par IA",
+                  "inLanguage": "fr-FR",
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": { "@type": "EntryPoint", "urlTemplate": `${SITE_URL}/horoscope?q={search_term_string}` },
+                    "query-input": "required name=search_term_string"
+                  }
+                },
+                {
+                  "@type": "Organization",
+                  "@id": `${SITE_URL}/#organization`,
+                  "name": "Madame Céleste",
+                  "url": SITE_URL,
+                  "logo": {
+                    "@type": "ImageObject",
+                    "url": `${SITE_URL}/logo-celeste.svg`
+                  },
+                  "sameAs": []
+                }
+              ]
+            })
+          }}
+        />
         <UserProfileProvider>
           <StarBackground />
           <Navigation />

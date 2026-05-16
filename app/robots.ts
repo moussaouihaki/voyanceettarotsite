@@ -5,8 +5,13 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://celestevoyance.com
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: "*", allow: "/", disallow: ["/api/", "/mon-profil"] },
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/api/", "/mon-profil", "/journal", "/connexion", "/tarifs/succes"],
+      },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }
