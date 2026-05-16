@@ -1,57 +1,51 @@
-import { initializeApp, getApps, cert, App } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
 import { NextRequest } from "next/server";
-
-let adminApp: App;
-
-function getAdminApp(): App {
-  if (adminApp) return adminApp;
-  if (getApps().length > 0) {
-    adminApp = getApps()[0]!;
-    return adminApp;
-  }
-
-  const projectId = process.env.FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-
-  if (projectId && clientEmail && privateKey) {
-    adminApp = initializeApp({
-      credential: cert({ projectId, clientEmail, privateKey }),
-    });
-  } else {
-    // Fallback: use GOOGLE_APPLICATION_CREDENTIALS or default credentials
-    adminApp = initializeApp({ projectId: projectId ?? process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID });
-  }
-
-  return adminApp;
-}
 
 export interface AuthResult {
   uid: string;
   email?: string;
-  tier?: string;
 }
 
 /**
- * Verify a Firebase ID token from the Authorization header.
- * Returns the decoded token or null if invalid/missing.
+ * Verify a Firebase ID token using the Firebase Auth REST API.
+ * No service account key required — uses the public Web API key.
  */
 export async function verifyIdToken(req: NextRequest): Promise<AuthResult | null> {
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) return null;
 
   const idToken = authHeader.slice(7);
+  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+
+  if (!apiKey) {
+    console.error("[Auth] NEXT_PUBLIC_FIREBASE_API_KEY not set");
+    return null;
+  }
+
   try {
-    const decoded = await getAuth(getAdminApp()).verifyIdToken(idToken);
-    return { uid: decoded.uid, email: decoded.email };
+    const res = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+        next: { revalidate: 0 },
+      }
+    );
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const user = data?.users?.[0];
+    if (!user) return null;
+
+    return { uid: user.localId, email: user.email };
   } catch {
     return null;
   }
 }
 
 /**
- * Get a 401 error response for unauthenticated requests.
+ * Standard 401 response for unauthenticated requests.
  */
 export function unauthorizedResponse(): Response {
   return new Response(
