@@ -32,7 +32,7 @@ function getGreeting(prenom?: string) {
 }
 
 export default function VoyancePage() {
-  const { profile, isHydrated } = useUserProfile();
+  const { profile, isHydrated, addReading } = useUserProfile();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
@@ -106,6 +106,16 @@ export default function VoyancePage() {
         const chunk = decoder.decode(value, { stream: true });
         full += chunk;
         setMessages([...newMessages, { role: "assistant", content: full }]);
+      }
+
+      // Save first exchange to journal
+      if (profile && userMessageCount === 1 && full && !full.includes("voilées en ce moment")) {
+        addReading({
+          type: "voyance",
+          title: `Voyance — "${text.trim().slice(0, 60)}${text.trim().length > 60 ? "…" : ""}"`,
+          content: full,
+          meta: { question: text.trim() },
+        });
       }
     } catch {
       setMessages([

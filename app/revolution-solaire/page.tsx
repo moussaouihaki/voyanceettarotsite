@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { authFetch } from "@/lib/api-client";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import { getSunSign } from "@/lib/astrology";
 import ReadingResult from "@/components/ReadingResult";
 import { Star, Sparkles, ArrowRight, User } from "lucide-react";
@@ -35,9 +35,18 @@ function getRSYear(dateNaissance: string): { rsDate: string; year: number } | nu
 // ── Page ─────────────────────────────────────────────────────────
 
 export default function RevolutionSolairePage() {
-  const { profile, addReading } = useUserProfile();
+  const { profile, addReading, isHydrated } = useUserProfile();
   const [reading, setReading] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+
+  // ── Hydration guard ──
+  if (!isHydrated) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <div className="w-10 h-10 rounded-full border-2 border-[rgba(212,175,111,0.2)] border-t-[#d4af6f] animate-spin" />
+      </div>
+    );
+  }
 
   // ── Profile guard ──
   if (!profile || !profile.dateNaissance) {
@@ -57,6 +66,20 @@ export default function RevolutionSolairePage() {
           <User size={14} />
           <span>Compléter mon profil</span>
         </Link>
+      </div>
+    );
+  }
+
+  // ── Subscription gate ──
+  if (!canAccessFeature(profile.subscription, "vip")) {
+    return (
+      <div className="max-w-xl mx-auto px-6 py-20 text-center fade-in-up">
+        <div className="badge-gold mb-5">Astrologie · VIP</div>
+        <h1 className="font-serif-display text-4xl text-gradient-cream mb-4">Révolution Solaire</h1>
+        <p className="font-serif-text italic text-[#c9b88a] mb-8">
+          La Révolution Solaire est une fonctionnalité exclusive réservée aux membres <strong className="text-[#d4af6f]">VIP</strong>.
+        </p>
+        <Link href="/tarifs" className="btn-gold">Découvrir l&apos;abonnement VIP</Link>
       </div>
     );
   }

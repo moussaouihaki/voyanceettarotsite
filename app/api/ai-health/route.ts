@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+export const maxDuration = 30;
+
 export async function GET(_req: NextRequest) {
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) {

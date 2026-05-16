@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import Stripe from "stripe";
 import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 
+export const maxDuration = 30;
+
 // Price IDs définis dans le dashboard Stripe, passés via variables d'env Vercel :
 //   STRIPE_PRICE_MYSTIQUE_MONTHLY, STRIPE_PRICE_MYSTIQUE_YEARLY
 //   STRIPE_PRICE_VIP_MONTHLY,      STRIPE_PRICE_VIP_YEARLY
