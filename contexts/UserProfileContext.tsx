@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { getFirestoreUser, saveFirestoreUser } from "@/lib/firebase-db";
+import { getFirestoreUser, saveFirestoreUser, saveReadingToFirestore, getReadingsFromFirestore, clearReadingsFromFirestore } from "@/lib/firebase-db";
 import { getSunSign } from "@/lib/astrology";
 
 export type SubscriptionTier = "decouverte" | "mystique" | "vip";
@@ -57,7 +57,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load local history on mount
+  // Load local history on mount (will be overridden by Firestore once auth resolves)
   useEffect(() => {
     try {
       const histRaw = localStorage.getItem(HISTORY_KEY);
@@ -124,6 +124,23 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
           };
           setProfile(mergedProfile);
           await saveFirestoreUser(user.uid, mergedProfile);
+        }
+
+        // Load reading history from Firestore (merges with any local-only readings)
+        const fsReadings = await getReadingsFromFirestore(user.uid, 50);
+        if (fsReadings.length > 0) {
+          // Merge: combine Firestore + localStorage readings, deduplicate by id, sort by date
+          let localHistory: ReadingHistory[] = [];
+          try {
+            const raw = localStorage.getItem(HISTORY_KEY);
+            if (raw) localHistory = JSON.parse(raw);
+          } catch {}
+          const merged = [...fsReadings, ...localHistory]
+            .reduce((acc, r) => (acc.some(x => x.id === r.id) ? acc : [...acc, r]), [] as ReadingHistory[])
+            .sort((a, b) => b.date - a.date)
+            .slice(0, 50);
+          setHistory(merged);
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(merged));
         }
       } else {
         // Not logged in — load from localStorage
@@ -194,9 +211,17 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
       date: Date.now(),
     };
     persistHistory([next, ...history]);
+    if (firebaseUser) {
+      saveReadingToFirestore(firebaseUser.uid, next).catch(console.error);
+    }
   };
 
-  const clearHistory = () => persistHistory([]);
+  const clearHistory = () => {
+    persistHistory([]);
+    if (firebaseUser) {
+      clearReadingsFromFirestore(firebaseUser.uid).catch(console.error);
+    }
+  };
 
   const sunSignName = profile?.dateNaissance ? getSunSign(profile.dateNaissance).name : null;
 

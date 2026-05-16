@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp, collection, addDoc, getDocs, deleteDoc, query, orderBy, limit } from "firebase/firestore";
 import { db } from "./firebase";
 import type { UserProfile } from "@/contexts/UserProfileContext";
 
@@ -34,6 +34,48 @@ export async function updateFirestoreSubscription(uid: string, tier: string): Pr
     });
   } catch (e) {
     console.error("[Firestore] updateSubscription error", e);
+  }
+}
+
+// ─── Reading history (subcollection: users/{uid}/readings) ──────────────────
+
+export interface FirestoreReading {
+  id: string;
+  type: string;
+  title: string;
+  date: number;
+  content: string;
+  meta?: Record<string, unknown>;
+}
+
+export async function saveReadingToFirestore(uid: string, reading: FirestoreReading): Promise<void> {
+  try {
+    await addDoc(collection(db, "users", uid, "readings"), reading);
+  } catch (e) {
+    console.error("[Firestore] saveReading error", e);
+  }
+}
+
+export async function getReadingsFromFirestore(uid: string, max = 50): Promise<FirestoreReading[]> {
+  try {
+    const q = query(
+      collection(db, "users", uid, "readings"),
+      orderBy("date", "desc"),
+      limit(max)
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => d.data() as FirestoreReading);
+  } catch {
+    return [];
+  }
+}
+
+export async function clearReadingsFromFirestore(uid: string): Promise<void> {
+  try {
+    const snap = await getDocs(collection(db, "users", uid, "readings"));
+    await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+  } catch (e) {
+    console.error("[Firestore] clearReadings error", e);
   }
 }
 
