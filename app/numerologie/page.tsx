@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { calculerProfil, NUMBER_MEANINGS, type NumerologyProfile } from "@/lib/numerology";
@@ -36,7 +37,7 @@ export default function NumerologiePage() {
     setIsStreaming(true);
     setReading("");
     try {
-      const res = await fetch("/api/numerologie", {
+      const res = await authFetch("/api/numerologie", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prenom, nom, dateNaissance, profile: numProfile }),

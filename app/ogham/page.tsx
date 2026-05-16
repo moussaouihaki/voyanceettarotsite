@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState } from "react";
 import Link from "next/link";
 import { OGHAM_STAVES, OGHAM_SPREADS, drawOgham, type OghamSpread, type OghamStave } from "@/lib/ogham";
@@ -68,7 +69,7 @@ export default function OghamPage() {
       meaning: s.meaning,
     }));
     try {
-      const res = await fetch("/api/ogham", {
+      const res = await authFetch("/api/ogham", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ staves: staveData, question, spreadName: selectedSpread.name, profile }),

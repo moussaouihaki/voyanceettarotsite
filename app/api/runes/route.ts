@@ -1,3 +1,4 @@
+import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
@@ -13,6 +14,9 @@ interface RuneData {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await verifyIdToken(req);
+  if (!auth) return unauthorizedResponse();
+
   const { runes, question, spreadName } = await req.json() as {
     runes: RuneData[];
     question: string;

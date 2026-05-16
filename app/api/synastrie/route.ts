@@ -1,3 +1,4 @@
+import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
@@ -5,6 +6,9 @@ import { FORMATTING_RULES } from "@/lib/gemini";
 const SYSTEM = `Tu es Madame Céleste, astrologue maîtresse de la synastrie et de la compatibilité amoureuse. Tu lis les thèmes astraux comparés avec poésie, profondeur et bienveillance, en français. Tu révèles les dynamiques karmiques, les forces et les défis d'une union.` + FORMATTING_RULES;
 
 export async function POST(req: NextRequest) {
+  const auth = await verifyIdToken(req);
+  if (!auth) return unauthorizedResponse();
+
   const body = await req.json() as {
     person1: { prenom: string; signe: string; dateNaissance: string };
     person2: { prenom: string; signe: string; dateNaissance: string };

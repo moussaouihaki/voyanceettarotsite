@@ -1,3 +1,4 @@
+import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -11,6 +12,9 @@ interface ProfileData {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await verifyIdToken(req);
+  if (!auth) return unauthorizedResponse();
+
   const { sign, period = "jour", profile } = await req.json() as {
     sign: string;
     period?: string;

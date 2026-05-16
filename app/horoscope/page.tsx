@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState } from "react";
 import { ZODIAC_SIGNS } from "@/lib/astrology";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -19,7 +20,7 @@ export default function HoroscopePage() {
     setReading("");
     setIsStreaming(true);
     try {
-      const res = await fetch("/api/horoscope", {
+      const res = await authFetch("/api/horoscope", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sign: signName, period, profile }),

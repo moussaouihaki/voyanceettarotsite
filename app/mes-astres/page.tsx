@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
@@ -275,7 +276,7 @@ function MesAstresContent({
     setLoading(true);
     setter("");
     try {
-      const res = await fetch("/api/mes-astres", {
+      const res = await authFetch("/api/mes-astres", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -568,7 +569,7 @@ function MesAstresContent({
 
         {/* Carte du ciel */}
         {activeTab === "carte" && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <h3 className="font-serif-display text-xl text-gradient-gold">Carte du ciel natale</h3>
 
             {!hasTime && (
@@ -577,25 +578,105 @@ function MesAstresContent({
               </p>
             )}
 
-            <div className="w-full max-w-lg mx-auto">
+            <div className="w-full max-w-[500px] mx-auto">
               <NatalChartSVG chart={chart} aspects={aspects} hasTime={hasTime} />
             </div>
 
-            {/* Legend */}
+            {/* Aspect legend */}
             <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center text-xs" style={{ color: "#c9b88a" }}>
               {([
-                ["conjonction","rgba(255,255,255,0.55)"],
-                ["sextile","rgba(80,200,80,0.55)"],
-                ["carré","rgba(244,80,80,0.55)"],
-                ["trigone","rgba(60,160,244,0.55)"],
-                ["opposition","rgba(255,165,40,0.55)"],
+                ["Conjonction","rgba(255,255,255,0.55)"],
+                ["Sextile","rgba(60,200,80,0.60)"],
+                ["Carré","rgba(240,70,70,0.60)"],
+                ["Trigone","rgba(50,150,240,0.65)"],
+                ["Opposition","rgba(255,160,30,0.60)"],
               ] as [string,string][]).map(([type, color]) => (
                 <span key={type} className="flex items-center gap-1.5">
-                  <span style={{ display: "inline-block", width: 22, height: 2, background: color, borderRadius: 1 }} />
-                  <span className="capitalize tracking-wide">{type}</span>
+                  <span style={{ display:"inline-block", width:22, height:2, background:color, borderRadius:1 }} />
+                  <span className="tracking-wide">{type}</span>
                 </span>
               ))}
             </div>
+
+            {/* Planet interpretation table */}
+            <div className="space-y-3">
+              <h4 className="font-serif-display text-base text-[#d4af6f] border-b border-[rgba(212,175,111,0.15)] pb-2">
+                Positions planétaires
+              </h4>
+              <div className="grid gap-2">
+                {PLANET_ORDER.map((name) => {
+                  const pos = chart.planets[name];
+                  if (!pos) return null;
+                  const symbol = { Soleil:"☉",Lune:"☽",Mercure:"☿",Vénus:"♀",Mars:"♂",Jupiter:"♃",Saturne:"♄",Uranus:"♅",Neptune:"♆",Pluton:"♇" }[name];
+                  const color = { Soleil:"#FFD060",Lune:"#C8D4E0",Mercure:"#88CCEE",Vénus:"#FFB8C8",Mars:"#FF7070",Jupiter:"#CC99DD",Saturne:"#D4AF6F",Uranus:"#66DDFF",Neptune:"#7799CC",Pluton:"#AA77CC" }[name] ?? "#d4af6f";
+                  const deg = Math.floor(pos.degreeInSign);
+                  const min = Math.floor((pos.degreeInSign % 1) * 60);
+                  const house = hasTime ? chart.houses.findIndex((h, i) => {
+                    const next = chart.houses[(i + 1) % 12];
+                    const lon = pos.longitude;
+                    const cur = h.longitude;
+                    const nxt = next.longitude;
+                    if (cur <= nxt) return lon >= cur && lon < nxt;
+                    return lon >= cur || lon < nxt;
+                  }) + 1 : 0;
+                  return (
+                    <div key={name} className="flex items-center gap-3 px-3 py-2 rounded-sm" style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(212,175,111,0.08)" }}>
+                      <span className="text-base w-6 text-center flex-shrink-0" style={{ color }}>{symbol}</span>
+                      <span className="text-sm font-medium w-20 flex-shrink-0" style={{ color:"#f5ecd9" }}>{name}</span>
+                      <span className="text-sm flex-1" style={{ color:"#c9b88a" }}>
+                        {deg}°{String(min).padStart(2,"0")}′ {pos.sign}
+                      </span>
+                      {hasTime && house > 0 && (
+                        <span className="text-xs px-2 py-0.5 rounded-sm flex-shrink-0" style={{ background:"rgba(212,175,111,0.08)", color:"#8a6f3a" }}>
+                          Maison {["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"][house-1]}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+                {hasTime && (
+                  <>
+                    <div className="flex items-center gap-3 px-3 py-2 rounded-sm" style={{ background:"rgba(212,175,111,0.05)", border:"1px solid rgba(212,175,111,0.15)" }}>
+                      <span className="text-base w-6 text-center flex-shrink-0" style={{ color:"#d4af6f" }}>↑</span>
+                      <span className="text-sm font-medium w-20 flex-shrink-0" style={{ color:"#f5ecd9" }}>Ascendant</span>
+                      <span className="text-sm flex-1" style={{ color:"#c9b88a" }}>
+                        {Math.floor(chart.ascendant.degreeInSign)}°{String(Math.floor((chart.ascendant.degreeInSign % 1) * 60)).padStart(2,"0")}′ {chart.ascendant.sign}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 px-3 py-2 rounded-sm" style={{ background:"rgba(245,236,217,0.03)", border:"1px solid rgba(212,175,111,0.10)" }}>
+                      <span className="text-base w-6 text-center flex-shrink-0" style={{ color:"rgba(245,236,217,0.8)" }}>⊕</span>
+                      <span className="text-sm font-medium w-20 flex-shrink-0" style={{ color:"#f5ecd9" }}>Milieu du Ciel</span>
+                      <span className="text-sm flex-1" style={{ color:"#c9b88a" }}>
+                        {Math.floor(chart.midheaven.degreeInSign)}°{String(Math.floor((chart.midheaven.degreeInSign % 1) * 60)).padStart(2,"0")}′ {chart.midheaven.sign}
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Top aspects */}
+            {aspects.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-serif-display text-base text-[#d4af6f] border-b border-[rgba(212,175,111,0.15)] pb-2">
+                  Aspects principaux
+                </h4>
+                <div className="grid gap-2">
+                  {aspects.slice(0, 8).map((asp, i) => {
+                    const aspColor: Record<string,string> = { conjonction:"rgba(255,255,255,0.55)", sextile:"rgba(60,200,80,0.70)", carré:"rgba(240,70,70,0.70)", trigone:"rgba(50,150,240,0.75)", opposition:"rgba(255,160,30,0.70)" };
+                    const col = aspColor[asp.type] ?? "#c9b88a";
+                    return (
+                      <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-sm text-sm" style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(212,175,111,0.08)" }}>
+                        <span className="w-24 flex-shrink-0" style={{ color:"#f5ecd9" }}>{asp.planet1}</span>
+                        <span className="font-medium text-center flex-1 capitalize" style={{ color: col }}>{asp.type}</span>
+                        <span className="w-24 text-right flex-shrink-0" style={{ color:"#f5ecd9" }}>{asp.planet2}</span>
+                        <span className="text-xs w-12 text-right flex-shrink-0" style={{ color:"#8a6f3a" }}>{asp.exactness.toFixed(1)}°</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

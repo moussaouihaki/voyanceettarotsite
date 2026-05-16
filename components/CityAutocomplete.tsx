@@ -139,7 +139,8 @@ export default function CityAutocomplete({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           required={required}
-          className={`${inputClass} pl-9 pr-9 w-full`}
+          className={`${inputClass} w-full`}
+          style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
           autoComplete="off"
         />
         {isLoading && (

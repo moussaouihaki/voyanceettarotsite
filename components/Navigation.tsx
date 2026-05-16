@@ -142,11 +142,13 @@ export default function Navigation() {
         </div>
 
         {/* Profile + CTA */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1.5 flex-shrink-0 min-w-0">
           <NotificationBell />
+
           <Link
             href="/mon-profil"
-            className={`hidden md:flex items-center gap-2 px-3 py-2 text-[12px] tracking-wider transition-all ${
+            title="Mon profil"
+            className={`hidden md:flex items-center gap-1.5 px-2 py-2 text-[12px] tracking-wider transition-all ${
               pathname === "/mon-profil" ? "text-[#e8c875]" : "text-[#c9b88a] hover:text-[#f5ecd9]"
             }`}
           >
@@ -155,18 +157,18 @@ export default function Navigation() {
             ) : (
               <User size={14} />
             )}
-            <span className="hidden xl:inline">{profile?.prenom || "Mon Profil"}</span>
+            <span className="hidden xl:inline max-w-[80px] truncate">{profile?.prenom || "Profil"}</span>
           </Link>
 
           {!profile?.subscription || profile.subscription === "decouverte" ? (
-            <Link href="/tarifs" className="btn-gold !text-[11px] !py-2.5 !px-5 hidden sm:inline-flex">
-              <Crown size={13} />
-              <span>Devenir membre</span>
+            <Link href="/tarifs" className="btn-gold !text-[11px] !py-2 !px-3 hidden lg:inline-flex">
+              <Crown size={12} />
+              <span>Membre</span>
             </Link>
           ) : (
-            <span className="badge-premium hidden sm:inline-flex items-center gap-1">
+            <span className="badge-premium hidden lg:inline-flex items-center gap-1">
               <Crown size={11} />
-              {profile.subscription === "vip" ? "VIP" : "Mystique"}
+              {profile.subscription === "vip" ? "VIP" : "✦"}
             </span>
           )}
 
@@ -174,14 +176,15 @@ export default function Navigation() {
             <button
               onClick={() => logout()}
               title="Se déconnecter"
-              className="hidden md:flex items-center gap-1.5 px-3 py-2 text-[11px] tracking-wider text-[#8a6f3a] hover:text-[#c9b88a] transition-colors"
+              aria-label="Se déconnecter"
+              className="hidden md:flex items-center justify-center w-8 h-8 text-[#8a6f3a] hover:text-[#c9b88a] transition-colors rounded-sm hover:bg-[rgba(212,175,111,0.08)]"
             >
               <LogOut size={13} />
             </button>
           ) : (
             <Link
               href="/connexion"
-              className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 text-[11px] tracking-[0.15em] uppercase font-medium border border-[rgba(212,175,111,0.45)] text-[#d4af6f] hover:bg-[rgba(212,175,111,0.1)] hover:border-[rgba(212,175,111,0.7)] transition-all rounded-sm"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 text-[11px] tracking-[0.1em] uppercase font-medium border border-[rgba(212,175,111,0.45)] text-[#d4af6f] hover:bg-[rgba(212,175,111,0.1)] hover:border-[rgba(212,175,111,0.7)] transition-all rounded-sm whitespace-nowrap"
             >
               <LogIn size={13} />
               <span>Connexion</span>
@@ -189,7 +192,12 @@ export default function Navigation() {
           )}
 
           {/* Mobile menu toggle */}
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden text-[#c9b88a] p-2">
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="lg:hidden text-[#c9b88a] p-2"
+            aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={mobileOpen}
+          >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>

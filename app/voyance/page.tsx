@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 
 import { useState, useRef, useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -76,7 +77,7 @@ export default function VoyancePage() {
     setMessages([...newMessages, assistantMessage]);
 
     try {
-      const res = await fetch("/api/voyance", {
+      const res = await authFetch("/api/voyance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState, useCallback } from "react";
 import Link from "next/link";
 import { drawCards, TarotCard } from "@/lib/tarot-cards";
@@ -111,7 +112,7 @@ export default function TiragePage() {
       reversed: c.reversed, keywords: c.keywords,
     }));
     try {
-      const res = await fetch("/api/lecture", {
+      const res = await authFetch("/api/lecture", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

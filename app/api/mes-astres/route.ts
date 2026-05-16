@@ -1,3 +1,4 @@
+import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
@@ -87,6 +88,9 @@ function buildPrompt(section: MesAstresRequest["section"], profile: MesAstresReq
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await verifyIdToken(req);
+  if (!auth) return unauthorizedResponse();
+
   const body = await req.json() as MesAstresRequest;
   const { section, profile, natalChart } = body;
 

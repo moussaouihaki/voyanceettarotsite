@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ZODIAC_SIGNS, getSunSign, PLANETS } from "@/lib/astrology";
 import { computeNatalChart, computeAspects, formatPosition, NatalChart, BirthData } from "@/lib/astro-engine";
@@ -107,7 +108,7 @@ export default function ProfilAstralPage() {
       .map(([name, pos]) => `${name}: ${formatPosition(pos)}`)
       .join(", ");
     try {
-      const res = await fetch("/api/profil-astral", {
+      const res = await authFetch("/api/profil-astral", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

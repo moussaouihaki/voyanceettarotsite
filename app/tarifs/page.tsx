@@ -327,11 +327,11 @@ export default function TarifsPage() {
         <div className="text-center mt-16 pt-12 border-t border-[rgba(212,175,111,0.15)]">
           <MessageCircle size={32} className="text-[#d4af6f] mx-auto mb-4" />
           <h3 className="font-serif-display text-2xl text-cream mb-3">Une autre question ?</h3>
-          <p className="text-[#c9b88a] mb-6">Notre support mystique est à votre écoute</p>
-          <Link href="/voyance" className="btn-outline-gold">
+          <p className="text-[#c9b88a] mb-6">Notre équipe est disponible pour vous accompagner</p>
+          <a href="mailto:info@celestevoyance.com" className="btn-outline-gold">
             <MessageCircle size={14} />
-            <span>Contacter Madame Céleste</span>
-          </Link>
+            <span>Nous contacter par email</span>
+          </a>
         </div>
       </div>
     </div>

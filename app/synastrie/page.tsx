@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 
 import { useState } from "react";
 import Link from "next/link";
@@ -54,7 +55,7 @@ export default function SynastriePage() {
     setStep("result");
 
     try {
-      const res = await fetch("/api/synastrie", {
+      const res = await authFetch("/api/synastrie", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState } from "react";
 import Link from "next/link";
 import { HEXAGRAMS, consultIChing, type Hexagram } from "@/lib/iching";
@@ -61,7 +62,7 @@ export default function IChingPage() {
     setIsStreaming(true);
     setReading("");
     try {
-      const res = await fetch("/api/iching", {
+      const res = await authFetch("/api/iching", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hexagram, question, profile }),

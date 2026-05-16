@@ -1,3 +1,4 @@
+import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MADAME_CELESTE_SYSTEM } from "@/lib/gemini";
@@ -10,6 +11,9 @@ interface ProfileData {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await verifyIdToken(req);
+  if (!auth) return unauthorizedResponse();
+
   const { card, intention, profile } = await req.json() as {
     card: { name: string; suit: string; reversed: boolean; keywords: string[]; upright: string; meaningReversed: string };
     intention?: string;

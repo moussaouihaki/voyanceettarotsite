@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ALL_CARDS } from "@/lib/tarot-cards";
@@ -47,7 +48,7 @@ export default function CarteDuJourPage() {
     setIsStreaming(true);
     setReading("");
     try {
-      const res = await fetch("/api/carte-du-jour", {
+      const res = await authFetch("/api/carte-du-jour", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ card, intention, profile }),

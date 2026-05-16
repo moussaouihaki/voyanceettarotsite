@@ -18,6 +18,13 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/logo-celeste.svg", type: "image/svg+xml" },
+    ],
+    apple: "/logo-celeste.svg",
+    shortcut: "/logo-celeste.svg",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

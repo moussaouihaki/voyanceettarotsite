@@ -1,3 +1,4 @@
+import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MADAME_CELESTE_SYSTEM } from "@/lib/gemini";
@@ -29,6 +30,9 @@ interface ConjointInfo {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await verifyIdToken(req);
+  if (!auth) return unauthorizedResponse();
+
   let body: { cards?: CardData[]; question?: string; spreadType?: string; spreadName?: string; profile?: UserProfile; conjoint?: ConjointInfo };
   try {
     body = await req.json();

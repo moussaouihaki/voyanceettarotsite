@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { AURA_COLORS, drawAuraColors, getAuraByBirthdate, type AuraColor } from "@/lib/aura";
@@ -113,7 +114,7 @@ export default function AuraPage() {
     }));
 
     try {
-      const res = await fetch("/api/aura", {
+      const res = await authFetch("/api/aura", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ colors: colorData, question, profile }),

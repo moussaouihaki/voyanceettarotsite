@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState } from "react";
 import Link from "next/link";
 import { ELDER_FUTHARK, RUNE_SPREADS, drawRunes, type RuneSpread } from "@/lib/runes";
@@ -59,7 +60,7 @@ export default function RunesPage() {
       reversed: r.isReversed, keywords: r.keywords,
     }));
     try {
-      const res = await fetch("/api/runes", {
+      const res = await authFetch("/api/runes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ runes: runeData, question, spreadName: selectedSpread.name, profile }),

@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState } from "react";
 import Link from "next/link";
 import { CRYSTALS, CRYSTAL_SPREADS, drawCrystals, type CrystalSpread, type Crystal } from "@/lib/lithotherapie";
@@ -137,7 +138,7 @@ export default function LithotherapiePage() {
       properties: c.properties,
     }));
     try {
-      const res = await fetch("/api/lithotherapie", {
+      const res = await authFetch("/api/lithotherapie", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ crystals: crystalData, question, spreadName: selectedSpread.name, profile }),

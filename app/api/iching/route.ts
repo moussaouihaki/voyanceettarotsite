@@ -1,3 +1,4 @@
+import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
@@ -5,6 +6,9 @@ import { FORMATTING_RULES } from "@/lib/gemini";
 const SYSTEM = `Tu es Madame Céleste, maîtresse du Yi-King (I-Ching) et des arts divinatoires de l'Orient ancien. Tu interprètes les hexagrammes avec sagesse taoïste, poésie et profondeur en français. Tu puises dans la philosophie du Tao et du Yin-Yang pour révéler les dynamiques de chaque situation.` + FORMATTING_RULES;
 
 export async function POST(req: NextRequest) {
+  const auth = await verifyIdToken(req);
+  if (!auth) return unauthorizedResponse();
+
   const { hexagram, question } = await req.json() as {
     hexagram: { number: number; name: string; nameZh: string; meaning: string; judgment: string; keywords: string[] };
     question: string;

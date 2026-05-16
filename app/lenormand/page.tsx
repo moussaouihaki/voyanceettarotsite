@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState } from "react";
 import Link from "next/link";
 import { LENORMAND_DECK, LENORMAND_SPREADS, drawLenormand, type LenormandSpread, type LenormandCard } from "@/lib/lenormand";
@@ -76,7 +77,7 @@ export default function LenormandPage() {
       upright: c.upright,
     }));
     try {
-      const res = await fetch("/api/lenormand", {
+      const res = await authFetch("/api/lenormand", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cards: cardData, question, spreadName: selectedSpread.name, profile }),

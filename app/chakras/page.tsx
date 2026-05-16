@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from '@/lib/api-client';
 import { useState } from "react";
 import Link from "next/link";
 import { CHAKRAS } from "@/lib/chakras";
@@ -78,7 +79,7 @@ export default function ChakrasPage() {
     setIsStreaming(true);
     setReading("");
     try {
-      const res = await fetch("/api/chakras", {
+      const res = await authFetch("/api/chakras", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scores, profile }),
