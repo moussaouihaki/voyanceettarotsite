@@ -400,7 +400,7 @@ function MesAstresContent({
                 borderBottom: isActive ? "2px solid #d4af6f" : "2px solid transparent",
                 background: "transparent",
                 cursor: "pointer",
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-inter), sans-serif",
                 letterSpacing: "0.08em",
               }}
             >
@@ -438,7 +438,7 @@ function MesAstresContent({
                       <th
                         key={h}
                         className="px-4 py-3 text-left text-xs tracking-widest uppercase"
-                        style={{ color: "#8a6f3a", fontFamily: "'Inter', sans-serif" }}
+                        style={{ color: "#8a6f3a", fontFamily: "var(--font-inter), sans-serif" }}
                       >
                         {h}
                       </th>
@@ -520,7 +520,7 @@ function MesAstresContent({
                         <th
                           key={h}
                           className="px-4 py-3 text-left text-xs tracking-widest uppercase"
-                          style={{ color: "#8a6f3a", fontFamily: "'Inter', sans-serif" }}
+                          style={{ color: "#8a6f3a", fontFamily: "var(--font-inter), sans-serif" }}
                         >
                           {h}
                         </th>

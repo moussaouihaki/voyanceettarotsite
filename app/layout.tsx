@@ -1,9 +1,33 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { Playfair_Display, Cormorant_Garamond, Inter } from "next/font/google";
 import Navigation from "@/components/Navigation";
 import StarBackground from "@/components/StarBackground";
 import Footer from "@/components/Footer";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "900"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://celestevoyance.com";
 
@@ -62,7 +86,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className="h-full">
+    <html lang="fr" className={`h-full ${playfair.variable} ${cormorant.variable} ${inter.variable}`}>
       <body className="min-h-full flex flex-col relative">
         <UserProfileProvider>
           <StarBackground />
