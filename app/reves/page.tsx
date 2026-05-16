@@ -31,13 +31,15 @@ export default function RevesPage() {
   const [dream, setDream] = useState("");
   const [recurring, setRecurring] = useState(false);
   const [emotions, setEmotions] = useState("");
+  const [dreamType, setDreamType] = useState("Rêve ordinaire");
   const [reading, setReading] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
   const isLoggedIn = !!firebaseUser;
-  const dreamTooShort = dream.trim().length < 10;
+  const MIN_CHARS = 50;
+  const dreamTooShort = dream.trim().length < MIN_CHARS;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +56,7 @@ export default function RevesPage() {
         body: JSON.stringify({
           dream: dream.trim(),
           recurring,
+          dreamType,
           emotions: emotions.trim() || undefined,
           profile: profile
             ? { prenom: profile.prenom || undefined, dateNaissance: profile.dateNaissance || undefined }
@@ -91,7 +94,7 @@ export default function RevesPage() {
         type: "reves",
         title: "Analyse de Rêve",
         content: full,
-        meta: { dreamExcerpt: dream.slice(0, 100), recurring, emotions: emotions.trim() || undefined },
+        meta: { dreamExcerpt: dream.slice(0, 100), recurring, dreamType, emotions: emotions.trim() || undefined },
       });
     } catch {
       setError("La connexion aux étoiles a été interrompue. Veuillez réessayer.");
@@ -106,6 +109,7 @@ export default function RevesPage() {
     setReading("");
     setDream("");
     setRecurring(false);
+    setDreamType("Rêve ordinaire");
     setEmotions("");
     setError(null);
   };
@@ -178,17 +182,20 @@ export default function RevesPage() {
                 <textarea
                   value={dream}
                   onChange={(e) => setDream(e.target.value)}
-                  placeholder="Décrivez votre rêve en détail... Les personnages, les lieux, les symboles, les événements, les sensations physiques..."
+                  placeholder="Décrivez votre rêve en détail... Les personnages, les lieux, les symboles, les événements, les sensations physiques, l'atmosphère..."
                   rows={8}
                   className="luxe-input resize-none"
-                  minLength={10}
+                  minLength={MIN_CHARS}
                 />
                 <div
                   className={`text-right text-[11px] mt-1.5 transition-colors ${
                     dreamTooShort ? "text-[rgba(201,184,138,0.4)]" : "text-[#d4af6f]"
                   }`}
                 >
-                  {dream.length} caractères {dreamTooShort && dream.length > 0 && "(minimum 10)"}
+                  {dream.length} caractères
+                  {dreamTooShort && dream.length > 0 && (
+                    <span> — encore {MIN_CHARS - dream.trim().length} caractères minimum requis</span>
+                  )}
                 </div>
               </div>
             </div>
@@ -215,6 +222,23 @@ export default function RevesPage() {
                   </p>
                 </div>
               </label>
+            </div>
+
+            {/* Dream type select */}
+            <div className="mb-6">
+              <label className="luxe-label">Type de rêve</label>
+              <select
+                value={dreamType}
+                onChange={(e) => setDreamType(e.target.value)}
+                className="luxe-input"
+              >
+                <option value="Rêve ordinaire">Rêve ordinaire</option>
+                <option value="Cauchemar">Cauchemar</option>
+                <option value="Rêve récurrent">Rêve récurrent</option>
+                <option value="Rêve lucide">Rêve lucide</option>
+                <option value="Rêve prophétique (pressentiment)">Rêve prophétique (pressentiment)</option>
+                <option value="Rêve de visite (défunt ou être cher)">Rêve de visite (défunt ou être cher)</option>
+              </select>
             </div>
 
             {/* Emotions textarea */}
@@ -312,7 +336,10 @@ export default function RevesPage() {
                 &rdquo;
               </p>
               <div className="flex gap-2 mt-2 flex-wrap">
-                {recurring && (
+                {dreamType !== "Rêve ordinaire" && (
+                  <span className="badge-gold text-[10px]">{dreamType}</span>
+                )}
+                {recurring && dreamType === "Rêve ordinaire" && (
                   <span className="badge-gold text-[10px]">Rêve récurrent</span>
                 )}
                 {emotions.trim() && (

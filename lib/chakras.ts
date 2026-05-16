@@ -11,6 +11,7 @@ export interface Chakra {
   keywords: string[];
   balanced: string;
   imbalanced: string;
+  overactive: string;
   crystals: string[];
   essentialOils: string[];
   affirmation: string;
@@ -26,6 +27,7 @@ export const CHAKRAS: Chakra[] = [
     keywords: ["sécurité", "ancrage", "survie", "instinct", "stabilité", "matière"],
     balanced: "Sentiment de sécurité, ancrage dans le présent, stabilité financière et émotionnelle.",
     imbalanced: "Peurs existentielles, problèmes financiers, manque d'ancrage, douleurs lombaires.",
+    overactive: "Tendance à la rigidité, matérialisme excessif, résistance au changement, comportements compulsifs liés à la sécurité et à l'accumulation.",
     crystals: ["Obsidienne", "Hématite", "Grenat", "Tourmaline noire", "Jaspe rouge"],
     essentialOils: ["Cèdre", "Vétiver", "Patchouli", "Santal"],
     affirmation: "Je suis ancré(e), en sécurité et pleinement présent(e) dans mon corps.",
@@ -45,6 +47,7 @@ export const CHAKRAS: Chakra[] = [
     keywords: ["créativité", "sexualité", "émotions", "plaisir", "flux", "relations"],
     balanced: "Créativité épanouie, émotions fluides, plaisir sain, relations équilibrées.",
     imbalanced: "Blocages créatifs, frigidité ou hypersexualité, émotions réprimées, problèmes reproductifs.",
+    overactive: "Émotions envahissantes, dépendances affectives et sensorielles, excès de plaisir, attachement excessif, hypersensibilité émotionnelle.",
     crystals: ["Cornaline", "Pierre de lune", "Pierre de soleil", "Calcite orange"],
     essentialOils: ["Ylang-ylang", "Orange douce", "Jasmin", "Néroli"],
     affirmation: "Je célèbre ma créativité et mes émotions avec fluidité et joie.",
@@ -64,6 +67,7 @@ export const CHAKRAS: Chakra[] = [
     keywords: ["pouvoir personnel", "volonté", "confiance", "identité", "transformation", "courage"],
     balanced: "Confiance en soi, fort sens de l'identité, volonté claire, prise de décision facile.",
     imbalanced: "Manque de confiance, besoin de contrôle excessif, problèmes digestifs, peur du jugement.",
+    overactive: "Besoin de contrôle et de domination, perfectionnisme oppressant, colère fréquente, jugement sévère des autres, arrogance et ego exacerbé.",
     crystals: ["Citrine", "Oeil de tigre", "Ambre", "Pyrite", "Calcite jaune"],
     essentialOils: ["Romarin", "Genévrier", "Citron", "Bergamote"],
     affirmation: "Je suis confiant(e) dans mon pouvoir et j'agis avec courage et authenticité.",
@@ -83,6 +87,7 @@ export const CHAKRAS: Chakra[] = [
     keywords: ["amour", "compassion", "guérison", "connexion", "pardon", "équilibre"],
     balanced: "Amour inconditionnel, compassion naturelle, capacité à pardonner, relations épanouies.",
     imbalanced: "Rancœur, peur de l'amour, manque d'empathie, problèmes cardiaques et respiratoires.",
+    overactive: "Sacrifice de soi excessif, codépendance, jalousie possessive, perte de ses propres limites au profit des autres, martyrologie affective.",
     crystals: ["Quartz rose", "Aventurine verte", "Rhodonite", "Malachite", "Amazonite"],
     essentialOils: ["Rose", "Géranium", "Bergamote", "Néroli", "Ylang-ylang"],
     affirmation: "Je m'ouvre à l'amour inconditionnel et je pardonne avec compassion.",
@@ -102,6 +107,7 @@ export const CHAKRAS: Chakra[] = [
     keywords: ["communication", "expression", "vérité", "authenticité", "écoute", "créativité verbale"],
     balanced: "Expression authentique, communication claire, capacité d'écoute profonde, créativité verbale.",
     imbalanced: "Difficulté à s'exprimer, mensonges fréquents, problèmes de gorge et de thyroïde.",
+    overactive: "Bavardage excessif et compulsif, incapacité à écouter les autres, jugements verbaux blessants, tendance à interrompre et à monopoliser la parole.",
     crystals: ["Turquoise", "Aigue-marine", "Lapis-lazuli", "Sodalite", "Célestite"],
     essentialOils: ["Menthe poivrée", "Eucalyptus", "Tea tree", "Camomille"],
     affirmation: "J'exprime ma vérité avec clarté, confiance et bienveillance.",
@@ -121,6 +127,7 @@ export const CHAKRAS: Chakra[] = [
     keywords: ["intuition", "clairvoyance", "sagesse", "perception", "imagination", "conscience"],
     balanced: "Intuition aiguisée, clarté mentale, capacité de visualisation, discernement sage.",
     imbalanced: "Maux de tête, cauchemars, difficulté à faire confiance à son intuition, pensée rigide.",
+    overactive: "Pensées obsessionnelles et ruminations, visions confuses ou envahissantes, déconnexion du monde réel, anxiété mentale intense et difficulté à s'ancrer.",
     crystals: ["Améthyste", "Sodalite", "Labradorite", "Fluorite", "Azurite"],
     essentialOils: ["Lavande", "Clary sage", "Frankincense", "Romarin"],
     affirmation: "Je fais confiance à mon intuition et à ma sagesse intérieure.",
@@ -140,6 +147,7 @@ export const CHAKRAS: Chakra[] = [
     keywords: ["connexion divine", "illumination", "unité", "sagesse universelle", "transcendance", "éveil"],
     balanced: "Connexion profonde au divin, sentiment d'unité, sérénité, accès à la sagesse universelle.",
     imbalanced: "Sentiment d'isolement spirituel, dogmatisme, dépression existentielle, déconnexion.",
+    overactive: "Déconnexion du corps et du monde matériel, spiritualité utilisée comme fuite du réel, arrogance spirituelle, négligence des besoins physiques et concrets.",
     crystals: ["Cristal de roche", "Améthyste blanche", "Séléite", "Charoïte", "Pierre de lune"],
     essentialOils: ["Frankincense", "Myrrhe", "Lotus", "Santal blanc"],
     affirmation: "Je suis connecté(e) à la sagesse divine et je fais confiance au plan de l'univers.",

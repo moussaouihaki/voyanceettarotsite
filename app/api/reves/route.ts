@@ -7,6 +7,7 @@ export const maxDuration = 60;
 interface RevesRequest {
   dream: string;
   recurring?: boolean;
+  dreamType?: string;
   emotions?: string;
   profile?: { prenom?: string; dateNaissance?: string };
 }
@@ -15,11 +16,11 @@ export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
 
-  const { dream, recurring, emotions, profile } = await req.json() as RevesRequest;
+  const { dream, recurring, dreamType, emotions, profile } = await req.json() as RevesRequest;
 
-  if (!dream || dream.trim().length < 10) {
+  if (!dream || dream.trim().length < 50) {
     return new Response(
-      JSON.stringify({ error: "La description du rêve doit contenir au moins 10 caractères." }),
+      JSON.stringify({ error: "La description du rêve doit contenir au moins 50 caractères." }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
@@ -47,6 +48,10 @@ RÈGLES ABSOLUES DE FORMAT — à respecter sans la moindre exception :
     ? `Date de naissance : ${dateNaissance}.`
     : "";
 
+  const dreamTypePhrase = dreamType && dreamType !== "Rêve ordinaire"
+    ? `Ce rêve est de type : ${dreamType}. Adapte ton interprétation à ce type spécifique — un ${dreamType.toLowerCase()} porte des caractéristiques et des messages particuliers que tu dois impérativement intégrer dans ta lecture.`
+    : "";
+
   const recurrentPhrase = recurring
     ? `Ce rêve est RÉCURRENT — insiste particulièrement sur l'importance de ce message répété et sur ce que l'inconscient cherche à communiquer avec insistance. Un rêve récurrent est un appel urgent de l'âme.`
     : "";
@@ -63,6 +68,7 @@ ${datePhrase}
 Rêve à interpréter :
 "${dream.trim()}"
 
+${dreamTypePhrase}
 ${recurrentPhrase}
 ${emotionsPhrase}
 

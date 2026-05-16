@@ -32,83 +32,108 @@ function processIntention(intention: string): {
 
 // ── SVG Generation ────────────────────────────────────────────────────────────
 
-interface LetterPlacement {
-  letter: string;
-  x: number;
-  y: number;
-  rotation: number;
-  fontSize: number;
-  opacity: number;
+// Maps a letter A–Z to an angle in degrees (A=0°, Z≈345°)
+function letterToAngle(letter: string): number {
+  const index = letter.charCodeAt(0) - 65; // A=0, B=1 ... Z=25
+  return (index / 26) * 360;
 }
 
-function computePlacements(letters: string[]): LetterPlacement[] {
-  const maxLetters = letters.slice(0, 8);
-  return maxLetters.map((letter, index) => {
-    const rotation = (index * 137.5) % 360;
-    const fontSize = 60 + ((index * 31) % 100); // 60–160
-    const opacity = 0.7 + (index % 4) * 0.075; // 0.7–0.925
-    // Slight offset from center based on index for variation
-    const offsetAngle = (index * 60) * (Math.PI / 180);
-    const offsetDist = (index % 3) * 8;
-    const x = 100 + Math.cos(offsetAngle) * offsetDist;
-    const y = 100 + Math.sin(offsetAngle) * offsetDist;
-    return { letter, x, y, rotation, fontSize, opacity };
-  });
+// Maps a letter to a point on the circle (cx=150, cy=150, r=100)
+function letterToPoint(letter: string): { x: number; y: number } {
+  const angleDeg = letterToAngle(letter) - 90; // start from top
+  const angleRad = (angleDeg * Math.PI) / 180;
+  return {
+    x: 150 + 100 * Math.cos(angleRad),
+    y: 150 + 100 * Math.sin(angleRad),
+  };
 }
 
 function buildSVG(letters: string[], bgColor = "#1a1208"): string {
+  const viewSize = 300;
+  const cx = 150;
+  const cy = 150;
+  const r = 100;
+
   if (letters.length === 0) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-  <rect width="200" height="200" fill="${bgColor}"/>
-  <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(212,175,111,0.15)" stroke-width="1"/>
-  <circle cx="100" cy="100" r="3" fill="rgba(212,175,111,0.3)"/>
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${viewSize}" height="${viewSize}" viewBox="0 0 ${viewSize} ${viewSize}">
+  <rect width="${viewSize}" height="${viewSize}" fill="${bgColor}"/>
+  <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(212,175,111,0.15)" stroke-width="1"/>
+  <circle cx="${cx}" cy="${cy}" r="3" fill="rgba(212,175,111,0.3)"/>
 </svg>`;
   }
 
-  const placements = computePlacements(letters);
+  // Deduplicate letters to avoid redundant points but preserve order
+  const uniqueLetters = letters.filter((l, i) => letters.indexOf(l) === i);
+  const points = uniqueLetters.map(letterToPoint);
 
-  // Build connecting lines between consecutive letter centers
-  const lines = placements.length > 1
-    ? placements.map((p, i) => {
+  // Build connecting line segments between consecutive consonant points
+  const lineSegments = points.length > 1
+    ? points.map((p, i) => {
         if (i === 0) return "";
-        const prev = placements[i - 1];
-        return `<line x1="${prev.x.toFixed(1)}" y1="${prev.y.toFixed(1)}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" stroke="rgba(212,175,111,0.25)" stroke-width="0.8"/>`;
+        const prev = points[i - 1];
+        return `<line x1="${prev.x.toFixed(2)}" y1="${prev.y.toFixed(2)}" x2="${p.x.toFixed(2)}" y2="${p.y.toFixed(2)}" stroke="rgba(212,175,111,0.7)" stroke-width="1.2" stroke-linecap="round"/>`;
       }).join("\n  ")
     : "";
 
-  // Also draw line from last to first for a closed shape
-  const closingLine = placements.length > 2
-    ? `<line x1="${placements[placements.length - 1].x.toFixed(1)}" y1="${placements[placements.length - 1].y.toFixed(1)}" x2="${placements[0].x.toFixed(1)}" y2="${placements[0].y.toFixed(1)}" stroke="rgba(212,175,111,0.15)" stroke-width="0.5"/>`
+  // Close the shape: connect last point back to first
+  const closingLine = points.length > 2
+    ? `<line x1="${points[points.length - 1].x.toFixed(2)}" y1="${points[points.length - 1].y.toFixed(2)}" x2="${points[0].x.toFixed(2)}" y2="${points[0].y.toFixed(2)}" stroke="rgba(212,175,111,0.35)" stroke-width="0.7" stroke-dasharray="3,3"/>`
     : "";
 
-  const letterElements = placements.map(p =>
-    `<text
-    x="${p.x.toFixed(1)}"
-    y="${p.y.toFixed(1)}"
-    text-anchor="middle"
-    dominant-baseline="central"
-    font-family="Georgia, serif"
-    font-size="${p.fontSize}"
-    fill="#d4af6f"
-    opacity="${p.opacity.toFixed(2)}"
-    transform="rotate(${p.rotation.toFixed(1)}, ${p.x.toFixed(1)}, ${p.y.toFixed(1)})"
-  >${p.letter}</text>`
+  // Small dot at each used letter position
+  const dots = points.map((p) =>
+    `<circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="3" fill="#d4af6f" opacity="0.85"/>`
   ).join("\n  ");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  // Tiny letter labels near each point (offset outward)
+  const labels = uniqueLetters.map((l, i) => {
+    const p = points[i];
+    const angleDeg = letterToAngle(l) - 90;
+    const angleRad = (angleDeg * Math.PI) / 180;
+    const labelDist = r + 14;
+    const lx = (cx + labelDist * Math.cos(angleRad)).toFixed(2);
+    const ly = (cy + labelDist * Math.sin(angleRad) + 4).toFixed(2);
+    return `<text x="${lx}" y="${ly}" text-anchor="middle" font-family="Georgia, serif" font-size="8" fill="rgba(212,175,111,0.55)">${l}</text>`;
+  }).join("\n  ");
+
+  // Start/end marker: a small circle at the first point
+  const startMarker = points.length > 0
+    ? `<circle cx="${points[0].x.toFixed(2)}" cy="${points[0].y.toFixed(2)}" r="5" fill="none" stroke="rgba(212,175,111,0.9)" stroke-width="1.2"/>`
+    : "";
+
+  // Tick marks for all 26 letter positions
+  const tickMarks = Array.from({ length: 26 }, (_, i) => {
+    const a = ((i / 26) * 360 - 90) * (Math.PI / 180);
+    const x1 = (cx + (r - 4) * Math.cos(a)).toFixed(2);
+    const y1 = (cy + (r - 4) * Math.sin(a)).toFixed(2);
+    const x2 = (cx + (r + 2) * Math.cos(a)).toFixed(2);
+    const y2 = (cy + (r + 2) * Math.sin(a)).toFixed(2);
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(212,175,111,0.12)" stroke-width="0.5"/>`;
+  }).join("\n  ");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${viewSize}" height="${viewSize}" viewBox="0 0 ${viewSize} ${viewSize}">
   <defs>
     <radialGradient id="bg" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#231a08"/>
       <stop offset="100%" stop-color="${bgColor}"/>
     </radialGradient>
   </defs>
-  <rect width="200" height="200" fill="url(#bg)"/>
-  <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(212,175,111,0.1)" stroke-width="0.5"/>
-  <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(212,175,111,0.06)" stroke-width="0.3"/>
-  ${lines}
+  <rect width="${viewSize}" height="${viewSize}" fill="url(#bg)"/>
+  <!-- Outer decorative circles -->
+  <circle cx="${cx}" cy="${cy}" r="${r + 22}" fill="none" stroke="rgba(212,175,111,0.08)" stroke-width="0.5"/>
+  <!-- Main letter-circle -->
+  <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(212,175,111,0.2)" stroke-width="0.8"/>
+  <!-- Letter position tick marks -->
+  ${tickMarks}
+  <!-- Sigil lines -->
+  ${lineSegments}
   ${closingLine}
-  ${letterElements}
-  <circle cx="100" cy="100" r="2.5" fill="rgba(212,175,111,0.6)"/>
+  <!-- Letter dots and labels -->
+  ${dots}
+  ${labels}
+  ${startMarker}
+  <!-- Center point -->
+  <circle cx="${cx}" cy="${cy}" r="2" fill="rgba(212,175,111,0.5)"/>
 </svg>`;
 }
 

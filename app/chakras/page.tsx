@@ -261,7 +261,18 @@ export default function ChakrasPage() {
             {CHAKRAS.map((c) => {
               const Icon = CHAKRA_ICONS[c.id] || Sparkle;
               const score = scores[c.id] ?? 0;
-              const status = score >= 75 ? "Équilibré" : score >= 50 ? "En éveil" : score >= 25 ? "Affaibli" : "Bloqué";
+              const status =
+                score > 85 ? "Sur-actif" :
+                score >= 75 ? "Équilibré" :
+                score >= 50 ? "En éveil" :
+                score >= 25 ? "Affaibli" :
+                "Bloqué";
+              const statusColor =
+                score > 85 ? "#9333ea" :
+                score >= 75 ? "#d4af6f" :
+                score >= 50 ? "#c9b88a" :
+                score >= 25 ? "#8a6f3a" :
+                "#6b5d3e";
               return (
                 <div key={c.id}>
                   <div className="flex items-center justify-between mb-2">
@@ -271,7 +282,7 @@ export default function ChakrasPage() {
                       <span className="text-[10px] tracking-widest italic text-[#8a6f3a]">{c.mantra}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px] tracking-widest uppercase text-[#c9b88a]">{status}</span>
+                      <span className="text-[10px] tracking-widest uppercase" style={{ color: statusColor }}>{status}</span>
                       <span className="font-serif-display text-lg" style={{ color: c.color }}>{score}%</span>
                     </div>
                   </div>
@@ -283,9 +294,12 @@ export default function ChakrasPage() {
             })}
           </div>
 
+          {/* Desequilibrium cards: blocked/weakened AND overactive */}
           <div className="grid md:grid-cols-2 gap-5 mb-8">
-            {CHAKRAS.filter(c => (scores[c.id] ?? 0) < 50).map((c) => {
+            {CHAKRAS.filter(c => (scores[c.id] ?? 0) < 50 || (scores[c.id] ?? 0) > 85).map((c) => {
               const Icon = CHAKRA_ICONS[c.id] || Sparkle;
+              const score = scores[c.id] ?? 0;
+              const isOveractive = score > 85;
               return (
                 <div key={c.id} className="luxe-card rounded-sm p-6">
                   <div className="flex items-center gap-3 mb-4">
@@ -294,10 +308,19 @@ export default function ChakrasPage() {
                     </div>
                     <div>
                       <div className="font-serif-display text-lg" style={{ color: c.color }}>{c.name}</div>
-                      <div className="text-[10px] tracking-wider italic text-[#8a6f3a]">{c.nameSanskrit}</div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-[10px] tracking-wider italic text-[#8a6f3a]">{c.nameSanskrit}</div>
+                        {isOveractive && (
+                          <span className="text-[9px] tracking-[0.2em] uppercase px-1.5 py-0.5 rounded-sm border border-purple-500/30 text-purple-400 bg-purple-900/20">
+                            Sur-actif
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-[13px] text-[#c9b88a] mb-4 leading-relaxed">{c.imbalanced}</p>
+                  <p className="text-[13px] text-[#c9b88a] mb-4 leading-relaxed">
+                    {isOveractive ? c.overactive : c.imbalanced}
+                  </p>
                   <div className="mb-3">
                     <div className="text-[10px] tracking-[0.2em] uppercase text-[#d4af6f] mb-1.5 flex items-center gap-1.5">
                       <Gem size={10} /> Cristaux recommandés
