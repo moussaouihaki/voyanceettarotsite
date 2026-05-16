@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp, collection, addDoc, getDocs, deleteDoc, query, orderBy, limit } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp, collection, addDoc, getDocs, deleteDoc, query, orderBy, limit, where } from "firebase/firestore";
 import { db } from "./firebase";
 import type { UserProfile } from "@/contexts/UserProfileContext";
 
@@ -56,7 +56,7 @@ export async function saveReadingToFirestore(uid: string, reading: FirestoreRead
   }
 }
 
-export async function getReadingsFromFirestore(uid: string, max = 50): Promise<FirestoreReading[]> {
+export async function getReadingsFromFirestore(uid: string, max = 500): Promise<FirestoreReading[]> {
   try {
     const q = query(
       collection(db, "users", uid, "readings"),
@@ -67,6 +67,16 @@ export async function getReadingsFromFirestore(uid: string, max = 50): Promise<F
     return snap.docs.map(d => d.data() as FirestoreReading);
   } catch {
     return [];
+  }
+}
+
+export async function deleteReadingFromFirestore(uid: string, readingId: string): Promise<void> {
+  try {
+    const q = query(collection(db, "users", uid, "readings"), where("id", "==", readingId));
+    const snap = await getDocs(q);
+    await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+  } catch (e) {
+    console.error("[Firestore] deleteReading error", e);
   }
 }
 

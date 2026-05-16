@@ -60,7 +60,7 @@ const NAV_GROUPS = [
 ];
 
 const SECONDARY_LINKS = [
-  { href: "/blog", label: "Journal" },
+  { href: "/journal", label: "Mon Journal" },
   { href: "/tarifs", label: "Tarifs" },
 ];
 

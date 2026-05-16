@@ -32,7 +32,7 @@ const FOOTER_LINKS = {
     { href: "/tarifs", label: "Abonnements" },
     { href: "/mon-profil", label: "Mon Profil" },
     { href: "/support", label: "Support" },
-    { href: "/blog", label: "Journal Mystique" },
+    { href: "/journal", label: "Mon Journal" },
     { href: "/mentions-legales", label: "Mentions légales" },
     { href: "/cgv", label: "Conditions générales" },
   ],
@@ -86,7 +86,7 @@ export default function Footer() {
             <span>© {new Date().getFullYear()} Madame Céleste — Tous droits réservés</span>
           </div>
           <div className="flex items-center gap-5 tracking-wider">
-            <Link href="/blog" className="hover:text-[#d4af6f] transition-colors">Journal</Link>
+            <Link href="/journal" className="hover:text-[#d4af6f] transition-colors">Mon Journal</Link>
             <span>·</span>
             <Link href="/tarifs" className="hover:text-[#d4af6f] transition-colors">Abonnements</Link>
             <span>·</span>

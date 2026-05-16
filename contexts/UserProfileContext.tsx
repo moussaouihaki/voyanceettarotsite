@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { getFirestoreUser, saveFirestoreUser, saveReadingToFirestore, getReadingsFromFirestore, clearReadingsFromFirestore } from "@/lib/firebase-db";
+import { getFirestoreUser, saveFirestoreUser, saveReadingToFirestore, getReadingsFromFirestore, clearReadingsFromFirestore, deleteReadingFromFirestore } from "@/lib/firebase-db";
 import { getSunSign } from "@/lib/astrology";
 
 export type SubscriptionTier = "decouverte" | "mystique" | "vip";
@@ -43,6 +43,7 @@ interface UserProfileContextType {
   logout: () => Promise<void>;
   addReading: (r: Omit<ReadingHistory, "id" | "date">) => void;
   updateReadingNotes: (id: string, notes: string) => void;
+  deleteReading: (id: string) => void;
   clearHistory: () => void;
   isHydrated: boolean;
   sunSignName: string | null;
@@ -140,7 +141,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
           const merged = [...fsReadings, ...localHistory]
             .reduce((acc, r) => (acc.some(x => x.id === r.id) ? acc : [...acc, r]), [] as ReadingHistory[])
             .sort((a, b) => b.date - a.date)
-            .slice(0, 50);
+            .slice(0, 500);
           setHistory(merged);
           localStorage.setItem(HISTORY_KEY, JSON.stringify(merged));
         }
@@ -180,7 +181,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
   };
 
   const persistHistory = (h: ReadingHistory[]) => {
-    const trimmed = h.slice(0, 50);
+    const trimmed = h.slice(0, 500);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
     setHistory(trimmed);
   };
@@ -230,11 +231,19 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
     persistHistory(updated);
   };
 
+  const deleteReading: UserProfileContextType["deleteReading"] = (id) => {
+    const updated = history.filter((r) => r.id !== id);
+    persistHistory(updated);
+    if (firebaseUser) {
+      deleteReadingFromFirestore(firebaseUser.uid, id).catch(console.error);
+    }
+  };
+
   const sunSignName = profile?.dateNaissance ? getSunSign(profile.dateNaissance).name : null;
 
   return (
     <UserProfileContext.Provider
-      value={{ profile, history, firebaseUser, saveProfile, updateSubscription, clearProfile, logout, addReading, updateReadingNotes, clearHistory, isHydrated, sunSignName }}
+      value={{ profile, history, firebaseUser, saveProfile, updateSubscription, clearProfile, logout, addReading, updateReadingNotes, deleteReading, clearHistory, isHydrated, sunSignName }}
     >
       {children}
     </UserProfileContext.Provider>
