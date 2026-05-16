@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { ChevronDown, User, Crown, Menu, X, LogIn, LogOut } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
@@ -32,7 +32,7 @@ const NAV_GROUPS = [
       { href: "/runes", label: "Runes Nordiques", desc: "Elder Futhark · 24 runes", premium: true },
       { href: "/i-ching", label: "I-Ching", desc: "Livre des Transformations", premium: true },
       { href: "/lenormand", label: "Oracle Lenormand", desc: "36 cartes · Tradition française", premium: true },
-      { href: "/ogham", label: "Ogham Celtique", desc: "25 staves · Tradition druidique", premium: true },
+      { href: "/ogham", label: "Ogham Celtique", desc: "25 feadha · Tradition druidique", premium: true },
     ],
   },
   {
@@ -57,12 +57,48 @@ export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { profile, firebaseUser, logout } = useUserProfile();
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Close on ESC + focus trap in mobile menu
+  const closeMobile = useCallback(() => {
+    setMobileOpen(false);
+    hamburgerRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { closeMobile(); return; }
+      if (e.key !== "Tab") return;
+      const menu = mobileMenuRef.current;
+      if (!menu) return;
+      const focusable = Array.from(
+        menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+      ).filter(el => !el.closest("[hidden]"));
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    // Move focus into menu on open
+    const firstFocusable = mobileMenuRef.current?.querySelector<HTMLElement>("a, button");
+    firstFocusable?.focus();
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileOpen, closeMobile]);
 
   return (
     <nav
@@ -193,10 +229,12 @@ export default function Navigation() {
 
           {/* Mobile menu toggle */}
           <button
+            ref={hamburgerRef}
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden text-[#c9b88a] p-2"
+            className="lg:hidden text-[#c9b88a] p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
             aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -205,9 +243,16 @@ export default function Navigation() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-[rgba(212,175,111,0.15)] bg-[#07040d]/98 backdrop-blur-xl">
+        <div
+          id="mobile-menu"
+          ref={mobileMenuRef}
+          className="lg:hidden border-t border-[rgba(212,175,111,0.15)] bg-[#07040d]/98 backdrop-blur-xl"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu de navigation"
+        >
           <div className="px-6 py-4 space-y-1 max-h-[80vh] overflow-y-auto scroll-custom">
-            <Link href="/mon-profil" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-3 py-3 text-[#f5ecd9] border-b border-[rgba(212,175,111,0.1)]">
+            <Link href="/mon-profil" onClick={closeMobile} className="flex items-center gap-2 px-3 py-3.5 min-h-[44px] text-[#f5ecd9] border-b border-[rgba(212,175,111,0.1)]">
               <User size={15} />
               <span className="font-serif-display">{profile?.prenom ? `Bonjour, ${profile.prenom}` : "Mon profil"}</span>
             </Link>
@@ -218,34 +263,35 @@ export default function Navigation() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={`block px-3 py-2 text-[14px] font-serif-display ${pathname === item.href ? "text-[#e8c875]" : "text-[#c9b88a]"}`}
+                    onClick={closeMobile}
+                    className={`flex items-center gap-2 px-3 min-h-[44px] py-3 text-[14px] font-serif-display ${pathname === item.href ? "text-[#e8c875]" : "text-[#c9b88a]"}`}
                   >
                     {item.label}
+                    {"premium" in item && item.premium && <Crown size={10} className="text-[#d4af6f]" />}
                   </Link>
                 ))}
               </div>
             ))}
             <div className="border-t border-[rgba(212,175,111,0.1)] pt-3 mt-2">
               {SECONDARY_LINKS.map((link) => (
-                <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="block px-3 py-2 text-[14px] font-serif-display text-[#c9b88a]">
+                <Link key={link.href} href={link.href} onClick={closeMobile} className="flex items-center px-3 min-h-[44px] py-3 text-[14px] font-serif-display text-[#c9b88a]">
                   {link.label}
                 </Link>
               ))}
-              <Link href="/tarifs" onClick={() => setMobileOpen(false)} className="btn-gold !w-full !text-[11px] !py-3 mt-3">
+              <Link href="/tarifs" onClick={closeMobile} className="btn-gold !w-full !text-[11px] !py-3 !min-h-[44px] mt-3">
                 <Crown size={13} />
                 <span>Devenir membre</span>
               </Link>
               {firebaseUser ? (
                 <button
-                  onClick={() => { logout(); setMobileOpen(false); }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 mt-2 border border-[rgba(212,175,111,0.2)] rounded-sm text-[#8a6f3a] text-[11px] tracking-widest uppercase hover:text-[#c9b88a] transition-colors"
+                  onClick={() => { logout(); closeMobile(); }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 min-h-[44px] mt-2 border border-[rgba(212,175,111,0.2)] rounded-sm text-[#8a6f3a] text-[11px] tracking-widest uppercase hover:text-[#c9b88a] transition-colors"
                 >
                   <LogOut size={13} />
                   <span>Se déconnecter</span>
                 </button>
               ) : (
-                <Link href="/connexion" onClick={() => setMobileOpen(false)} className="w-full flex items-center justify-center gap-2 px-4 py-3 mt-2 border border-[rgba(212,175,111,0.45)] rounded-sm text-[#d4af6f] text-[11px] tracking-widest uppercase hover:bg-[rgba(212,175,111,0.1)] transition-colors">
+                <Link href="/connexion" onClick={closeMobile} className="w-full flex items-center justify-center gap-2 px-4 py-3 min-h-[44px] mt-2 border border-[rgba(212,175,111,0.45)] rounded-sm text-[#d4af6f] text-[11px] tracking-widest uppercase hover:bg-[rgba(212,175,111,0.1)] transition-colors">
                   <LogIn size={13} />
                   <span>Connexion</span>
                 </Link>

@@ -4,6 +4,7 @@ import { Playfair_Display, Cormorant_Garamond, Inter } from "next/font/google";
 import Navigation from "@/components/Navigation";
 import StarBackground from "@/components/StarBackground";
 import Footer from "@/components/Footer";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 
 const playfair = Playfair_Display({
@@ -91,7 +92,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <UserProfileProvider>
           <StarBackground />
           <Navigation />
-          <main className="flex-1 relative z-10">{children}</main>
+          <main className="flex-1 relative z-10">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </main>
           <Footer />
         </UserProfileProvider>
       </body>
