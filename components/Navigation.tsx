@@ -33,6 +33,8 @@ const NAV_GROUPS = [
       { href: "/i-ching", label: "I-Ching", desc: "Livre des Transformations", premium: true },
       { href: "/lenormand", label: "Oracle Lenormand", desc: "36 cartes · Tradition française", premium: true },
       { href: "/ogham", label: "Ogham Celtique", desc: "25 feadha · Tradition druidique", premium: true },
+      { href: "/belline", label: "Oracle de Belline", desc: "53 cartes · Planètes & Destins", premium: true },
+      { href: "/cartomancie", label: "Cartomancie", desc: "Jeu de 32 cartes · Tradition populaire" },
     ],
   },
   {
@@ -42,6 +44,7 @@ const NAV_GROUPS = [
       { href: "/numerologie", label: "Numérologie", desc: "Profil numérologique" },
       { href: "/lithotherapie", label: "Lithothérapie", desc: "30 cristaux · Guérison vibratoire", premium: true },
       { href: "/aura", label: "Lecture d'Aura", desc: "Couleurs vibratoires · Énergie subtile", premium: true },
+      { href: "/autel", label: "Autel Virtuel", desc: "Intentions · Bougies · Rituels" },
     ],
   },
   {
@@ -49,6 +52,9 @@ const NAV_GROUPS = [
     items: [
       { href: "/chiromancie", label: "Chiromancie", desc: "Lignes de la main · Analyse photo", premium: true },
       { href: "/reves", label: "Analyse des Rêves", desc: "Oniromancie · Symbolisme jungien" },
+      { href: "/sigil", label: "Générateur de Sigils", desc: "Magie du chaos · Intention → Symbole" },
+      { href: "/bibliomancie", label: "Bibliomancie", desc: "L'oracle des textes sacrés" },
+      { href: "/revolution-solaire", label: "Révolution Solaire", desc: "Prévision annuelle · Thème natal", premium: true },
     ],
   },
 ];

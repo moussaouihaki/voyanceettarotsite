@@ -3,8 +3,36 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MADAME_CELESTE_SYSTEM } from "@/lib/gemini";
 import { getSunSign } from "@/lib/astrology";
+import { computeNatalChart, ZODIAC_NAMES } from "@/lib/astro-engine";
 
 export const maxDuration = 60;
+
+function getTodayPlanetaryContext(): string {
+  try {
+    const today = new Date();
+    const chart = computeNatalChart({
+      date: today.toISOString().split('T')[0],
+      time: "12:00",
+      latitude: 48.8566,
+      longitude: 2.3522, // Paris
+    });
+    const planets = chart.planets;
+    const lines: string[] = [];
+    const PLANET_FR: Record<string, string> = {
+      "Soleil": "Soleil", "Lune": "Lune", "Mercure": "Mercure",
+      "Vénus": "Vénus", "Mars": "Mars", "Jupiter": "Jupiter", "Saturne": "Saturne"
+    };
+    for (const [name, pos] of Object.entries(planets)) {
+      if (PLANET_FR[name]) {
+        const sign = ZODIAC_NAMES[Math.floor(pos.longitude / 30) % 12];
+        lines.push(`${PLANET_FR[name]} en ${sign}`);
+      }
+    }
+    return lines.slice(0, 7).join(", ");
+  } catch {
+    return "";
+  }
+}
 
 interface CardData {
   name: string;
@@ -81,6 +109,8 @@ export async function POST(req: NextRequest) {
     conjointContext = `\n\nInformations sur le/la partenaire : ${conjoint.prenom}, né(e) le ${conjoint.dateNaissance}${conjoint.heureNaissance ? ` à ${conjoint.heureNaissance}` : ""}${conjoint.villeNaissance ? ` à ${conjoint.villeNaissance}` : ""}${sunDesc}. Intègre une analyse de compatibilité entre ${profile?.prenom || "le/la consultant(e)"} et ${conjoint.prenom} dans ta lecture.`;
   }
 
+  const transitsContext = getTodayPlanetaryContext();
+
   const userPrompt = `${MADAME_CELESTE_SYSTEM}
 
 Tirage consulté : ${spreadName || "Tirage de Tarot"}
@@ -90,6 +120,7 @@ Cartes tirées :
 ${cardsList}
 
 ${question ? `Question du consultant : « ${question} »` : "Lecture générale (pas de question spécifique)."}
+${transitsContext ? `\nTransits planétaires du jour : ${transitsContext}. Si pertinent, fais le lien entre ces influences célestes actuelles et les cartes tirées pour une lecture encore plus précise.` : ""}
 
 Donne une lecture complète, poétique et profonde. Pour chaque carte, explique sa signification dans sa position et son interaction avec les autres cartes. Termine par une synthèse globale, un message d'espoir et un conseil pratique actionnable. Environ 600-800 mots.`;
 

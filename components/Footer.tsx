@@ -15,12 +15,18 @@ const FOOTER_LINKS = {
   "Traditions": [
     { href: "/runes", label: "Runes Nordiques" },
     { href: "/i-ching", label: "I-Ching" },
-    { href: "/chakras", label: "Chakras" },
-    { href: "/numerologie", label: "Numérologie" },
+    { href: "/lenormand", label: "Oracle Lenormand" },
+    { href: "/belline", label: "Oracle de Belline" },
+    { href: "/cartomancie", label: "Cartomancie 32 cartes" },
+    { href: "/ogham", label: "Ogham Celtique" },
   ],
-  "Vision IA": [
+  "Vision IA & Rituels": [
     { href: "/chiromancie", label: "Chiromancie" },
     { href: "/reves", label: "Analyse des Rêves" },
+    { href: "/sigil", label: "Générateur de Sigils" },
+    { href: "/bibliomancie", label: "Bibliomancie" },
+    { href: "/autel", label: "Autel Virtuel" },
+    { href: "/revolution-solaire", label: "Révolution Solaire" },
   ],
   "Le Sanctuaire": [
     { href: "/tarifs", label: "Abonnements" },
