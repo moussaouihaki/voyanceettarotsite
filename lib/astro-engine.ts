@@ -334,9 +334,9 @@ export interface Aspect {
 
 const ASPECT_TYPES = [
   { angle: 0,   type: "conjonction" as const, orb: 8 },
-  { angle: 60,  type: "sextile" as const, orb: 4 },
+  { angle: 60,  type: "sextile" as const, orb: 6 },
   { angle: 90,  type: "carré" as const, orb: 6 },
-  { angle: 120, type: "trigone" as const, orb: 6 },
+  { angle: 120, type: "trigone" as const, orb: 8 },
   { angle: 180, type: "opposition" as const, orb: 8 },
   { angle: 150, type: "quinconce" as const, orb: 3 },
 ];

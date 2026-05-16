@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!stripeKey || !webhookSecret) {
-    return new Response("Stripe non configuré", { status: 200 });
+    return new Response("Stripe non configuré", { status: 500 });
   }
 
   const body = await req.text();

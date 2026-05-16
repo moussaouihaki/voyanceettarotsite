@@ -91,8 +91,8 @@ export const OGHAM_STAVES: OghamStave[] = [
   },
   {
     id: "straif", number: 14, letter: "ᚎ", name: "Straif", tree: "Épine noire", element: "Terre",
-    keywords: ["destin", "fatalité", "magie noire", "inévitabilité"],
-    meaning: "L'Épine noire, arbre du destin inexorable, marque les carrefours où les chemins se croisent sans retour. Sa magie puissante révèle les forces qui dépassent la volonté humaine.",
+    keywords: ["contrainte du destin", "force irrésistible", "carrefour", "inévitabilité"],
+    meaning: "L'Épine noire, arbre du destin inexorable, marque les carrefours où les chemins se croisent sans retour. Sa puissance révèle les forces qui dépassent la volonté humaine et imposent une direction.",
     upright: "Acceptez ce qui est inévitable ; certaines forces du destin doivent être traversées avec humilité.",
   },
   {
@@ -156,9 +156,9 @@ export const OGHAM_STAVES: OghamStave[] = [
     upright: "Une récompense inattendue vous attend derrière un obstacle apparent ; persévérez.",
   },
   {
-    id: "emhancholl", number: 25, letter: "ᚙ", name: "Emhancholl", tree: "Pin gemellé", element: "Feu",
+    id: "emhancholl", number: 25, letter: "ᚙ", name: "Emhancholl", tree: "Tremble", element: "Feu",
     keywords: ["synthèse", "totalité", "accomplissement", "clôture-du-cycle"],
-    meaning: "Le Pin gemellé, dernier stave et gardien de la totalité, clôture le cercle de la sagesse oghamique. Il incarne l'accomplissement du grand cycle et l'union des contraires dans la plénitude.",
+    meaning: "Le Tremble frémissant, dernier fid et gardien de la totalité, clôture le cercle de la sagesse oghamique. Il incarne l'accomplissement du grand cycle et l'union des contraires dans la plénitude.",
     upright: "Un cycle important s'achève ; célébrez ce que vous avez accompli et préparez-vous au prochain cercle.",
   },
 ];
@@ -174,7 +174,7 @@ export interface OghamSpread {
 export const OGHAM_SPREADS: OghamSpread[] = [
   {
     id: "fid-unique",
-    name: "Le Stave du Druide",
+    name: "Le Fid du Druide",
     count: 1,
     positions: ["Guidance du moment"],
     description: "Un seul fid oghamique pour une guidance directe de la sagesse druidique.",

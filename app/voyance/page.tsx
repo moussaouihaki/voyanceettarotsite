@@ -86,6 +86,14 @@ export default function VoyancePage() {
         }),
       });
 
+      if (res.status === 401) {
+        setMessages([
+          ...newMessages,
+          { role: "assistant", content: "Pour continuer à parler avec Madame Céleste, veuillez créer un compte gratuit ou vous connecter. 🔮" },
+        ]);
+        setIsStreaming(false);
+        return;
+      }
       if (!res.ok || !res.body) throw new Error("Erreur");
 
       const reader = res.body.getReader();

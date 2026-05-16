@@ -64,7 +64,7 @@ export const LENORMAND_DECK: LenormandCard[] = [
     combined: "Embellit et positivise les cartes voisines ; annonce cadeaux, compliments ou moments de joie.",
   },
   {
-    id: "faux", number: 10, name: "La Faux", symbol: "⚔️",
+    id: "faux", number: 10, name: "La Faux", symbol: "🌾",
     keywords: ["danger", "décision", "séparation", "récolte"],
     upright: "Une décision tranchante s'impose ou un danger soudain apparaît. La récolte arrive, mais une séparation peut en découler.",
     combined: "Coupe, termine ou sépare les énergies des cartes voisines ; décision irréversible proche.",

@@ -449,3 +449,14 @@ h1, h2, h3, h4, h5 {
   animation: shimmer-gold 6s linear infinite;
 }
 .font-cinzel { font-family: var(--font-playfair), serif; }
+
+.ai-paragraph { text-align: justify; margin-bottom: 1.1em; }
+.ai-paragraph:last-child { margin-bottom: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

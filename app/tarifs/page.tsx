@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useUserProfile, type SubscriptionTier } from "@/contexts/UserProfileContext";
+import { authFetch } from "@/lib/api-client";
 import {
   Crown,
   Check,
@@ -59,9 +60,9 @@ const PLANS = [
       { label: "Bilan complet des chakras", included: true },
       { label: "Numérologie pythagoricienne complète", included: true },
       { label: "Horoscope semaine + mois détaillés", included: true },
-      { label: "Historique de 30 jours sauvegardé", included: true },
-      { label: "Chat voyance illimité avec Madame Céleste", included: false },
-      { label: "Synastrie & compatibilité amoureuse", included: false },
+      { label: "Chat voyance illimité avec Madame Céleste", included: true },
+      { label: "Synastrie & compatibilité amoureuse", included: true },
+      { label: "Historique illimité sauvegardé", included: true },
     ],
     cta: "Devenir Mystique",
     badge: "Le plus populaire",
@@ -123,25 +124,31 @@ const FAQ = [
 export default function TarifsPage() {
   const [period, setPeriod] = useState<Period>("monthly");
   const [loading, setLoading] = useState<SubscriptionTier | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const { profile, updateSubscription } = useUserProfile();
 
   const handleSubscribe = async (tier: SubscriptionTier) => {
+    setCheckoutError(null);
+
     if (tier === "decouverte") {
+      if (profile?.subscription && profile.subscription !== "decouverte") {
+        const ok = window.confirm("Êtes-vous sûr de vouloir rétrograder vers Découverte ? Vous perdrez l'accès aux fonctionnalités premium.");
+        if (!ok) return;
+      }
       if (profile) updateSubscription("decouverte");
       window.location.href = "/mon-profil";
       return;
     }
 
     if (!profile) {
-      window.location.href = "/mon-profil";
+      window.location.href = "/connexion?redirect=/tarifs";
       return;
     }
 
     setLoading(tier);
     try {
-      const res = await fetch("/api/checkout", {
+      const res = await authFetch("/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tier, period, email: profile.email, prenom: profile.prenom }),
       });
       const data = await res.json();
@@ -150,9 +157,11 @@ export default function TarifsPage() {
       } else if (data.simulated) {
         updateSubscription(tier);
         window.location.href = `/tarifs/succes?tier=${tier}`;
+      } else {
+        setCheckoutError(data.error ?? "Erreur lors du paiement. Veuillez réessayer.");
       }
     } catch {
-      alert("Erreur lors du paiement. Veuillez réessayer.");
+      setCheckoutError("Erreur de connexion. Vérifiez votre réseau et réessayez.");
     } finally {
       setLoading(null);
     }
@@ -284,6 +293,13 @@ export default function TarifsPage() {
           );
         })}
       </div>
+
+      {/* Checkout error */}
+      {checkoutError && (
+        <div className="mb-8 max-w-lg mx-auto text-center text-sm text-red-400 bg-[rgba(220,50,50,0.08)] border border-[rgba(220,50,50,0.2)] rounded-sm px-5 py-3">
+          {checkoutError}
+        </div>
+      )}
 
       {/* Trust signals */}
       <div className="grid md:grid-cols-4 gap-6 mb-20">

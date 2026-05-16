@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import Stripe from "stripe";
+import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 
 // Price IDs définis dans le dashboard Stripe, passés via variables d'env Vercel :
 //   STRIPE_PRICE_MYSTIQUE_MONTHLY, STRIPE_PRICE_MYSTIQUE_YEARLY
@@ -16,6 +17,9 @@ const PRICE_IDS = () => ({
 });
 
 export async function POST(req: NextRequest) {
+  const authResult = await verifyIdToken(req);
+  if (!authResult) return unauthorizedResponse();
+
   const body = await req.json() as {
     tier: "mystique" | "vip";
     period: "monthly" | "yearly";
