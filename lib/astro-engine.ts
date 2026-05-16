@@ -198,7 +198,7 @@ export interface PlanetPosition {
   retrograde?: boolean;
 }
 
-function toPosition(lon: number): PlanetPosition {
+function toPosition(lon: number, retrograde?: boolean): PlanetPosition {
   const l = rev(lon);
   const signIndex = Math.floor(l / 30);
   return {
@@ -207,7 +207,40 @@ function toPosition(lon: number): PlanetPosition {
     symbol: ZODIAC_SYMBOLS[signIndex],
     signIndex,
     degreeInSign: l - signIndex * 30,
+    retrograde: retrograde ?? false,
   };
+}
+
+// ───────── 5b. Obliquité dynamique (Meeus, ch. 22) ─────────
+function getObliquity(T: number): number {
+  return 23.439291111 - 0.013004167 * T - 0.000000164 * T * T + 0.000000504 * T * T * T;
+}
+
+// ───────── 5c. Rétrogradation ─────────
+// Retourne la longitude géocentrique brute d'un corps à un JD donné.
+function getRawLongitude(name: string, jd: number): number {
+  if (name === "Soleil") return sunLongitude(jd);
+  if (name === "Lune")   return moonLongitude(jd);
+  return planetEclipticLongitude(name, jd, sunLongitude(jd));
+}
+
+function isRetrograde(name: string, jd: number): boolean {
+  // Le Soleil et la Lune ne sont jamais rétrogrades
+  if (name === "Soleil" || name === "Lune") return false;
+  const lon1 = getRawLongitude(name, jd);
+  const lon2 = getRawLongitude(name, jd + 1);
+  const diff = ((lon2 - lon1) + 360) % 360;
+  return diff > 180; // si > 180°, la planète recule
+}
+
+// ───────── 5d. Nœuds lunaires (Meeus, ch. 47) ─────────
+function getLunarNode(T: number): number {
+  return rev(125.0445479 - 1934.1362608 * T + 0.0020754 * T * T);
+}
+
+// ───────── 5e. Lilith — apogée moyen de la Lune ─────────
+function getLilith(T: number): number {
+  return rev(83.3532465 + 40.9982502 * T);
 }
 
 // ───────── 6. Greenwich Mean Sidereal Time ─────────
@@ -219,14 +252,13 @@ function gmst(jd: number): number {
 }
 
 // ───────── 7. Ascendant & Midheaven (MC) ─────────
-const OBLIQUITY = 23.4393; // approximate epoch 2000
-
 function calculateAscendant(jd: number, latitude: number, longitudeEast: number): { ascendant: number; mc: number } {
+  const T = (jd - 2451545.0) / 36525;
   // LST = GMST + longitude (positive east)
   const lst = rev(gmst(jd) + longitudeEast);
   const ramc = lst * DEG;
   const lat = latitude * DEG;
-  const obl = OBLIQUITY * DEG;
+  const obl = getObliquity(T) * DEG; // obliquité dynamique
 
   // MC = atan(tan(RAMC) / cos(obl))
   const mcRaw = Math.atan2(Math.sin(ramc), Math.cos(ramc) * Math.cos(obl));
@@ -253,6 +285,9 @@ export interface NatalChart {
   ascendant: PlanetPosition;
   midheaven: PlanetPosition;
   houses: PlanetPosition[]; // 12 cusps (Whole Sign houses = same sign as ascendant for house I)
+  northNode: PlanetPosition;
+  southNode: PlanetPosition;
+  lilith: PlanetPosition;
 }
 
 export interface BirthData {
@@ -281,17 +316,30 @@ export function computeNatalChart(birth: BirthData): NatalChart {
   const hourUT = localHour - tz;
 
   const jd = julianDay(y, m, d, hourUT);
+  const T = (jd - 2451545.0) / 36525;
 
   const sun = sunLongitude(jd);
   const moon = moonLongitude(jd);
 
   const planets: Record<string, PlanetPosition> = {
-    Soleil: toPosition(sun),
-    Lune: toPosition(moon),
+    Soleil: toPosition(sun, false),
+    Lune:   toPosition(moon, false),
   };
   for (const name of Object.keys(PLANETS_DATA)) {
-    planets[name] = toPosition(planetEclipticLongitude(name, jd, sun));
+    const lon = planetEclipticLongitude(name, jd, sun);
+    const retro = isRetrograde(name, jd);
+    planets[name] = toPosition(lon, retro);
   }
+
+  // Nœuds lunaires
+  const northNodeLon = getLunarNode(T);
+  const southNodeLon = rev(northNodeLon + 180);
+  const northNode = toPosition(northNodeLon, false);
+  const southNode = toPosition(southNodeLon, false);
+
+  // Lilith (apogée moyen de la Lune)
+  const lilithLon = getLilith(T);
+  const lilith = toPosition(lilithLon, false);
 
   let asc: PlanetPosition;
   let mc: PlanetPosition;
@@ -309,7 +357,7 @@ export function computeNatalChart(birth: BirthData): NatalChart {
     houses = [];
   }
 
-  return { jd, planets, ascendant: asc, midheaven: mc, houses };
+  return { jd, planets, ascendant: asc, midheaven: mc, houses, northNode, southNode, lilith };
 }
 
 /** Very rough timezone estimate based on longitude (only used as fallback). */
@@ -360,5 +408,49 @@ export function computeAspects(planets: Record<string, PlanetPosition>): Aspect[
       }
     }
   }
+  return aspects.sort((a, b) => a.exactness - b.exactness);
+}
+
+// ───────── 9. Transits du jour ─────────
+/** Retourne les positions planétaires actuelles (midi UTC, Paris) pour les pages horoscope/mes-astres. */
+export function computeTodayTransits(): NatalChart {
+  const today = new Date();
+  const dateStr = today.toISOString().split('T')[0];
+  return computeNatalChart({ date: dateStr, time: "12:00", latitude: 48.8566, longitude: 2.3522 });
+}
+
+// ───────── 10. Aspects de synastrie ─────────
+export interface SynastrieAspect extends Aspect {
+  // planet1 appartient à la personne 1, planet2 à la personne 2
+}
+
+/**
+ * Calcule les aspects entre les planètes de deux personnes (synastrie).
+ * Croise chaque planète de `planets1` avec chaque planète de `planets2`.
+ */
+export function computeSynastrieAspects(
+  planets1: Record<string, PlanetPosition>,
+  planets2: Record<string, PlanetPosition>
+): SynastrieAspect[] {
+  const names1 = Object.keys(planets1);
+  const names2 = Object.keys(planets2);
+  const aspects: SynastrieAspect[] = [];
+
+  for (const n1 of names1) {
+    for (const n2 of names2) {
+      const a = planets1[n1].longitude;
+      const b = planets2[n2].longitude;
+      let diff = Math.abs(a - b);
+      if (diff > 180) diff = 360 - diff;
+      for (const at of ASPECT_TYPES) {
+        const exact = Math.abs(diff - at.angle);
+        if (exact <= at.orb) {
+          aspects.push({ planet1: n1, planet2: n2, type: at.type, exactness: exact });
+          break;
+        }
+      }
+    }
+  }
+
   return aspects.sort((a, b) => a.exactness - b.exactness);
 }

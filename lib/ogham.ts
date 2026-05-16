@@ -38,7 +38,7 @@ export const OGHAM_STAVES: OghamStave[] = [
   {
     id: "nion", number: 5, letter: "ᚅ", name: "Nion", tree: "Frêne", element: "Air",
     keywords: ["connexion", "monde-des-esprits", "destin", "expansion"],
-    meaning: "Le Frêne, Yggdrasil des Celtes, relie les trois mondes — ciel, terre et sous-terre. Il ouvre les portes de la perception au-delà du voile de l'ordinaire.",
+    meaning: "Le Frêne sacré des Celtes relie les trois royaumes — le ciel, la terre et le monde souterrain, à la manière du Bile, l'arbre cosmique de la mythologie irlandaise. Il ouvre les portes de la perception au-delà du voile de l'ordinaire.",
     upright: "Ouvrez-vous aux connexions entre les plans ; votre destin se tisse à travers plusieurs dimensions.",
   },
   {
@@ -156,9 +156,9 @@ export const OGHAM_STAVES: OghamStave[] = [
     upright: "Une récompense inattendue vous attend derrière un obstacle apparent ; persévérez.",
   },
   {
-    id: "emhancholl", number: 25, letter: "ᚙ", name: "Emhancholl", tree: "Fusain", element: "Feu",
+    id: "emhancholl", number: 25, letter: "ᚙ", name: "Emhancholl", tree: "Peuplier blanc", element: "Feu",
     keywords: ["synthèse", "totalité", "accomplissement", "clôture-du-cycle"],
-    meaning: "Le Fusain, arbre des transitions et des seuils, dernier fid et gardien de la totalité, clôture le cercle de la sagesse oghamique. Il incarne l'accomplissement du grand cycle et l'union des contraires dans la plénitude.",
+    meaning: "Le Peuplier blanc, arbre des transitions et des seuils, dernier fid et gardien de la totalité, clôture le cercle de la sagesse oghamique. Il incarne l'accomplissement du grand cycle et l'union des contraires dans la plénitude.",
     upright: "Un cycle important s'achève ; célébrez ce que vous avez accompli et préparez-vous au prochain cercle.",
   },
 ];

@@ -3,7 +3,7 @@ import { authFetch } from '@/lib/api-client';
 
 import { useState, useRef, useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import { Sparkles, Send, User, MessageCircle, Crown, Lock } from "lucide-react";
+import { Sparkles, Send, User, MessageCircle, Crown, Lock, BookOpen } from "lucide-react";
 import { cleanAIText } from "@/lib/format-ai-text";
 import Link from "next/link";
 import { canUse, increment, remaining } from "@/lib/daily-limits";
@@ -36,7 +36,10 @@ export default function VoyancePage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isContemplating, setIsContemplating] = useState(false);
   const [continueAnon, setContinueAnon] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedConversation, setSavedConversation] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const tier = profile?.subscription ?? "decouverte";
@@ -65,12 +68,18 @@ export default function VoyancePage() {
   }, [messages]);
 
   const sendMessage = async (text: string) => {
-    if (!text.trim() || isStreaming || limitReached) return;
+    if (!text.trim() || isStreaming || isContemplating || limitReached) return;
 
     const userMessage: Message = { role: "user", content: text.trim() };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput("");
+
+    // Contemplation delay for immersion
+    setIsContemplating(true);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setIsContemplating(false);
+
     setIsStreaming(true);
 
     const assistantMessage: Message = { role: "assistant", content: "" };
@@ -128,6 +137,27 @@ export default function VoyancePage() {
       if (profile && tier === "decouverte") {
         increment("voyanceMessages");
       }
+    }
+  };
+
+  const saveConversation = async () => {
+    if (!profile || userMessageCount < 2 || isSaving || savedConversation) return;
+    setIsSaving(true);
+    try {
+      const fullConversation = messages
+        .filter((m) => m.content)
+        .map((m) => `${m.role === "user" ? "Vous" : "Madame Céleste"} : ${m.content}`)
+        .join("\n\n");
+      const firstQuestion = messages.find((m) => m.role === "user")?.content ?? "Voyance";
+      addReading({
+        type: "voyance",
+        title: `Conversation — "${firstQuestion.slice(0, 60)}${firstQuestion.length > 60 ? "…" : ""}"`,
+        content: fullConversation,
+        meta: { question: firstQuestion },
+      });
+      setSavedConversation(true);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -221,6 +251,16 @@ export default function VoyancePage() {
             )}
           </div>
         ))}
+        {isContemplating && (
+          <div className="flex justify-start fade-in-up">
+            <div className="w-9 h-9 rounded-full border border-[#d4af6f] bg-[rgba(212,175,111,0.08)] flex items-center justify-center mr-3 flex-shrink-0 mt-1">
+              <Sparkles size={13} className="text-[#d4af6f] animate-pulse" />
+            </div>
+            <div className="luxe-card text-[#c9b88a] rounded-sm px-5 py-4 font-serif-text text-[15px] italic">
+              Je consulte les astres...
+            </div>
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 
@@ -284,6 +324,20 @@ export default function VoyancePage() {
         </div>
       )}
 
+      {/* Save conversation button */}
+      {profile && userMessageCount >= 2 && (
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={saveConversation}
+            disabled={isSaving || savedConversation}
+            className="btn-outline-gold !text-[11px] !py-2 !px-4 flex items-center gap-1.5 disabled:opacity-50"
+          >
+            <BookOpen size={11} />
+            <span>{savedConversation ? "Conversation sauvegardée" : isSaving ? "Sauvegarde…" : "Sauvegarder cette conversation"}</span>
+          </button>
+        </div>
+      )}
+
       {/* Input */}
       <div className="flex gap-3 items-stretch">
         <input
@@ -291,13 +345,13 @@ export default function VoyancePage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage(input)}
-          placeholder={limitReached ? "Limite atteinte pour aujourd'hui..." : "Posez votre question aux astres..."}
-          disabled={isStreaming || limitReached}
+          placeholder={limitReached ? "Limite atteinte pour aujourd'hui..." : isContemplating ? "Je consulte les astres..." : "Posez votre question aux astres..."}
+          disabled={isStreaming || isContemplating || limitReached}
           className="luxe-input flex-1 disabled:opacity-50"
         />
         <button
           onClick={() => sendMessage(input)}
-          disabled={isStreaming || !input.trim() || limitReached}
+          disabled={isStreaming || isContemplating || !input.trim() || limitReached}
           className="btn-gold !px-6"
         >
           <Send size={13} />

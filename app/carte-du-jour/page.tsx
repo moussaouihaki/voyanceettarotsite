@@ -19,6 +19,7 @@ type CardOfDay = {
   keywords: string[];
   upright: string;
   meaningReversed: string;
+  affirmation?: string;
 };
 
 function getDailyCard(): CardOfDay {
@@ -199,7 +200,7 @@ export default function CarteDuJourPage() {
             <div className="luxe-card rounded-sm p-6 w-full max-w-2xl text-center">
               <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-3">Affirmation du jour</div>
               <p className="font-serif-text italic text-[#e8dcc0] text-lg leading-relaxed">
-                &ldquo;Aujourd&apos;hui, je m&apos;ouvre aux messages de {card.name} et accueille sa guidance avec gratitude.&rdquo;
+                &ldquo;{card.affirmation ?? `Aujourd'hui, je m'ouvre aux messages de ${card.name} et accueille sa guidance avec gratitude.`}&rdquo;
               </p>
             </div>
           </div>

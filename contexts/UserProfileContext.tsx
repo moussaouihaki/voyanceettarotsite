@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { getFirestoreUser, saveFirestoreUser, saveReadingToFirestore, getReadingsFromFirestore, clearReadingsFromFirestore, deleteReadingFromFirestore } from "@/lib/firebase-db";
+import { getFirestoreUser, saveFirestoreUser, saveReadingToFirestore, getReadingsFromFirestore, clearReadingsFromFirestore, deleteReadingFromFirestore, updateReadingNotesInFirestore } from "@/lib/firebase-db";
 import { getSunSign } from "@/lib/astrology";
 
 export type SubscriptionTier = "decouverte" | "mystique" | "vip";
@@ -229,6 +229,9 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
   const updateReadingNotes: UserProfileContextType["updateReadingNotes"] = (id, notes) => {
     const updated = history.map((r) => r.id === id ? { ...r, notes } : r);
     persistHistory(updated);
+    if (firebaseUser) {
+      updateReadingNotesInFirestore(firebaseUser.uid, id, notes).catch(console.error);
+    }
   };
 
   const deleteReading: UserProfileContextType["deleteReading"] = (id) => {

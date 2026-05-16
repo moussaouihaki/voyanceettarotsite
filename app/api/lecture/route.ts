@@ -38,6 +38,7 @@ interface CardData {
   name: string;
   suit: string;
   number: string;
+  element: string;
   position: string;
   reversed: boolean;
   keywords: string[];
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
   if (!apiKey) return new Response("Clé API manquante", { status: 500 });
 
   const cardsList = cards.map((c, i) =>
-    `${i + 1}. Position « ${c.position} » : ${c.name} (${c.suit}, ${c.number})${c.reversed ? " — INVERSÉE" : ""}\n   Mots-clés : ${c.keywords.join(", ")}`
+    `${i + 1}. Position « ${c.position} » : ${c.name} (${c.suit}, ${c.number}, élément : ${c.element})${c.reversed ? " — INVERSÉE" : ""}\n   Mots-clés : ${c.keywords.join(", ")}`
   ).join("\n");
 
   let personalContext = "";

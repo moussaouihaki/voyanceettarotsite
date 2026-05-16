@@ -2,65 +2,12 @@
 import { authFetch } from "@/lib/api-client";
 import { useState } from "react";
 import Link from "next/link";
-import { BELLINE_DECK, drawBelline, type BellineCard } from "@/lib/belline";
+import { BELLINE_DECK, BELLINE_SPREADS, drawBelline, type BellineCard, type BellineSpread } from "@/lib/belline";
 import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
 import DeckShuffle from "@/components/DeckShuffle";
 import GenericDeckPick from "@/components/GenericDeckPick";
 import { Sparkles, ArrowLeft, RotateCcw, Crown, Star } from "lucide-react";
-
-type BellineSpread = {
-  id: string;
-  name: string;
-  count: number;
-  positions: string[];
-  description: string;
-};
-
-const BELLINE_SPREADS: BellineSpread[] = [
-  {
-    id: "reponse",
-    name: "La Réponse",
-    count: 1,
-    positions: ["La réponse de l'Oracle"],
-    description: "Une carte pour une réponse directe et précise de l'Oracle.",
-  },
-  {
-    id: "trilogie",
-    name: "La Trilogie Planétaire",
-    count: 3,
-    positions: ["Passé", "Présent", "Futur"],
-    description: "Trois cartes pour une vision temporelle sous l'influence des astres.",
-  },
-  {
-    id: "quintessence",
-    name: "La Quintessence",
-    count: 5,
-    positions: [
-      "Votre énergie",
-      "L'environnement",
-      "Ce qui vient",
-      "L'obstacle",
-      "La résolution",
-    ],
-    description: "Cinq cartes pour une lecture approfondie de votre situation.",
-  },
-  {
-    id: "grand-oracle",
-    name: "Le Grand Oracle",
-    count: 7,
-    positions: [
-      "Situation actuelle",
-      "Influences passées",
-      "Influences futures",
-      "Vos atouts",
-      "Vos obstacles",
-      "Le conseil planétaire",
-      "Le dénouement",
-    ],
-    description: "Sept cartes pour une révélation complète des forces en jeu.",
-  },
-];
 
 const PLANET_SYMBOLS: Record<string, string> = {
   Soleil: "☉",

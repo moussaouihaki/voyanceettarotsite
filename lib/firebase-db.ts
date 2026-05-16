@@ -70,6 +70,12 @@ export async function getReadingsFromFirestore(uid: string, max = 500): Promise<
   }
 }
 
+export async function updateReadingNotesInFirestore(uid: string, readingId: string, notes: string): Promise<void> {
+  const q = query(collection(db, "users", uid, "readings"), where("id", "==", readingId));
+  const snap = await getDocs(q);
+  await Promise.all(snap.docs.map(d => updateDoc(d.ref, { notes })));
+}
+
 export async function deleteReadingFromFirestore(uid: string, readingId: string): Promise<void> {
   try {
     const q = query(collection(db, "users", uid, "readings"), where("id", "==", readingId));

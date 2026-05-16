@@ -5,6 +5,8 @@ export interface BellineCard {
   keywords: string[];
   upright: string;
   element?: string;
+  /** true = bénéfique (Vénus, Jupiter, Soleil) ; false = maléfique (Saturne, Mars, Neptune) ; undefined = neutre (Lune, Mercure, Uranus) */
+  beneficial?: boolean;
 }
 
 export const BELLINE_DECK: BellineCard[] = [
@@ -15,6 +17,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["inspiration", "génie", "créativité", "révélation"],
     upright: "Une illumination intérieure vous guide vers une découverte extraordinaire qui changera le cours de votre vie.",
     element: "Feu",
+    beneficial: true,
   },
   {
     id: 2,
@@ -23,6 +26,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["destin", "karma", "chemin de vie", "prédestination"],
     upright: "Le destin se manifeste avec force, révélant que certains événements étaient écrits depuis toujours dans le grand livre de votre vie.",
     element: "Terre",
+    beneficial: false,
   },
   {
     id: 3,
@@ -39,6 +43,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["don", "présent", "générosité", "surprise"],
     upright: "Un cadeau inattendu, qu'il soit matériel ou spirituel, vous est offert avec amour et générosité sincère.",
     element: "Terre",
+    beneficial: true,
   },
   {
     id: 5,
@@ -63,6 +68,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["chance", "prospérité", "bonne étoile", "abondance"],
     upright: "La fortune vous sourit et une période de grande chance et d'abondance matérielle s'annonce à votre porte.",
     element: "Feu",
+    beneficial: true,
   },
   {
     id: 8,
@@ -71,6 +77,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["bonheur", "allégresse", "contentement", "célébration"],
     upright: "La joie pure et lumineuse illumine votre quotidien, apportant bonheur et légèreté dans tous vos domaines de vie.",
     element: "Feu",
+    beneficial: true,
   },
   {
     id: 9,
@@ -79,6 +86,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["transformation", "fin", "renouveau", "passage"],
     upright: "Une fin nécessaire ouvre la porte à une transformation profonde, permettant un renouveau libérateur et bienfaiteur.",
     element: "Terre",
+    beneficial: false,
   },
   {
     id: 10,
@@ -87,6 +95,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["puissance", "courage", "détermination", "vitalité"],
     upright: "Votre force intérieure et votre courage sont vos plus grands atouts pour surmonter les défis qui se présentent.",
     element: "Feu",
+    beneficial: false,
   },
   {
     id: 11,
@@ -95,6 +104,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["séduction", "compliments", "faux semblants", "charme"],
     upright: "Des paroles flatteuses circulent autour de vous ; discernez la sincérité des intentions avant d'accorder votre confiance.",
     element: "Air",
+    beneficial: true,
   },
   {
     id: 12,
@@ -103,6 +113,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["union", "engagement", "alliance", "lien sacré"],
     upright: "Une union profonde et durable se profile, qu'elle soit romantique, professionnelle ou spirituelle, scellant un beau destin commun.",
     element: "Eau",
+    beneficial: true,
   },
   {
     id: 13,
@@ -111,6 +122,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["trahison", "mensonge", "déception", "illusion"],
     upright: "Une trahison ou une déception amère se cache dans votre entourage ; restez vigilant et protégez vos confidences précieuses.",
     element: "Eau",
+    beneficial: false,
   },
   {
     id: 14,
@@ -127,6 +139,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["gain", "bénéfice", "récompense", "avantage"],
     upright: "Un profit matériel ou intellectuel significatif récompense vos efforts et vos investissements passés avec générosité.",
     element: "Terre",
+    beneficial: true,
   },
   {
     id: 16,
@@ -143,6 +156,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["souffrance", "épreuve", "peine", "difficulté"],
     upright: "Une épreuve douloureuse traverse votre chemin, mais sa traversée forge votre caractère et approfondit votre sagesse intérieure.",
     element: "Terre",
+    beneficial: false,
   },
   {
     id: 18,
@@ -151,6 +165,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["amour", "féminité", "désir", "bien-aimée"],
     upright: "La femme aimée ou une figure féminine bienveillante joue un rôle central et essentiel dans votre situation présente.",
     element: "Eau",
+    beneficial: true,
   },
   {
     id: 19,
@@ -199,6 +214,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["équité", "vérité", "jugement", "équilibre"],
     upright: "La justice s'exercera avec équité et la vérité triomphera, rétablissant l'équilibre dans une situation longtemps perturbée.",
     element: "Air",
+    beneficial: false,
   },
   {
     id: 25,
@@ -207,6 +223,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["succès", "accomplissement", "victoire", "épanouissement"],
     upright: "La réussite couronne vos efforts avec éclat et vos projets aboutissent selon vos espoirs les plus chers.",
     element: "Feu",
+    beneficial: true,
   },
   {
     id: 26,
@@ -223,6 +240,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["grâce", "protection", "bénédiction", "soutien"],
     upright: "Une faveur divine ou humaine vous est accordée, ouvrant des portes qui semblaient fermées et facilitant votre chemin.",
     element: "Feu",
+    beneficial: true,
   },
   {
     id: 28,
@@ -231,6 +249,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["grief", "réclamation", "mécontentement", "conflit"],
     upright: "Un grief ou une insatisfaction profonde cherche à s'exprimer ; exprimez vos besoins avec clarté pour rétablir l'harmonie.",
     element: "Eau",
+    beneficial: false,
   },
   {
     id: 29,
@@ -239,6 +258,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["vitalité", "bien-être", "guérison", "forme"],
     upright: "La santé et la vitalité sont préservées ou en voie de restauration, promettant un retour à l'équilibre et à la plénitude.",
     element: "Feu",
+    beneficial: true,
   },
   {
     id: 30,
@@ -255,6 +275,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["maladie", "fragilité", "vulnérabilité", "affaiblissement"],
     upright: "Une période de vulnérabilité nécessite attention et soin ; écoutez les signaux de votre corps et cherchez l'aide appropriée.",
     element: "Eau",
+    beneficial: false,
   },
   {
     id: 32,
@@ -263,6 +284,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["tristesse", "peine", "mélancolie", "affliction"],
     upright: "Un chagrin profond traverse votre âme, mais les larmes versées ouvrent la voie à une guérison émotionnelle bienveillante.",
     element: "Eau",
+    beneficial: false,
   },
   {
     id: 33,
@@ -271,6 +293,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["contentement", "plénitude", "accomplissement", "bonheur"],
     upright: "Une profonde satisfaction intérieure vous envahit, signe que vous êtes sur la bonne voie et en harmonie avec vos valeurs.",
     element: "Eau",
+    beneficial: true,
   },
   {
     id: 34,
@@ -295,6 +318,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["urgence", "rapidité", "précipitation", "impatience"],
     upright: "L'urgence est réelle et l'action immédiate s'impose, mais veillez à ne pas sacrifier la qualité à la précipitation.",
     element: "Feu",
+    beneficial: false,
   },
   {
     id: 37,
@@ -303,6 +327,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["espérance", "foi", "optimisme", "attente positive"],
     upright: "L'espoir brille avec intensité et vos attentes positives ont toutes les chances de se concrétiser dans un avenir proche.",
     element: "Feu",
+    beneficial: true,
   },
   {
     id: 38,
@@ -311,6 +336,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["désir", "aspiration", "envie", "passion"],
     upright: "Un désir puissant anime votre cœur et vos aspirations profondes méritent d'être honorées et poursuivies avec ardeur.",
     element: "Feu",
+    beneficial: true,
   },
   {
     id: 39,
@@ -319,6 +345,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["ambition", "objectif", "détermination", "ascension"],
     upright: "Votre ambition légitime vous propulse vers de nouveaux sommets ; canalisez cette énergie avec sagesse pour atteindre vos buts.",
     element: "Feu",
+    beneficial: false,
   },
   {
     id: 40,
@@ -327,6 +354,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["amour", "passion", "tendresse", "union des cœurs"],
     upright: "L'amour sous toutes ses formes illumine votre vie et une relation sincère ou une profonde affection s'épanouit merveilleusement.",
     element: "Eau",
+    beneficial: true,
   },
   {
     id: 41,
@@ -343,6 +371,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["crainte", "anxiété", "blocage", "paralysie"],
     upright: "Une peur ou anxiété vous retient d'avancer ; identifiez-la avec honnêteté pour la traverser et retrouver votre liberté intérieure.",
     element: "Eau",
+    beneficial: false,
   },
   {
     id: 43,
@@ -351,6 +380,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["adversaire", "opposition", "rivalité", "obstacle humain"],
     upright: "Un adversaire ou une opposition se dresse sur votre chemin ; restez vigilant et gardez votre stratégie confidentielle.",
     element: "Feu",
+    beneficial: false,
   },
   {
     id: 44,
@@ -359,6 +389,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["prospérité", "abondance", "opulence", "succès matériel"],
     upright: "La richesse matérielle et spirituelle vous est promise, récompensant vos mérites et ouvrant une ère d'abondance durable.",
     element: "Terre",
+    beneficial: true,
   },
   {
     id: 45,
@@ -367,6 +398,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["prudence", "doute", "suspicion", "vigilance"],
     upright: "La méfiance est de mise dans cette situation ; faites confiance à votre instinct et vérifiez les apparences avant d'agir.",
     element: "Terre",
+    beneficial: false,
   },
   {
     id: 46,
@@ -399,6 +431,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["soutien", "assistance", "secours", "solidarité"],
     upright: "Une aide précieuse et bienveillante se présente au bon moment, vous permettant de surmonter un obstacle avec grâce.",
     element: "Terre",
+    beneficial: true,
   },
   {
     id: 50,
@@ -407,6 +440,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["mélancolie", "deuil", "abattement", "isolement"],
     upright: "Une vague de tristesse traverse votre cœur ; accordez-vous le droit à l'émotion car elle porte les graines d'une guérison profonde.",
     element: "Eau",
+    beneficial: false,
   },
   {
     id: 51,
@@ -423,6 +457,7 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["patience", "durée", "cycles", "maturité"],
     upright: "Le temps est votre allié dans cette situation ; la patience et la persévérance apporteront les fruits attendus en leur heure.",
     element: "Terre",
+    beneficial: false,
   },
   {
     id: 53,
@@ -431,6 +466,75 @@ export const BELLINE_DECK: BellineCard[] = [
     keywords: ["fête", "victoire", "reconnaissance", "joie collective"],
     upright: "Une célébration bien méritée s'annonce, marquant le couronnement de vos efforts et le partage de votre bonheur avec vos proches.",
     element: "Feu",
+    beneficial: true,
+  },
+];
+
+export interface BellineSpread {
+  id: string;
+  name: string;
+  count: number;
+  positions: string[];
+  description: string;
+}
+
+export const BELLINE_SPREADS: BellineSpread[] = [
+  {
+    id: "reponse",
+    name: "La Réponse",
+    count: 1,
+    positions: ["La réponse de l'Oracle"],
+    description: "Une carte pour une réponse directe et précise de l'Oracle.",
+  },
+  {
+    id: "trilogie",
+    name: "La Trilogie Planétaire",
+    count: 3,
+    positions: ["Passé", "Présent", "Futur"],
+    description: "Trois cartes pour une vision temporelle sous l'influence des astres.",
+  },
+  {
+    id: "quintessence",
+    name: "La Quintessence",
+    count: 5,
+    positions: [
+      "Votre énergie",
+      "L'environnement",
+      "Ce qui vient",
+      "L'obstacle",
+      "La résolution",
+    ],
+    description: "Cinq cartes pour une lecture approfondie de votre situation.",
+  },
+  {
+    id: "grand-oracle",
+    name: "Le Grand Oracle",
+    count: 7,
+    positions: [
+      "Situation actuelle",
+      "Influences passées",
+      "Influences futures",
+      "Vos atouts",
+      "Vos obstacles",
+      "Le conseil planétaire",
+      "Le dénouement",
+    ],
+    description: "Sept cartes pour une révélation complète des forces en jeu.",
+  },
+  {
+    id: "tirage-planetaire",
+    name: "Tirage Planétaire",
+    count: 7,
+    positions: [
+      "Soleil — Vitalité et succès",
+      "Lune — Émotions et intuition",
+      "Mercure — Communication",
+      "Vénus — Amour et harmonie",
+      "Mars — Action et conflits",
+      "Jupiter — Chance et expansion",
+      "Saturne — Épreuves et karma",
+    ],
+    description: "Les 7 planètes révèlent les forces à l'œuvre dans votre vie.",
   },
 ];
 

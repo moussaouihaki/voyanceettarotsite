@@ -104,14 +104,14 @@ export const LENORMAND_DECK: LenormandCard[] = [
     combined: "Embellit et positivise les cartes voisines ; annonce cadeaux, compliments ou moments de joie.",
   },
   {
-    id: "faux", number: 10, name: "La Faux", symbol: "🌾",
+    id: "faux", number: 10, name: "La Faux", symbol: "⚔️",
     keywords: ["danger", "décision", "séparation", "récolte"],
     upright: "Une décision tranchante s'impose ou un danger soudain apparaît. La récolte arrive, mais une séparation peut en découler.",
     combined: "Coupe, termine ou sépare les énergies des cartes voisines ; décision irréversible proche.",
   },
   {
     id: "fouet", number: 11, name: "Le Fouet", symbol: "🔥",
-    keywords: ["conflit", "répétition", "discussion", "passion"],
+    keywords: ["conflit", "répétition", "discussion", "discipline"],
     upright: "Des conflits récurrents ou discussions agitées perturbent l'harmonie. La passion s'enflamme ; la répétition des erreurs doit être évitée.",
     combined: "Active et intensifie les tensions des cartes voisines ; peut évoquer disputes ou activité physique.",
   },
@@ -146,7 +146,7 @@ export const LENORMAND_DECK: LenormandCard[] = [
     combined: "Illumine et positivise les cartes voisines ; guidance spirituelle et espoir augmentés.",
   },
   {
-    id: "cigogne", number: 17, name: "La Cigogne", symbol: "🦢",
+    id: "cigogne", number: 17, name: "La Cigogne", symbol: "🕊️",
     keywords: ["changement", "retour", "naissance", "migration"],
     upright: "Un changement positif ou un retour bienvenu s'annonce. Une naissance, un renouveau ou une migration transforme favorablement votre situation.",
     combined: "Apporte du mouvement et de la transformation aux cartes voisines ; souvent un changement positif.",
@@ -225,8 +225,8 @@ export const LENORMAND_DECK: LenormandCard[] = [
   },
   {
     id: "lys", number: 30, name: "Les Lys", symbol: "🌺",
-    keywords: ["sagesse", "sérénité", "vertu", "maturité"],
-    upright: "La sagesse, la sérénité et la vertu guident votre chemin. Une période de maturité et de paix intérieure s'installe avec grâce et dignité.",
+    keywords: ["sagesse", "sérénité", "sensualité", "plaisir des sens", "maturité"],
+    upright: "La sagesse, la sérénité et la sensualité guident votre chemin. Une période de maturité et de paix intérieure s'installe, avec le plaisir des sens pleinement assumé.",
     combined: "Apporte sérénité et maturité aux cartes voisines ; peut indiquer une relation durable et apaisée.",
   },
   {
@@ -277,6 +277,13 @@ export interface LenormandSpread {
 
 export const LENORMAND_SPREADS: LenormandSpread[] = [
   {
+    id: "ligne-de-3",
+    name: "Tirage en ligne de 3",
+    count: 3,
+    positions: ["Passé proche", "Présent", "Futur proche"],
+    description: "Le tirage fondamental du Lenormand, lu comme une phrase.",
+  },
+  {
     id: "croix-lenormand",
     name: "La Croix Lenormand",
     count: 5,
@@ -299,7 +306,7 @@ export const LENORMAND_SPREADS: LenormandSpread[] = [
   },
   {
     id: "grand-tableau",
-    name: "Le Grand Tableau",
+    name: "Tirage des 9 Positions Clés",
     count: 9,
     positions: [
       "Position 1 (A) — Vous-même",

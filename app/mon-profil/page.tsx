@@ -372,7 +372,7 @@ export default function MonProfilPage() {
               </div>
 
               {(() => {
-                const fields = [profile?.prenom, profile?.dateNaissance, profile?.heureNaissance, profile?.villeNaissance, (profile as unknown as Record<string, unknown>)?.gender];
+                const fields = [profile?.prenom, profile?.dateNaissance, profile?.heureNaissance, profile?.villeNaissance, profile?.genre];
                 const filled = fields.filter(Boolean).length;
                 const pct = Math.round((filled / fields.length) * 100);
                 return (
