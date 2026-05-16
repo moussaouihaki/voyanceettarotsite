@@ -14,12 +14,8 @@ export async function verifyIdToken(req: NextRequest): Promise<AuthResult | null
   if (!authHeader?.startsWith("Bearer ")) return null;
 
   const idToken = authHeader.slice(7);
-  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-
-  if (!apiKey) {
-    console.error("[Auth] NEXT_PUBLIC_FIREBASE_API_KEY not set");
-    return null;
-  }
+  // Firebase Web API key — public by design (visible in client bundle)
+  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? "AIzaSyDIdkRiuvMHqfBehDbmTiOVBMWB2SJg5q8";
 
   try {
     const res = await fetch(
