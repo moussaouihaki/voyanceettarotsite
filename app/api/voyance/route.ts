@@ -83,8 +83,16 @@ export async function POST(req: NextRequest) {
           if (text) controller.enqueue(new TextEncoder().encode(text));
         }
       } catch (err) {
-        controller.enqueue(new TextEncoder().encode("Les étoiles sont voilées... Réessayez dans quelques instants."));
-        console.error(err);
+        const msg = err instanceof Error ? err.message : String(err);
+        const isKeyError = msg.includes("API_KEY_INVALID") || msg.includes("API key") || msg.includes("UNAUTHENTICATED");
+        const isQuota = msg.includes("quota") || msg.includes("RESOURCE_EXHAUSTED");
+        const userMsg = isKeyError
+          ? "La connexion aux étoiles est temporairement interrompue. Notre équipe est informée."
+          : isQuota
+          ? "Madame Céleste est très sollicitée en ce moment. Réessayez dans quelques minutes."
+          : "Les étoiles sont voilées... Réessayez dans quelques instants.";
+        controller.enqueue(new TextEncoder().encode(userMsg));
+        console.error("[voyance/route] Gemini error:", msg);
       } finally {
         controller.close();
       }

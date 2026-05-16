@@ -2,7 +2,7 @@
 import { authFetch } from '@/lib/api-client';
 import { useState, useCallback } from "react";
 import Link from "next/link";
-import { drawCards, TarotCard } from "@/lib/tarot-cards";
+import { ALL_CARDS, TarotCard } from "@/lib/tarot-cards";
 import { ALL_SPREADS, SPREAD_CATEGORIES, type Spread, type SpreadCategory } from "@/lib/spreads";
 import { getSpreadIcon, CATEGORY_ICONS } from "@/lib/spread-icons";
 import { useUserProfile, canAccessFeature, TIER_LIMITS } from "@/contexts/UserProfileContext";
@@ -10,10 +10,21 @@ import { canUse, increment, remaining } from "@/lib/daily-limits";
 import TarotCardComponent from "@/components/TarotCard";
 import ReadingResult from "@/components/ReadingResult";
 import CityAutocomplete from "@/components/CityAutocomplete";
+import DeckShuffle from "@/components/DeckShuffle";
+import DeckPick from "@/components/DeckPick";
 import { Search, Sparkles, ArrowLeft, RotateCcw, Star, Layers, Lock, Crown, Heart, ChevronDown, Calendar, Clock, MapPin } from "lucide-react";
 
 type DrawnCard = TarotCard & { reversed: boolean; positionIndex: number };
-type Step = "choose" | "question" | "draw" | "reading";
+type Step = "choose" | "question" | "shuffle" | "pick" | "draw" | "reading";
+
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 const DIFFICULTY_LABELS = {
   facile: "Initiation",
@@ -41,6 +52,13 @@ export default function TiragePage() {
   const [conjointLat, setConjointLat] = useState<number | undefined>();
   const [conjointLon, setConjointLon] = useState<number | undefined>();
   const [showConjoint, setShowConjoint] = useState(false);
+  const [shuffledDeck, setShuffledDeck] = useState<TarotCard[]>([]);
+
+  // Shuffle deck when entering shuffle step
+  const startShuffle = useCallback(() => {
+    setShuffledDeck(shuffleArray(ALL_CARDS));
+    setStep("shuffle");
+  }, []);
 
   const tier = profile?.subscription;
 
@@ -64,20 +82,21 @@ export default function TiragePage() {
     setStep("question");
   };
 
-  const handleDraw = useCallback(() => {
-    if (!selectedSpread) return;
-    if (!profile) return;
+  // Called when user finishes shuffling → go to pick step
+  const handleShuffleDone = useCallback(() => {
+    setStep("pick");
+  }, []);
+
+  // Called when user picks their cards manually
+  const handlePickDone = useCallback((pickedCards: DrawnCard[]) => {
+    if (!selectedSpread || !profile) return;
     const currentTier = profile.subscription;
     if (!canUse("tirages", currentTier)) {
       setLimitReached(true);
-      setStep("draw");
-      setCards(drawCards(selectedSpread.cardCount));
-      setFlippedCards(new Set());
-      setReading("");
-      return;
+    } else {
+      setLimitReached(false);
     }
-    setLimitReached(false);
-    setCards(drawCards(selectedSpread.cardCount));
+    setCards(pickedCards);
     setFlippedCards(new Set());
     setReading("");
     setStep("draw");
@@ -167,6 +186,7 @@ export default function TiragePage() {
     setSelectedSpread(null);
     setLimitReached(false);
     setNoProfileHint(null);
+    setShuffledDeck([]);
     setConjointPrenom("");
     setConjointDateNaissance("");
     setConjointHeureNaissance("");
@@ -434,15 +454,36 @@ export default function TiragePage() {
               <ArrowLeft size={13} className="inline mr-2" />
               <span>Retour</span>
             </button>
-            <button onClick={handleDraw} className="btn-gold">
+            <button onClick={startShuffle} className="btn-gold">
               <Sparkles size={14} />
-              <span>Tirer les cartes</span>
+              <span>Mélanger les cartes</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Step 3 & 4: Draw + Reading */}
+      {/* Step 3: Shuffle */}
+      {step === "shuffle" && selectedSpread && (
+        <div className="fade-in-up">
+          <DeckShuffle
+            spreadName={selectedSpread.name}
+            onShuffleDone={handleShuffleDone}
+          />
+        </div>
+      )}
+
+      {/* Step 4: Pick */}
+      {step === "pick" && selectedSpread && (
+        <div className="fade-in-up">
+          <DeckPick
+            count={selectedSpread.cardCount}
+            shuffledDeck={shuffledDeck}
+            onPickDone={handlePickDone}
+          />
+        </div>
+      )}
+
+      {/* Step 5 & 6: Draw + Reading */}
       {(step === "draw" || step === "reading") && selectedSpread && (
         <div className="fade-in-up">
           <div className="text-center mb-10">
