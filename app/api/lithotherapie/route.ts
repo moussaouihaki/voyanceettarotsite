@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
 
+export const maxDuration = 60;
+
 const SYSTEM = `Tu es Madame Céleste, lithothérapeute et guérisseuse énergétique. Tu interprètes les messages des cristaux et pierres précieuses avec sagesse, poésie et profondeur en français. Tu guides vers la guérison vibratoire et l'équilibre des énergies.` + FORMATTING_RULES;
 
 interface CrystalData {

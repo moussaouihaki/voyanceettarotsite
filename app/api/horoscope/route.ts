@@ -2,6 +2,8 @@ import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+export const maxDuration = 60;
+
 const SYSTEM = `Tu es Madame Céleste, astrologue mystique et voyante expérimentée. Tu écris les horoscopes en français avec un style poétique, inspirant et précis. Tes horoscopes sont personnalisés, profonds, et toujours bienveillants.`;
 
 interface ProfileData {

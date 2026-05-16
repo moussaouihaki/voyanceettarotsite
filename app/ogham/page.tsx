@@ -5,6 +5,7 @@ import Link from "next/link";
 import { OGHAM_STAVES, OGHAM_SPREADS, drawOgham, type OghamSpread, type OghamStave } from "@/lib/ogham";
 import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
+import OghamCardArt from "@/components/OghamCardArt";
 import { Sparkles, ArrowLeft, RotateCcw, Leaf, Crown, Hourglass, Plus } from "lucide-react";
 
 function getOghamSpreadIcon(id: string) {
@@ -132,11 +133,8 @@ export default function OghamPage() {
             <div className="text-[10px] tracking-[0.3em] uppercase text-[#4a7c59] text-center mb-5">Les 25 Staves Oghamiques</div>
             <div className="flex flex-wrap gap-2 justify-center">
               {OGHAM_STAVES.map((s) => (
-                <div key={s.id} className="group cursor-help">
-                  <div className="w-11 h-14 rounded-sm border border-[rgba(74,124,89,0.3)] bg-[rgba(13,8,32,0.6)] flex flex-col items-center justify-center gap-0.5 hover:border-[#4a7c59] hover:bg-[rgba(74,124,89,0.08)] transition-all">
-                    <span className="text-xl font-mono text-[#4a7c59]">{s.letter}</span>
-                  </div>
-                  <div className="text-[9px] tracking-wider text-center text-[#4a7c59] mt-1 opacity-70">{s.name}</div>
+                <div key={s.id} className="group cursor-help hover:-translate-y-0.5 transition-transform">
+                  <OghamCardArt fid={s} size="sm" />
                 </div>
               ))}
             </div>
@@ -239,24 +237,11 @@ export default function OghamPage() {
                 </div>
                 <div
                   onClick={() => !revealedStaves.has(i) && revealStave(i)}
-                  className={`w-20 h-36 rounded-sm flex flex-col items-center justify-center gap-1 cursor-pointer transition-all duration-500 ${
-                    revealedStaves.has(i)
-                      ? "border-2 border-[#4a7c59] bg-gradient-to-b from-[#0d1a10] to-[#07040d] shadow-[0_0_30px_rgba(74,124,89,0.2)]"
-                      : "border border-[rgba(74,124,89,0.3)] bg-gradient-to-b from-[#0f1a12] to-[#0d0820] hover:border-[#4a7c59]"
+                  className={`cursor-pointer transition-all duration-500 ${
+                    revealedStaves.has(i) ? "shadow-[0_0_20px_rgba(74,124,89,0.25)] -translate-y-1" : "hover:-translate-y-0.5 opacity-75 hover:opacity-100"
                   }`}
                 >
-                  {revealedStaves.has(i) ? (
-                    <>
-                      <div className="text-2xl font-mono text-[#4a7c59]">{stave.letter}</div>
-                      <div className="text-[9px] font-serif-display text-[#6aab7a] tracking-wider text-center px-1">{stave.tree}</div>
-                      <div className="text-[9px] font-serif-display text-[#c9b88a] tracking-wider text-center px-1">{stave.name}</div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-xl font-mono text-[rgba(74,124,89,0.4)]">ᚉ</div>
-                      <div className="text-[9px] tracking-widest uppercase text-[rgba(74,124,89,0.5)] mt-1">Révéler</div>
-                    </>
-                  )}
+                  <OghamCardArt fid={stave} size="lg" revealed={revealedStaves.has(i)} />
                 </div>
                 {revealedStaves.has(i) && (
                   <div className="flex flex-wrap gap-1 max-w-[110px] justify-center">

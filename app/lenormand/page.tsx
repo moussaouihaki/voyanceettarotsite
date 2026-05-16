@@ -5,6 +5,7 @@ import Link from "next/link";
 import { LENORMAND_DECK, LENORMAND_SPREADS, drawLenormand, type LenormandSpread, type LenormandCard } from "@/lib/lenormand";
 import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
+import LenormandCardArt from "@/components/LenormandCardArt";
 import { Sparkles, ArrowLeft, RotateCcw, Crown, Star } from "lucide-react";
 
 type DrawnCard = LenormandCard & { position: string };
@@ -140,11 +141,8 @@ export default function LenormandPage() {
             <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] text-center mb-5">Le Jeu de Lenormand · Les 36 cartes</div>
             <div className="flex flex-wrap gap-2 justify-center">
               {LENORMAND_DECK.map((card) => (
-                <div key={card.id} className="group cursor-help">
-                  <div className="w-12 h-12 rounded border border-[rgba(212,175,111,0.2)] bg-[rgba(13,8,32,0.6)] flex items-center justify-center text-2xl hover:border-[#d4af6f] hover:bg-[rgba(212,175,111,0.08)] transition-all">
-                    {card.symbol}
-                  </div>
-                  <div className="text-[8px] tracking-wider text-center text-[#8a6f3a] mt-1 max-w-[48px] truncate">{card.name.replace(/^(Le |La |Les |L')/, "")}</div>
+                <div key={card.id} className="group cursor-help hover:-translate-y-0.5 transition-transform">
+                  <LenormandCardArt card={card} size="sm" />
                 </div>
               ))}
             </div>
@@ -239,29 +237,17 @@ export default function LenormandPage() {
                 </div>
                 <div
                   onClick={() => !revealedCards.has(i) && revealCard(i)}
-                  className={`w-24 h-36 rounded border-2 flex flex-col items-center justify-center cursor-pointer transition-all duration-500 overflow-hidden ${
+                  className={`cursor-pointer transition-all duration-500 ${
                     revealedCards.has(i)
-                      ? "border-[#d4af6f] bg-gradient-to-b from-[#15102b] to-[#07040d] shadow-[0_0_30px_rgba(212,175,111,0.2)]"
-                      : "border-[rgba(212,175,111,0.3)] bg-gradient-to-b from-[#1a1234] to-[#0d0820] hover:border-[#d4af6f]"
+                      ? "shadow-[0_0_30px_rgba(212,175,111,0.25)] -translate-y-1"
+                      : "hover:-translate-y-0.5 opacity-80 hover:opacity-100"
                   }`}
                 >
-                  {revealedCards.has(i) ? (
-                    <div className="flex flex-col items-center justify-center px-2 w-full h-full">
-                      <div className="text-4xl mb-2">{card.symbol}</div>
-                      <div className="text-[10px] font-serif-display text-[#e8c875] tracking-wider text-center leading-tight mb-1">{card.name}</div>
-                      <div className="text-[8px] text-[#c9b88a] text-center leading-tight line-clamp-2 px-1">{card.upright}</div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center gap-3 w-full h-full">
-                      <div className="text-[rgba(212,175,111,0.4)] text-xl">✦</div>
-                      <div className="flex flex-col items-center gap-1 opacity-30">
-                        <div className="w-8 h-px bg-[#d4af6f]" />
-                        <div className="w-5 h-px bg-[#d4af6f]" />
-                        <div className="w-3 h-px bg-[#d4af6f]" />
-                      </div>
-                      <div className="text-[9px] tracking-widest uppercase text-[rgba(212,175,111,0.5)]">Révéler</div>
-                    </div>
-                  )}
+                  <LenormandCardArt
+                    card={card}
+                    size="lg"
+                    revealed={revealedCards.has(i)}
+                  />
                 </div>
                 {revealedCards.has(i) && (
                   <div className="flex flex-wrap gap-1 max-w-[110px] justify-center">

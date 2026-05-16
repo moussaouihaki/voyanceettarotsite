@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
 
+export const maxDuration = 60;
+
 const SYSTEM = `Tu es Madame Céleste, gardienne des secrets celtiques et maîtresse de l'Ogham, l'alphabet sacré des druides. Tu interprètes les staves oghamiques avec sagesse druidique, poésie et connection à la nature en français.` + FORMATTING_RULES;
 
 interface OghamStaveData {

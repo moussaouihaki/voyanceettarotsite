@@ -6,6 +6,7 @@ import { ELDER_FUTHARK, RUNE_SPREADS, drawRunes, type RuneSpread } from "@/lib/r
 import { getRuneSpreadIcon } from "@/lib/spread-icons";
 import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
+import RuneCardArt from "@/components/RuneCardArt";
 import { Sparkles, ArrowLeft, RotateCcw, Flame, Crown } from "lucide-react";
 
 type DrawnRune = typeof ELDER_FUTHARK[0] & { isReversed: boolean };
@@ -116,11 +117,8 @@ export default function RunesPage() {
             <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] text-center mb-5">Elder Futhark · Les 24 runes</div>
             <div className="flex flex-wrap gap-2 justify-center">
               {ELDER_FUTHARK.map(r => (
-                <div key={r.id} className="group cursor-help">
-                  <div className="w-11 h-11 rounded-sm border border-[rgba(212,175,111,0.2)] bg-[rgba(13,8,32,0.6)] flex items-center justify-center text-2xl text-[#d4af6f] hover:border-[#d4af6f] hover:bg-[rgba(212,175,111,0.08)] transition-all">
-                    {r.symbol}
-                  </div>
-                  <div className="text-[9px] tracking-wider text-center text-[#8a6f3a] mt-1">{r.name}</div>
+                <div key={r.id} className="group cursor-help hover:-translate-y-0.5 transition-transform">
+                  <RuneCardArt rune={r} size="sm" />
                 </div>
               ))}
             </div>
@@ -223,24 +221,16 @@ export default function RunesPage() {
                 </div>
                 <div
                   onClick={() => !revealedRunes.has(i) && revealRune(i)}
-                  className={`w-24 h-32 rounded-sm flex flex-col items-center justify-center cursor-pointer transition-all duration-500 ${
-                    revealedRunes.has(i)
-                      ? "border-2 border-[#d4af6f] bg-gradient-to-b from-[#15102b] to-[#07040d] shadow-[0_0_30px_rgba(212,175,111,0.2)]"
-                      : "border border-[rgba(212,175,111,0.3)] bg-gradient-to-b from-[#1a1234] to-[#0d0820] hover:border-[#d4af6f]"
+                  className={`cursor-pointer transition-all duration-500 ${
+                    revealedRunes.has(i) ? "shadow-[0_0_20px_rgba(212,175,111,0.2)] -translate-y-1" : "hover:-translate-y-0.5 opacity-75 hover:opacity-100"
                   }`}
                 >
-                  {revealedRunes.has(i) ? (
-                    <>
-                      <div className={`text-4xl text-[#d4af6f] ${rune.isReversed ? "rotate-180" : ""}`}>{rune.symbol}</div>
-                      <div className="text-[10px] font-serif-display text-[#e8c875] mt-2 tracking-wider">{rune.name}</div>
-                      {rune.isReversed && <div className="text-[8px] tracking-widest uppercase text-[#d4af6f] mt-1">Inversée</div>}
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-2xl text-[rgba(212,175,111,0.5)]">✦</div>
-                      <div className="text-[9px] tracking-widest uppercase text-[rgba(212,175,111,0.5)] mt-2">Révéler</div>
-                    </>
-                  )}
+                  <RuneCardArt
+                    rune={rune}
+                    size="lg"
+                    revealed={revealedRunes.has(i)}
+                    reversed={rune.isReversed}
+                  />
                 </div>
                 {revealedRunes.has(i) && (
                   <div className="flex flex-wrap gap-1 max-w-[110px] justify-center">

@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
 
+export const maxDuration = 60;
+
 const SYSTEM = `Tu es Madame Céleste, voyante et lectrice d'auras. Tu interprètes les couleurs des champs énergétiques avec clairvoyance, poésie et profondeur en français. Tu révèles l'état de l'âme à travers les vibrations colorées de l'aura.` + FORMATTING_RULES;
 
 interface AuraColorData {

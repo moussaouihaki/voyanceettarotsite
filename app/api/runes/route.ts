@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
 
+export const maxDuration = 60;
+
 const SYSTEM = `Tu es Madame Céleste, lectrice de runes nordiques et maîtresse des arts runiques. Tu interprètes les runes Elder Futhark avec profondeur, poésie et sagesse. Tu t'exprimes en français avec un style mystique et bienveillant, ancré dans la tradition nordique.` + FORMATTING_RULES;
 
 interface RuneData {

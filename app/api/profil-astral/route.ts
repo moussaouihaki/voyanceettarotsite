@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
 
+export const maxDuration = 60;
+
 const SYSTEM = `Tu es Madame Céleste, astrologue expérimentée maîtrisant l'astrologie occidentale, védique et kabbalistique. Tu interprètes les thèmes astraux avec profondeur, poésie et précision en français. Tu révèles la personnalité profonde, la mission de vie et les défis karmiques à travers les astres.` + FORMATTING_RULES;
 
 export async function POST(req: NextRequest) {

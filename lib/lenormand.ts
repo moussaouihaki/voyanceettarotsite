@@ -8,6 +8,46 @@ export interface LenormandCard {
   combined: string;
 }
 
+// Traditional French Lenormand playing card correspondences
+export const LENORMAND_PLAYING_CARDS: Record<number, { rank: string; suit: "♥" | "♦" | "♣" | "♠"; red: boolean }> = {
+  1:  { rank: "9",  suit: "♥", red: true  },
+  2:  { rank: "6",  suit: "♣", red: false },
+  3:  { rank: "10", suit: "♠", red: false },
+  4:  { rank: "R",  suit: "♥", red: true  },
+  5:  { rank: "7",  suit: "♥", red: true  },
+  6:  { rank: "R",  suit: "♣", red: false },
+  7:  { rank: "D",  suit: "♣", red: false },
+  8:  { rank: "9",  suit: "♣", red: false },
+  9:  { rank: "D",  suit: "♠", red: false },
+  10: { rank: "V",  suit: "♣", red: false },
+  11: { rank: "V",  suit: "♦", red: true  },
+  12: { rank: "7",  suit: "♠", red: false },
+  13: { rank: "V",  suit: "♠", red: false },
+  14: { rank: "9",  suit: "♠", red: false },
+  15: { rank: "10", suit: "♣", red: false },
+  16: { rank: "6",  suit: "♥", red: true  },
+  17: { rank: "D",  suit: "♥", red: true  },
+  18: { rank: "10", suit: "♥", red: true  },
+  19: { rank: "6",  suit: "♠", red: false },
+  20: { rank: "8",  suit: "♠", red: false },
+  21: { rank: "8",  suit: "♣", red: false },
+  22: { rank: "D",  suit: "♦", red: true  },
+  23: { rank: "7",  suit: "♣", red: false },
+  24: { rank: "V",  suit: "♥", red: true  },
+  25: { rank: "A",  suit: "♣", red: false },
+  26: { rank: "10", suit: "♦", red: true  },
+  27: { rank: "7",  suit: "♦", red: true  },
+  28: { rank: "A",  suit: "♥", red: true  },
+  29: { rank: "A",  suit: "♠", red: false },
+  30: { rank: "R",  suit: "♠", red: false },
+  31: { rank: "A",  suit: "♦", red: true  },
+  32: { rank: "8",  suit: "♥", red: true  },
+  33: { rank: "8",  suit: "♦", red: true  },
+  34: { rank: "R",  suit: "♦", red: true  },
+  35: { rank: "9",  suit: "♦", red: true  },
+  36: { rank: "6",  suit: "♦", red: true  },
+};
+
 export const LENORMAND_DECK: LenormandCard[] = [
   {
     id: "cavalier", number: 1, name: "Le Cavalier", symbol: "🐴",

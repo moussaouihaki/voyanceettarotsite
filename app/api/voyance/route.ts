@@ -4,6 +4,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MADAME_CELESTE_SYSTEM } from "@/lib/gemini";
 import { getSunSign } from "@/lib/astrology";
 
+export const maxDuration = 60;
+
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
@@ -66,6 +68,9 @@ export async function POST(req: NextRequest) {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
     systemInstruction: MADAME_CELESTE_SYSTEM + personalContext,
+    // Disable thinking for fast chat responses
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any,
   });
 
   const history = messages.slice(0, -1).map((m) => ({

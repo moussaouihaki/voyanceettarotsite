@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
 
+export const maxDuration = 60;
+
 interface MesAstresRequest {
   section: "portrait" | "amour" | "carriere" | "transits" | "lune";
   profile: {

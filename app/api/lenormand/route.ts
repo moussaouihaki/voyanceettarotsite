@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
 
+export const maxDuration = 60;
+
 const SYSTEM = `Tu es Madame Céleste, maîtresse de l'Oracle Lenormand et des arts cartomanciques. Tu interprètes les 36 cartes Lenormand avec précision, poésie et profondeur en français. Tu révèles les messages cachés dans les combinaisons de cartes avec sagesse bienveillante.` + FORMATTING_RULES;
 
 interface LenormandCardData {

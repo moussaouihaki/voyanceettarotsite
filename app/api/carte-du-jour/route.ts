@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MADAME_CELESTE_SYSTEM } from "@/lib/gemini";
 
+export const maxDuration = 60;
+
 interface ProfileData {
   prenom?: string;
   dateNaissance?: string;

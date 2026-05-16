@@ -4,6 +4,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MADAME_CELESTE_SYSTEM } from "@/lib/gemini";
 import { getSunSign } from "@/lib/astrology";
 
+export const maxDuration = 60;
+
 interface CardData {
   name: string;
   suit: string;
@@ -92,7 +94,8 @@ ${question ? `Question du consultant : « ${question} »` : "Lecture générale 
 Donne une lecture complète, poétique et profonde. Pour chaque carte, explique sa signification dans sa position et son interaction avec les autres cartes. Termine par une synthèse globale, un message d'espoir et un conseil pratique actionnable. Environ 600-800 mots.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {
