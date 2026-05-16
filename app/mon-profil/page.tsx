@@ -479,9 +479,14 @@ export default function MonProfilPage() {
               </Link>
             )}
             {tier !== "decouverte" && (
-              <Link href="/tarifs" className="btn-outline-gold">
-                <span>Gérer mon abonnement</span>
-              </Link>
+              <div className="flex flex-wrap gap-3 justify-center">
+                <Link href="/tarifs" className="btn-outline-gold">
+                  <span>Gérer mon abonnement</span>
+                </Link>
+                <Link href="/support" className="btn-ghost">
+                  <span>{tier === "vip" ? "Support prioritaire" : "Contacter le support"}</span>
+                </Link>
+              </div>
             )}
           </div>
 

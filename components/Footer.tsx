@@ -21,6 +21,7 @@ const FOOTER_LINKS = {
   "Le Sanctuaire": [
     { href: "/tarifs", label: "Abonnements" },
     { href: "/mon-profil", label: "Mon Profil" },
+    { href: "/support", label: "Support" },
     { href: "/blog", label: "Journal Mystique" },
     { href: "/mentions-legales", label: "Mentions légales" },
     { href: "/cgv", label: "Conditions générales" },

@@ -84,7 +84,7 @@ const PLANS = [
       { label: "Tirages exclusifs (Lenormand, Tzigane, etc.)", included: true },
       { label: "Historique illimité (jusqu'à 200 lectures)", included: true },
       { label: "Profil astral chinois bonus", included: true },
-      { label: "Support prioritaire 24/7", included: true },
+      { label: "Support prioritaire — réponse sous 24h", included: true },
       { label: "Newsletter mystique hebdomadaire", included: true },
       { label: "Accès anticipé aux nouvelles fonctionnalités", included: true },
     ],
