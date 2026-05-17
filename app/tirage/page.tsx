@@ -9,6 +9,7 @@ import { useUserProfile, canAccessFeature, TIER_LIMITS } from "@/contexts/UserPr
 import { canUse, increment, remaining } from "@/lib/daily-limits";
 import TarotCardComponent from "@/components/TarotCard";
 import ReadingResult from "@/components/ReadingResult";
+import CircleVideo from "@/components/CircleVideo";
 import { type DeckType } from "@/lib/deck-images";
 import CityAutocomplete from "@/components/CityAutocomplete";
 import DeckShuffle from "@/components/DeckShuffle";
@@ -219,6 +220,9 @@ export default function TiragePage() {
       {step === "choose" && (
         <div className="fade-in-up">
           <div className="text-center mb-12">
+            <div className="flex justify-center mb-6">
+              <CircleVideo size="md" glow />
+            </div>
             <div className="badge-gold mb-5">
               <Layers size={11} className="inline mr-2" />
               Bibliothèque de tirages
@@ -524,6 +528,9 @@ export default function TiragePage() {
       {(step === "draw" || step === "reading") && selectedSpread && (
         <div className="fade-in-up">
           <div className="text-center mb-10">
+            <div className="flex justify-center mb-6">
+              <CircleVideo size="sm" glow />
+            </div>
             <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-2">{selectedSpread.subtitle}</div>
             <h2 className="font-serif-display text-3xl text-gradient-cream mb-2">{selectedSpread.name}</h2>
             {question && <p className="font-serif-text italic text-[#c9b88a] mt-2">&ldquo;{question}&rdquo;</p>}
