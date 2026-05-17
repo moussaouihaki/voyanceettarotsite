@@ -1,6 +1,6 @@
 "use client";
 import { authFetch } from '@/lib/api-client';
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { ALL_CARDS, TarotCard } from "@/lib/tarot-cards";
 import { ALL_SPREADS, SPREAD_CATEGORIES, type Spread, type SpreadCategory } from "@/lib/spreads";
@@ -54,6 +54,11 @@ export default function TiragePage() {
   const [conjointLon, setConjointLon] = useState<number | undefined>();
   const [showConjoint, setShowConjoint] = useState(false);
   const [shuffledDeck, setShuffledDeck] = useState<TarotCard[]>([]);
+
+  // Scroll to top whenever the step changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
   const [deck, setDeck] = useState<DeckType>(() => {
     if (typeof window !== "undefined") {
       return (localStorage.getItem("tarot-deck") as DeckType) || "rws";

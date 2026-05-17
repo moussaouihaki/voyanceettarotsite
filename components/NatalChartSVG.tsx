@@ -142,12 +142,23 @@ export default function NatalChartSVG({ chart, aspects, hasTime, size = 440 }: P
           <feGaussianBlur stdDeviation="2" result="b" />
           <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
+        <style>{`
+          @keyframes nchart-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+          @keyframes nchart-spin-rev { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+          @keyframes nchart-pulse { 0%,100% { opacity: 0.7; r: 3.5; } 50% { opacity: 1; r: 4.5; } }
+          @keyframes nchart-fadein { from { opacity: 0; } to { opacity: 1; } }
+          .nchart-zodiac { transform-origin: 0 0; animation: nchart-spin 240s linear infinite; }
+          .nchart-outer-ring { transform-origin: 0 0; animation: nchart-spin-rev 180s linear infinite; }
+          .nchart-planet-dot { animation: nchart-pulse 3s ease-in-out infinite; }
+          .nchart-aspect { animation: nchart-fadein 1.5s ease-out both; }
+        `}</style>
       </defs>
 
       {/* Background */}
       <circle cx={0} cy={0} r={vb} fill="url(#nchart-bg)" />
 
-      {/* Outer degree tick ring */}
+      {/* Rotating outer ring (degree ticks + zodiac band) */}
+      <g className="nchart-outer-ring">
       {Array.from({ length: 360 }).map((_, d) => {
         const a = ang(d);
         const isMaj = d % 10 === 0, isMed = d % 5 === 0;
@@ -164,8 +175,10 @@ export default function NatalChartSVG({ chart, aspects, hasTime, size = 440 }: P
 
       {/* Outer ring border */}
       <circle cx={0} cy={0} r={R_OUTER} fill="none" stroke="rgba(212,175,111,0.55)" strokeWidth="0.8" />
+      </g>
 
-      {/* Zodiac band — thin elegant sectors */}
+      {/* Zodiac band — slow rotation opposite direction */}
+      <g className="nchart-zodiac">
       {ZODIAC_NAMES.map((sign, i) => {
         const s = i * 30, e = s + 30;
         const a1 = ang(s), a2 = ang(e);
@@ -191,6 +204,7 @@ export default function NatalChartSVG({ chart, aspects, hasTime, size = 440 }: P
 
       {/* Inner zodiac border */}
       <circle cx={0} cy={0} r={R_ZODIAC_IN} fill="none" stroke="rgba(212,175,111,0.38)" strokeWidth="0.8" />
+      </g>
 
       {/* Planet band outer border */}
       <circle cx={0} cy={0} r={R_HOUSE_EDGE} fill="none" stroke="rgba(212,175,111,0.15)" strokeWidth="0.5" />
@@ -228,12 +242,14 @@ export default function NatalChartSVG({ chart, aspects, hasTime, size = 440 }: P
       })}
 
       {/* Aspect lines */}
-      {aspLines.map(asp => (
+      {aspLines.map((asp, idx) => (
         <line key={asp.key}
+          className="nchart-aspect"
           x1={asp.x1} y1={asp.y1} x2={asp.x2} y2={asp.y2}
           stroke={ASPECT_COLORS[asp.type] ?? "rgba(255,255,255,0.3)"}
           strokeWidth={asp.exact < 1 ? 1.4 : asp.exact < 3 ? 0.9 : 0.5}
           clipPath="url(#nchart-inner)"
+          style={{ animationDelay: `${idx * 0.08}s` }}
         />
       ))}
 
@@ -261,7 +277,7 @@ export default function NatalChartSVG({ chart, aspects, hasTime, size = 440 }: P
         return (
           <g key={name} transform={`translate(${c.x},${c.y})`} filter="url(#nchart-glow)">
             {/* Subtle background disc */}
-            <circle cx={0} cy={0} r={10} fill="rgba(7,4,13,0.90)" stroke={color} strokeWidth="0.7" opacity="0.9" />
+            <circle cx={0} cy={0} r={10} className="nchart-planet-dot" fill="rgba(7,4,13,0.90)" stroke={color} strokeWidth="0.7" opacity="0.9" />
             {/* Planet glyph */}
             <text x={0} y={0} textAnchor="middle" dominantBaseline="central"
               fontSize="10" fill={color} style={{ fontFamily: "serif", fontWeight: "400" }}>
