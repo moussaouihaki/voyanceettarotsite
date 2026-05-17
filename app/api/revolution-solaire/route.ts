@@ -148,7 +148,7 @@ La lecture doit être en prose pure, sans markdown, d'environ 700 à 900 mots. A
             "Les astres sont momentanément voilés… Réessayez dans quelques instants."
           )
         );
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

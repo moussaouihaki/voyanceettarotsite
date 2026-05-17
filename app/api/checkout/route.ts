@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     return Response.json({ url: session.url });
   } catch (err) {
-    console.error("[Stripe checkout error]", err);
+    if (process.env.NODE_ENV === "development") console.error("[Stripe checkout error]", err);
     return Response.json({ error: "Erreur lors de la création du paiement" }, { status: 500 });
   }
 }

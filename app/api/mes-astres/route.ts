@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les étoiles sont voilées... Réessayez dans quelques instants."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

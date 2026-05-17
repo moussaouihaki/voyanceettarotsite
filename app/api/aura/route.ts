@@ -65,7 +65,7 @@ Compose une lecture d'aura d'environ 400 mots. Adresse-toi à ${prenom} dès la 
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les couleurs de l'aura restent voilées... Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

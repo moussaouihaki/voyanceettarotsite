@@ -89,7 +89,7 @@ Style : poétique, profond, nuancé. Ne sois pas trop optimiste ni trop pessimis
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les étoiles refusent de parler... Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

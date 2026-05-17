@@ -101,7 +101,7 @@ Conclus avec une note de bienveillance et rappelle discrètement en toute fin qu
             "Les songes se dérobent ce soir... Les voiles du sommeil restent fermés. Veuillez réessayer."
           )
         );
-        console.error("[reves/route]", err);
+        if (process.env.NODE_ENV === "development") console.error("[reves/route]", err);
       } finally {
         controller.close();
       }

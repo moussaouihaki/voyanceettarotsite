@@ -67,7 +67,7 @@ Style bienveillant, spirituel et ancré dans les pratiques traditionnelles.`;
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les énergies subtiles sont perturbées... Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

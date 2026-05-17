@@ -55,7 +55,7 @@ Interprète chaque carte dans sa position selon la tradition française (♥ = s
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les cartes restent muettes... Réessayez."));
-        console.error("[cartomancie/route]", err);
+        if (process.env.NODE_ENV === "development") console.error("[cartomancie/route]", err);
       } finally { controller.close(); }
     },
   });

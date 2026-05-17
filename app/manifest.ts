@@ -13,9 +13,11 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["lifestyle", "entertainment"],
     lang: "fr",
     icons: [
-      { src: "/logo-celeste.svg", sizes: "any", type: "image/svg+xml", purpose: "maskable" },
-      { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { src: "/icon-192.png",         sizes: "192x192", type: "image/png" },
+      { src: "/icon-512.png",         sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icon-512.png",         sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      { src: "/logo-celeste.svg",     sizes: "any",     type: "image/svg+xml" },
     ],
     shortcuts: [
       { name: "Tirage Tarot", short_name: "Tarot", url: "/tirage", description: "Tirer les cartes" },

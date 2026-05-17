@@ -61,7 +61,7 @@ Sois précise, évocatrice et bienveillante. Entre 400 et 600 mots. Précise en 
             "Les feuilles de votre tasse gardent leurs secrets... Réessayez."
           )
         );
-        console.error("[Tasséomancie error]", err);
+        if (process.env.NODE_ENV === "development") console.error("[Tasséomancie error]", err);
       } finally {
         controller.close();
       }

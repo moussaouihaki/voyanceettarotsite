@@ -149,7 +149,7 @@ Donne une lecture complète, poétique et profonde. Pour chaque carte, explique 
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("\n\nLes astres sont voilés... Réessayez dans quelques instants."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

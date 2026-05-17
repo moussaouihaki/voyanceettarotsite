@@ -68,7 +68,7 @@ Donne une interprétation personnelle, poétique et bienveillante. Commence par 
         controller.enqueue(
           new TextEncoder().encode("Les lignes de votre main gardent leurs secrets... Réessayez.")
         );
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

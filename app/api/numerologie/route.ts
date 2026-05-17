@@ -67,7 +67,7 @@ Style mystique, précis et bienveillant. Mentionnez si des nombres maîtres ou k
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les vibrations numériques sont perturbées... Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

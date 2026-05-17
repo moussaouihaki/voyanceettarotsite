@@ -67,7 +67,7 @@ Compose une lecture lithothérapeutique d'environ 500 mots. Adresse-toi à ${pre
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les cristaux gardent leur silence... Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

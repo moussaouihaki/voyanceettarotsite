@@ -64,7 +64,7 @@ Commence par une accroche mystique sur l'énergie ${periodLabel} pour ce signe.$
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les astres sont momentanément voilés..."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

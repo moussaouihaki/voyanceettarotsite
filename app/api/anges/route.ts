@@ -69,7 +69,7 @@ Interprète ce tirage angélique avec douceur et profondeur. Pour chaque ange, e
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les anges gardent leur silence pour l'instant... Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

@@ -66,7 +66,7 @@ Sois poétique, inspirant et bienveillant.${profile?.prenom ? ` Commence en t'ad
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("\n\nLa carte garde son silence... Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

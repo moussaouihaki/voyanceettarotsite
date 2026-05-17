@@ -69,7 +69,7 @@ Donne une interprétation profonde et poétique d'environ 500 mots de ce tirage 
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les cartes gardent leur silence... Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

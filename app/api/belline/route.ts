@@ -56,7 +56,7 @@ Donne une interprétation complète en prose pure (JAMAIS de markdown, JAMAIS d'
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les astres gardent leur silence... Réessayez."));
-        console.error("[belline/route]", err);
+        if (process.env.NODE_ENV === "development") console.error("[belline/route]", err);
       } finally {
         controller.close();
       }

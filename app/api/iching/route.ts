@@ -53,7 +53,7 @@ Style : Poétique, ancré dans la philosophie taoïste. Citez des métaphores na
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Le Yi-King garde son silence... Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

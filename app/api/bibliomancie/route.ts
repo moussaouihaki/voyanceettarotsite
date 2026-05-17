@@ -61,7 +61,7 @@ D'abord, explique ce que dit ce passage dans son contexte original et sa traditi
         controller.enqueue(
           new TextEncoder().encode("Le livre garde ses secrets pour ce soir... Réessayez.")
         );
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

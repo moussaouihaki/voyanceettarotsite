@@ -58,7 +58,7 @@ Donne une interprétation profonde et poétique de ce tirage runique. Pour chaqu
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les runes gardent leur silence... Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

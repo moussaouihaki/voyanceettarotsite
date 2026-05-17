@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const stripe = new Stripe(stripeKey);
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err) {
-    console.error("[Webhook signature error]", err);
+    if (process.env.NODE_ENV === "development") console.error("[Webhook signature error]", err);
     return new Response("Signature invalide", { status: 400 });
   }
 
@@ -35,9 +35,9 @@ export async function POST(req: NextRequest) {
       const user = await getUserByEmail(customerEmail);
       if (user?.uid) {
         await updateFirestoreSubscription(user.uid, tier);
-        console.log(`[Webhook] Abonnement activé — ${customerEmail} → ${tier}`);
+        if (process.env.NODE_ENV === "development") console.log(`[Webhook] Abonnement activé — ${customerEmail} → ${tier}`);
       } else {
-        console.warn(`[Webhook] Utilisateur introuvable pour email: ${customerEmail}`);
+        if (process.env.NODE_ENV === "development") console.warn(`[Webhook] Utilisateur introuvable pour email: ${customerEmail}`);
       }
     }
   }
@@ -52,11 +52,11 @@ export async function POST(req: NextRequest) {
         const user = await getUserByEmail(customer.email);
         if (user?.uid) {
           await updateFirestoreSubscription(user.uid, "decouverte");
-          console.log(`[Webhook] Abonnement résilié — ${customer.email} → decouverte`);
+          if (process.env.NODE_ENV === "development") console.log(`[Webhook] Abonnement résilié — ${customer.email} → decouverte`);
         }
       }
     } catch (e) {
-      console.error("[Webhook] Erreur résiliation", e);
+      if (process.env.NODE_ENV === "development") console.error("[Webhook] Erreur résiliation", e);
     }
   }
 

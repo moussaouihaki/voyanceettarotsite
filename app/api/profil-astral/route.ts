@@ -78,7 +78,7 @@ Style mystique, précis, poétique. Utilise des archétypes mythologiques. Évit
         }
       } catch (err) {
         controller.enqueue(new TextEncoder().encode("Les astres sont momentanément cachés derrière les nuages… Réessayez."));
-        console.error(err);
+        if (process.env.NODE_ENV === "development") console.error(err);
       } finally {
         controller.close();
       }

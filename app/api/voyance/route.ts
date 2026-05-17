@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
           ? "Madame Céleste est très sollicitée en ce moment. Réessayez dans quelques minutes."
           : "Les étoiles sont voilées... Réessayez dans quelques instants.";
         controller.enqueue(new TextEncoder().encode(userMsg));
-        console.error("[voyance/route] Gemini error:", msg);
+        if (process.env.NODE_ENV === "development") console.error("[voyance/route] Gemini error:", msg);
       } finally {
         controller.close();
       }
