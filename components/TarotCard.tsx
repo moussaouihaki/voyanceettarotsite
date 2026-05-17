@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { TarotCard } from "@/lib/tarot-cards";
-import { getTarotImage } from "@/lib/tarot-images";
+import { getCardImage, type DeckType } from "@/lib/deck-images";
 import Image from "next/image";
 import { X } from "lucide-react";
 
@@ -12,6 +12,7 @@ interface Props {
   isFlipped: boolean;
   onClick: () => void;
   index: number;
+  deck?: DeckType;
 }
 
 function CardImage({ card, imageUrl, size }: { card: Props["card"]; imageUrl: string | null; size: "small" | "large" }) {
@@ -56,9 +57,9 @@ function CardImage({ card, imageUrl, size }: { card: Props["card"]; imageUrl: st
   );
 }
 
-export default function TarotCardComponent({ card, position, isFlipped, onClick, index }: Props) {
+export default function TarotCardComponent({ card, position, isFlipped, onClick, index, deck = "rws" }: Props) {
   const [expanded, setExpanded] = useState(false);
-  const imageUrl = getTarotImage(card.id);
+  const imageUrl = getCardImage(card.id, deck);
 
   const handleClick = () => {
     if (isFlipped) {

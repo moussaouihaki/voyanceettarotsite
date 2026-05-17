@@ -9,6 +9,7 @@ import { useUserProfile, canAccessFeature, TIER_LIMITS } from "@/contexts/UserPr
 import { canUse, increment, remaining } from "@/lib/daily-limits";
 import TarotCardComponent from "@/components/TarotCard";
 import ReadingResult from "@/components/ReadingResult";
+import { type DeckType } from "@/lib/deck-images";
 import CityAutocomplete from "@/components/CityAutocomplete";
 import DeckShuffle from "@/components/DeckShuffle";
 import DeckPick from "@/components/DeckPick";
@@ -53,6 +54,17 @@ export default function TiragePage() {
   const [conjointLon, setConjointLon] = useState<number | undefined>();
   const [showConjoint, setShowConjoint] = useState(false);
   const [shuffledDeck, setShuffledDeck] = useState<TarotCard[]>([]);
+  const [deck, setDeck] = useState<DeckType>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("tarot-deck") as DeckType) || "rws";
+    }
+    return "rws";
+  });
+
+  const switchDeck = (d: DeckType) => {
+    setDeck(d);
+    localStorage.setItem("tarot-deck", d);
+  };
 
   // Shuffle deck when entering shuffle step
   const startShuffle = useCallback(() => {
@@ -210,6 +222,26 @@ export default function TiragePage() {
             <p className="font-serif-text italic text-[#c9b88a] text-lg">
               {ALL_SPREADS.length} tirages — choisissez celui qui résonne avec votre question
             </p>
+
+            {/* Deck selector */}
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <span className="text-[10px] tracking-[0.2em] uppercase text-[#8a6f3a]">Jeu de cartes</span>
+              <div className="flex border border-[rgba(212,175,111,0.25)] rounded-sm overflow-hidden">
+                {(["rws", "marseille"] as DeckType[]).map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => switchDeck(d)}
+                    className={`px-3 py-1.5 text-[10px] tracking-[0.15em] uppercase transition-all ${
+                      deck === d
+                        ? "bg-[rgba(212,175,111,0.15)] text-[#e8c875] border-r border-[rgba(212,175,111,0.25)] last:border-r-0"
+                        : "text-[#8a6f3a] hover:text-[#c9b88a] border-r border-[rgba(212,175,111,0.15)] last:border-r-0"
+                    }`}
+                  >
+                    {d === "rws" ? "Rider-Waite" : "Marseille"}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* No-profile banner */}
@@ -528,6 +560,7 @@ export default function TiragePage() {
                     isFlipped={flippedCards.has(i)}
                     onClick={() => !flippedCards.has(i) && flipCard(i)}
                     index={i}
+                    deck={deck}
                   />
                 ))}
               </div>

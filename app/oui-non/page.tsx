@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 import { Sparkles, RotateCcw } from "lucide-react";
 import { ALL_CARDS as TAROT_DECK, type TarotCard } from "@/lib/tarot-cards";
-import { getTarotImage } from "@/lib/tarot-images";
+import { getCardImage, type DeckType } from "@/lib/deck-images";
 import { authFetch } from "@/lib/api-client";
 
 // ── Card classification by ID ─────────────────────────────────────────────────
@@ -142,8 +142,8 @@ function CardBack() {
   );
 }
 
-function CardFront({ card }: { card: TarotCard }) {
-  const imageUrl = getTarotImage(card.id);
+function CardFront({ card, deck = "rws" }: { card: TarotCard; deck?: DeckType }) {
+  const imageUrl = getCardImage(card.id, deck);
 
   if (imageUrl) {
     return (
@@ -188,9 +188,10 @@ function CardFront({ card }: { card: TarotCard }) {
 interface FlipCardProps {
   drawn: DrawnCard;
   index: number;
+  deck?: DeckType;
 }
 
-function FlipCard({ drawn, index }: FlipCardProps) {
+function FlipCard({ drawn, index, deck = "rws" }: FlipCardProps) {
   return (
     <div
       className="card-scene"
@@ -205,7 +206,7 @@ function FlipCard({ drawn, index }: FlipCardProps) {
           <CardBack />
         </div>
         <div className="card-face card-front-face !p-0 overflow-hidden">
-          <CardFront card={drawn.card} />
+          <CardFront card={drawn.card} deck={deck} />
         </div>
       </div>
     </div>
@@ -221,6 +222,17 @@ export default function OuiNonPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [phase, setPhase] = useState<"form" | "revealing" | "done">("form");
+  const [deck, setDeck] = useState<DeckType>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("tarot-deck") as DeckType) || "rws";
+    }
+    return "rws";
+  });
+
+  const switchDeck = (d: DeckType) => {
+    setDeck(d);
+    localStorage.setItem("tarot-deck", d);
+  };
 
   const handleConsult = useCallback(async () => {
     if (!question.trim()) return;
@@ -325,6 +337,26 @@ export default function OuiNonPage() {
               <span>Consulter les cartes</span>
             </button>
 
+            {/* Deck selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] tracking-[0.2em] uppercase text-[#8a6f3a]">Jeu</span>
+              <div className="flex border border-[rgba(212,175,111,0.25)] rounded-sm overflow-hidden">
+                {(["rws", "marseille"] as DeckType[]).map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => switchDeck(d)}
+                    className={`px-3 py-1.5 text-[10px] tracking-[0.15em] uppercase transition-all ${
+                      deck === d
+                        ? "bg-[rgba(212,175,111,0.15)] text-[#e8c875] border-r border-[rgba(212,175,111,0.25)] last:border-r-0"
+                        : "text-[#8a6f3a] hover:text-[#c9b88a] border-r border-[rgba(212,175,111,0.15)] last:border-r-0"
+                    }`}
+                  >
+                    {d === "rws" ? "Rider-Waite" : "Marseille"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <p className="text-[11px] tracking-widest uppercase text-[#8a6f3a]">
               Tirage gratuit · Sans inscription
             </p>
@@ -346,7 +378,7 @@ export default function OuiNonPage() {
             >
               {drawn.map((d, i) => (
                 <div key={d.card.id} role="listitem">
-                  <FlipCard drawn={d} index={i} />
+                  <FlipCard drawn={d} index={i} deck={deck} />
                 </div>
               ))}
             </div>
