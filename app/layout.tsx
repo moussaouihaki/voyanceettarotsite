@@ -6,6 +6,7 @@ import StarBackground from "@/components/StarBackground";
 import Footer from "@/components/Footer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 
 const playfair = Playfair_Display({
@@ -46,10 +47,12 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
       { url: "/logo-celeste.svg", type: "image/svg+xml" },
     ],
-    apple: "/logo-celeste.svg",
-    shortcut: "/logo-celeste.svg",
+    apple: "/apple-touch-icon.png",
+    shortcut: "/icon-192.png",
   },
   appleWebApp: {
     capable: true,
@@ -126,6 +129,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <UserProfileProvider>
           <ScrollToTop />
+          <ServiceWorkerRegistration />
           <StarBackground />
           <Navigation />
           <main className="flex-1 relative z-10">
