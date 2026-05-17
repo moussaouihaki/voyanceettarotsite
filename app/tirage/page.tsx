@@ -557,6 +557,26 @@ export default function TiragePage() {
 
           {!limitReached && (
             <>
+              {/* Deck selector — visible while cards are shown */}
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <span className="text-[10px] tracking-[0.2em] uppercase text-[#8a6f3a]">Jeu de cartes</span>
+                <div className="flex border border-[rgba(212,175,111,0.25)] rounded-sm overflow-hidden">
+                  {(["rws", "marseille"] as DeckType[]).map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => switchDeck(d)}
+                      className={`px-3 py-1.5 text-[10px] tracking-[0.15em] uppercase transition-all ${
+                        deck === d
+                          ? "bg-[rgba(212,175,111,0.15)] text-[#e8c875] border-r border-[rgba(212,175,111,0.25)] last:border-r-0"
+                          : "text-[#8a6f3a] hover:text-[#c9b88a] border-r border-[rgba(212,175,111,0.15)] last:border-r-0"
+                      }`}
+                    >
+                      {d === "rws" ? "Rider-Waite" : "Marseille"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className={`flex flex-wrap justify-center gap-5 md:gap-6 mb-10 ${selectedSpread.cardCount > 7 ? "max-w-6xl" : "max-w-4xl"} mx-auto`}>
                 {cards.map((card, i) => (
                   <TarotCardComponent
