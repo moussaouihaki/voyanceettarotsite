@@ -124,18 +124,18 @@ export default function Navigation() {
         scrolled ? "bg-[#07040d]/95 backdrop-blur-xl border-b border-[rgba(212,175,111,0.15)]" : "bg-[#07040d]/70 backdrop-blur-md border-b border-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-2">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 flex-shrink-0 group" onClick={() => { setOpenGroup(null); setMobileOpen(false); }}>
-          <Image src="/logo-celeste.svg" alt="Céleste Voyance" width={38} height={38} className="rounded-full group-hover:scale-105 transition-transform duration-300" />
+          <Image src="/logo-celeste.svg" alt="Céleste Voyance" width={34} height={34} className="rounded-full group-hover:scale-105 transition-transform duration-300" />
           <div className="leading-tight">
-            <div className="font-serif-display text-[15px] font-semibold tracking-wider text-gradient-cream">MADAME&nbsp;CÉLESTE</div>
-            <div className="text-[9px] tracking-[0.3em] text-[#8a6f3a] uppercase">Arts Divinatoires</div>
+            <div className="font-serif-display text-[14px] font-semibold tracking-wider text-gradient-cream">MADAME&nbsp;CÉLESTE</div>
+            <div className="text-[9px] tracking-[0.25em] text-[#8a6f3a] uppercase">Arts Divinatoires</div>
           </div>
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden lg:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-0">
           {NAV_GROUPS.map((group) => {
             const isActive = group.items.some((item) => pathname === item.href);
             const isOpen = openGroup === group.label;
@@ -143,7 +143,7 @@ export default function Navigation() {
               <div key={group.label} className="relative">
                 <button
                   onClick={() => setOpenGroup(isOpen ? null : group.label)}
-                  className={`px-4 py-2 text-[12px] tracking-[0.15em] uppercase font-medium transition-all duration-200 flex items-center gap-1.5 ${
+                  className={`px-2.5 py-2 text-[11px] tracking-[0.1em] uppercase font-medium transition-all duration-200 flex items-center gap-1 ${
                     isActive ? "text-[#e8c875]" : "text-[#c9b88a] hover:text-[#f5ecd9]"
                   }`}
                 >
@@ -180,13 +180,13 @@ export default function Navigation() {
             );
           })}
 
-          <div className="w-px h-6 bg-[rgba(212,175,111,0.2)] mx-2" />
+          <div className="w-px h-6 bg-[rgba(212,175,111,0.2)] mx-1" />
 
           {SECONDARY_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`px-4 py-2 text-[12px] tracking-[0.15em] uppercase font-medium transition-all ${
+              className={`px-2.5 py-2 text-[11px] tracking-[0.1em] uppercase font-medium transition-all ${
                 pathname === link.href ? "text-[#e8c875]" : "text-[#c9b88a] hover:text-[#f5ecd9]"
               }`}
             >
@@ -196,7 +196,7 @@ export default function Navigation() {
         </div>
 
         {/* Profile + CTA */}
-        <div className="flex items-center gap-1.5 flex-shrink-0 min-w-0">
+        <div className="flex items-center gap-1 flex-shrink-0 min-w-0">
           <NotificationBell />
 
           <Link
