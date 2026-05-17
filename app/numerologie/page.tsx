@@ -2,93 +2,179 @@
 import { authFetch } from '@/lib/api-client';
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { calculerProfil, NUMBER_MEANINGS, type NumerologyProfile } from "@/lib/numerology";
+import { calculerProfil, calculerExpression, calculerAme, calculerCheminDeVie, NUMBER_MEANINGS, type NumerologyProfile } from "@/lib/numerology";
 import { useUserProfile, canAccessFeature } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
 import { Hash, Sparkles, Crown, AlertCircle, Heart } from "lucide-react";
 
-function getExpressionNumber(name: string): number {
-  const clean = name.toUpperCase().replace(/[^A-Z]/g, "");
-  const sum = clean.split("").reduce((acc, ch) => acc + (ch.charCodeAt(0) - 64), 0);
-  return reduceToSingle(sum);
+// ── Compatibility matrix (Pythagorean, base numbers 1-9) ──────────────────────
+const COMPAT_MATRIX: Record<string, { score: number; label: string }> = {
+  "1-1": { score: 65, label: "Dynamique" },
+  "1-2": { score: 85, label: "Harmonieux" },
+  "1-3": { score: 80, label: "Créatif" },
+  "1-4": { score: 70, label: "Solide" },
+  "1-5": { score: 75, label: "Stimulant" },
+  "1-6": { score: 80, label: "Équilibré" },
+  "1-7": { score: 70, label: "Mystérieux" },
+  "1-8": { score: 85, label: "Puissant" },
+  "1-9": { score: 75, label: "Inspiré" },
+  "2-2": { score: 80, label: "Doux" },
+  "2-3": { score: 85, label: "Joyeux" },
+  "2-4": { score: 80, label: "Stable" },
+  "2-5": { score: 65, label: "Contrasté" },
+  "2-6": { score: 90, label: "Idéal" },
+  "2-7": { score: 75, label: "Profond" },
+  "2-8": { score: 70, label: "Complémentaire" },
+  "2-9": { score: 85, label: "Universel" },
+  "3-3": { score: 70, label: "Expressif" },
+  "3-4": { score: 65, label: "Contrasté" },
+  "3-5": { score: 85, label: "Aventureux" },
+  "3-6": { score: 90, label: "Harmonieux" },
+  "3-7": { score: 70, label: "Spirituel" },
+  "3-8": { score: 70, label: "Contrasté" },
+  "3-9": { score: 85, label: "Inspirant" },
+  "4-4": { score: 75, label: "Solide" },
+  "4-5": { score: 60, label: "Difficile" },
+  "4-6": { score: 85, label: "Familial" },
+  "4-7": { score: 75, label: "Réfléchi" },
+  "4-8": { score: 85, label: "Ambitieux" },
+  "4-9": { score: 70, label: "Humaniste" },
+  "5-5": { score: 75, label: "Libre" },
+  "5-6": { score: 70, label: "Contrasté" },
+  "5-7": { score: 80, label: "Curieux" },
+  "5-8": { score: 75, label: "Dynamique" },
+  "5-9": { score: 80, label: "Ouvert" },
+  "6-6": { score: 80, label: "Harmonieux" },
+  "6-7": { score: 70, label: "Profond" },
+  "6-8": { score: 80, label: "Équilibré" },
+  "6-9": { score: 92, label: "Idéal" },
+  "7-7": { score: 75, label: "Mystique" },
+  "7-8": { score: 68, label: "Contrasté" },
+  "7-9": { score: 85, label: "Spirituel" },
+  "8-8": { score: 70, label: "Ambitieux" },
+  "8-9": { score: 75, label: "Puissant" },
+  "9-9": { score: 85, label: "Universel" },
+};
+
+function baseNumber(n: number): number {
+  if (n === 11) return 2;
+  if (n === 22) return 4;
+  if (n === 33) return 6;
+  return n;
 }
 
-function reduceToSingle(n: number): number {
-  if (n === 11 || n === 22 || n === 33) return n;
-  if (n <= 9) return n;
-  const digits = String(n).split("").reduce((acc, d) => acc + parseInt(d), 0);
-  return reduceToSingle(digits);
-}
-
-function getCompatibilityScore(n1: number, n2: number): { score: number; label: string; description: string } {
-  const compatibilityMatrix: Record<string, { score: number; label: string; description: string }> = {
-    "1-1": { score: 65, label: "Dynamique", description: "Deux leaders qui devront apprendre à partager le pouvoir avec bienveillance." },
-    "1-2": { score: 85, label: "Harmonieux", description: "Le 1 apporte la direction, le 2 l'harmonie — un duo complémentaire et fort." },
-    "1-3": { score: 80, label: "Créatif", description: "Association joyeuse et créative, pleine d'énergie et d'enthousiasme." },
-    "1-4": { score: 70, label: "Solide", description: "Le 1 et le 4 construisent ensemble des fondations durables." },
-    "1-5": { score: 75, label: "Stimulant", description: "Relation dynamique et aventureuse, mais attention aux directions opposées." },
-    "1-6": { score: 80, label: "Équilibré", description: "Le 1 guide, le 6 nourrit — une belle complémentarité." },
-    "1-7": { score: 70, label: "Mystérieux", description: "Deux âmes indépendantes qui se fascinent mutuellement." },
-    "1-8": { score: 85, label: "Puissant", description: "Duo ambitieux et efficace, capable de grandes réalisations communes." },
-    "1-9": { score: 75, label: "Inspiré", description: "Le 1 agit, le 9 inspire — une relation porteuse de sens." },
-    "2-2": { score: 80, label: "Doux", description: "Relation sensible et intuitive, avec une grande empathie mutuelle." },
-    "2-3": { score: 85, label: "Joyeux", description: "Couple communicatif et enjoué, l'harmonie et la créativité s'unissent." },
-    "2-4": { score: 80, label: "Stable", description: "Le 2 apporte l'harmonie, le 4 la stabilité — relation solide." },
-    "2-5": { score: 65, label: "Contrasté", description: "Le 2 cherche la paix, le 5 l'aventure — un équilibre à trouver." },
-    "2-6": { score: 90, label: "Idéal", description: "Deux âmes tournées vers l'amour et l'harmonie — compatibilité excellente." },
-    "2-7": { score: 75, label: "Profond", description: "Relation spirituelle et intime, riche en échanges profonds." },
-    "2-8": { score: 70, label: "Complémentaire", description: "Le 2 adoucit le 8, le 8 structure le 2 — bonne complémentarité." },
-    "2-9": { score: 85, label: "Universel", description: "Deux âmes généreuses et aimantes — relation belle et profonde." },
-    "3-3": { score: 70, label: "Créatif", description: "Trop de légèreté parfois, mais une relation joyeuse et créative." },
-    "3-4": { score: 65, label: "Contrasté", description: "Le 3 rêve, le 4 construit — ils peuvent s'équilibrer avec patience." },
-    "3-5": { score: 85, label: "Aventureux", description: "Relation pétillante et joyeuse, pleine d'aventures et de découvertes." },
-    "3-6": { score: 90, label: "Harmonieux", description: "Beauté, amour et créativité réunis — une des meilleures compatibilités." },
-    "3-7": { score: 70, label: "Spirituel", description: "Le 3 s'exprime, le 7 réfléchit — une relation enrichissante." },
-    "3-8": { score: 70, label: "Contrasté", description: "Le 3 joue, le 8 travaille — ils se complètent si chacun respecte l'autre." },
-    "3-9": { score: 85, label: "Inspirant", description: "Créativité et humanisme unis — une relation artistique et généreuse." },
-    "4-4": { score: 75, label: "Solide", description: "Relation stable et fiable, parfois manquant de spontanéité." },
-    "4-5": { score: 60, label: "Difficile", description: "Le 4 veut la stabilité, le 5 la liberté — des ajustements nécessaires." },
-    "4-6": { score: 85, label: "Familial", description: "Sécurité, amour et engagement — une relation durable et chaleureuse." },
-    "4-7": { score: 75, label: "Réfléchi", description: "Deux âmes sérieuses qui apprécient la profondeur et la fiabilité." },
-    "4-8": { score: 85, label: "Ambitieux", description: "Duo travailleur et efficace, capable de construire quelque chose de grand." },
-    "4-9": { score: 70, label: "Humaniste", description: "Le 4 construit, le 9 donne — une relation utile et généreuse." },
-    "5-5": { score: 75, label: "Libre", description: "Deux esprits libres qui s'amusent ensemble — mais attention à l'instabilité." },
-    "5-6": { score: 70, label: "Contrasté", description: "Le 5 cherche l'aventure, le 6 le foyer — trouver un équilibre." },
-    "5-7": { score: 80, label: "Curieux", description: "Deux esprits curieux et indépendants qui s'enrichissent mutuellement." },
-    "5-8": { score: 75, label: "Dynamique", description: "Énergie et ambition réunies — relation active et stimulante." },
-    "5-9": { score: 80, label: "Humaniste", description: "Liberté et générosité — relation inspirante et ouverte sur le monde." },
-    "6-6": { score: 80, label: "Harmonieux", description: "Beaucoup d'amour et de soin, parfois au détriment de l'individualité." },
-    "6-7": { score: 70, label: "Profond", description: "Le 6 aime, le 7 réfléchit — relation intime et spirituelle." },
-    "6-8": { score: 80, label: "Équilibré", description: "Amour et ambition réunis — une relation protectrice et stable." },
-    "6-9": { score: 90, label: "Idéal", description: "Deux âmes généreuses et aimantes — une des meilleures combinaisons." },
-    "7-7": { score: 75, label: "Mystique", description: "Deux chercheurs de vérité — relation profonde mais parfois solitaire." },
-    "7-8": { score: 70, label: "Contrasté", description: "Le 7 cherche l'intériorité, le 8 le succès — des compromis à trouver." },
-    "7-9": { score: 85, label: "Spirituel", description: "Quête spirituelle commune — relation profonde et évolutive." },
-    "8-8": { score: 70, label: "Ambitieux", description: "Beaucoup d'ambition, parfois au détriment de la douceur." },
-    "8-9": { score: 75, label: "Puissant", description: "Force et générosité réunies — relation impactante et significative." },
-    "9-9": { score: 85, label: "Universel", description: "Deux âmes évoluées tournées vers le monde — relation profondément humaine." },
-  };
+function numberCompat(a: number, b: number): number {
+  const n1 = baseNumber(a), n2 = baseNumber(b);
   const key = n1 <= n2 ? `${n1}-${n2}` : `${n2}-${n1}`;
-  return compatibilityMatrix[key] || { score: 72, label: "Unique", description: "Une combinaison rare et unique, riche en apprentissages mutuels." };
+  return COMPAT_MATRIX[key]?.score ?? 72;
+}
+
+function overallLabel(score: number): string {
+  if (score >= 88) return "Âmes sœurs";
+  if (score >= 80) return "Très harmonieux";
+  if (score >= 70) return "Équilibré";
+  if (score >= 60) return "À cultiver";
+  return "Défi vibratoire";
+}
+
+function gaugeColor(score: number): string {
+  if (score <= 60) return "#ef4444";
+  if (score <= 72) return "#f97316";
+  return "#22c55e";
+}
+
+interface PersonInput {
+  prenom: string;
+  date: string;
+}
+
+interface CompatResult {
+  p1: { prenom: string; expression: number; ame: number; chemin: number | null };
+  p2: { prenom: string; expression: number; ame: number; chemin: number | null };
+  scores: { expression: number; ame: number; chemin: number | null };
+  overall: number;
+  label: string;
+}
+
+function computeCompat(a: PersonInput, b: PersonInput): CompatResult {
+  const e1 = calculerExpression(a.prenom);
+  const e2 = calculerExpression(b.prenom);
+  const am1 = calculerAme(a.prenom);
+  const am2 = calculerAme(b.prenom);
+  const c1 = a.date ? calculerCheminDeVie(a.date) : null;
+  const c2 = b.date ? calculerCheminDeVie(b.date) : null;
+
+  const sExpr = numberCompat(e1, e2);
+  const sAme = numberCompat(am1, am2);
+  const sChemin = (c1 && c2) ? numberCompat(c1, c2) : null;
+
+  const overall = sChemin !== null
+    ? Math.round(0.40 * sExpr + 0.35 * sChemin + 0.25 * sAme)
+    : Math.round(0.60 * sExpr + 0.40 * sAme);
+
+  return {
+    p1: { prenom: a.prenom, expression: e1, ame: am1, chemin: c1 },
+    p2: { prenom: b.prenom, expression: e2, ame: am2, chemin: c2 },
+    scores: { expression: sExpr, ame: sAme, chemin: sChemin },
+    overall,
+    label: overallLabel(overall),
+  };
+}
+
+function MiniBar({ score, label }: { score: number; label: string }) {
+  return (
+    <div className="mb-3">
+      <div className="flex justify-between text-[10px] tracking-wider uppercase text-[#8a6f3a] mb-1">
+        <span>{label}</span>
+        <span style={{ color: gaugeColor(score) }}>{score}%</span>
+      </div>
+      <div className="h-1.5 rounded-full bg-[rgba(255,255,255,0.06)] overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-700"
+          style={{ width: `${score}%`, backgroundColor: gaugeColor(score) }}
+        />
+      </div>
+    </div>
+  );
 }
 
 function NumericCompatibility() {
-  const [prenom1, setPrenom1] = useState("");
-  const [prenom2, setPrenom2] = useState("");
-  const [result, setResult] = useState<{ n1: number; n2: number; score: number; label: string; description: string } | null>(null);
+  const { profile } = useUserProfile();
+  const [a, setA] = useState<PersonInput>({ prenom: profile?.prenom || "", date: profile?.dateNaissance || "" });
+  const [b, setB] = useState<PersonInput>({ prenom: "", date: "" });
+  const [result, setResult] = useState<CompatResult | null>(null);
+  const [aiReading, setAiReading] = useState("");
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   const handleCalculate = () => {
-    if (!prenom1.trim() || !prenom2.trim()) return;
-    const n1 = getExpressionNumber(prenom1);
-    const n2 = getExpressionNumber(prenom2);
-    const compat = getCompatibilityScore(n1, n2);
-    setResult({ n1, n2, ...compat });
+    if (!a.prenom.trim() || !b.prenom.trim()) return;
+    setResult(computeCompat(a, b));
+    setAiReading("");
   };
 
-  const gaugeColor = (score: number) => {
-    if (score <= 50) return "#ef4444";
-    if (score <= 70) return "#f97316";
-    return "#22c55e";
+  const getAIReading = async () => {
+    if (!result) return;
+    setIsLoadingAI(true);
+    setAiReading("");
+    try {
+      const res = await authFetch("/api/compatibilite-numerique", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(result),
+      });
+      if (!res.ok || !res.body) throw new Error();
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        setAiReading((p) => p + decoder.decode(value, { stream: true }));
+      }
+    } catch {
+      setAiReading("Les vibrations numériques sont perturbées... Réessayez.");
+    } finally {
+      setIsLoadingAI(false);
+    }
   };
 
   return (
@@ -99,35 +185,39 @@ function NumericCompatibility() {
           Compatibilité Numérique
         </div>
         <p className="font-serif-text italic text-[#c9b88a] text-sm max-w-md mx-auto">
-          Découvrez l&apos;harmonie vibratoire entre deux prénoms grâce au Nombre d&apos;Expression.
+          Expression, Âme et Chemin de Vie — trois axes vibratoires analysés selon la tradition pythagoricienne.
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto mb-5">
-        <div className="flex-1">
-          <label className="luxe-label">Votre prénom</label>
-          <input
-            value={prenom1}
-            onChange={(e) => { setPrenom1(e.target.value); setResult(null); }}
-            placeholder="Ex : Marie"
-            className="luxe-input"
-          />
-        </div>
-        <div className="flex-1">
-          <label className="luxe-label">Prénom de l&apos;autre</label>
-          <input
-            value={prenom2}
-            onChange={(e) => { setPrenom2(e.target.value); setResult(null); }}
-            placeholder="Ex : Pierre"
-            className="luxe-input"
-          />
-        </div>
+      {/* Inputs */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-xl mx-auto mb-6">
+        {([
+          { label: "Votre prénom", val: a, set: setA },
+          { label: "Prénom de l'autre", val: b, set: setB },
+        ] as const).map(({ label, val, set }) => (
+          <div key={label}>
+            <label className="luxe-label">{label}</label>
+            <input
+              value={val.prenom}
+              onChange={(e) => { set((p) => ({ ...p, prenom: e.target.value })); setResult(null); setAiReading(""); }}
+              placeholder="Ex : Marie"
+              className="luxe-input mb-3"
+            />
+            <label className="luxe-label">Date de naissance <span className="text-[#8a6f3a] normal-case">(optionnel)</span></label>
+            <input
+              type="date"
+              value={val.date}
+              onChange={(e) => { set((p) => ({ ...p, date: e.target.value })); setResult(null); setAiReading(""); }}
+              className="luxe-input"
+            />
+          </div>
+        ))}
       </div>
 
-      <div className="flex justify-center mb-6">
+      <div className="flex justify-center mb-8">
         <button
           onClick={handleCalculate}
-          disabled={!prenom1.trim() || !prenom2.trim()}
+          disabled={!a.prenom.trim() || !b.prenom.trim()}
           className="btn-gold"
         >
           <Heart size={14} />
@@ -137,52 +227,71 @@ function NumericCompatibility() {
 
       {result && (
         <div className="fade-in-up">
-          {/* Two circles */}
-          <div className="flex items-center justify-center gap-6 mb-8">
-            <div className="flex flex-col items-center gap-2">
-              <div
-                className="w-20 h-20 rounded-full flex flex-col items-center justify-center border-2"
-                style={{ borderColor: "#d4af6f", background: "rgba(212,175,111,0.08)" }}
-              >
-                <div className="font-serif-display text-3xl font-semibold text-gradient-gold">{result.n1}</div>
+          {/* Two circles with 3 numbers each */}
+          <div className="flex items-start justify-center gap-8 mb-8">
+            {([
+              { p: result.p1, color: "#d4af6f", bg: "rgba(212,175,111,0.08)" },
+              { p: result.p2, color: "#9b7ed4", bg: "rgba(155,126,212,0.08)" },
+            ] as const).map(({ p, color, bg }) => (
+              <div key={p.prenom} className="flex flex-col items-center gap-2">
+                <div
+                  className="w-20 h-20 rounded-full flex flex-col items-center justify-center border-2"
+                  style={{ borderColor: color, background: bg }}
+                >
+                  <div className="font-serif-display text-3xl font-semibold" style={{ color }}>{p.expression}</div>
+                </div>
+                <div className="text-[11px] tracking-[0.2em] uppercase" style={{ color }}>{p.prenom}</div>
+                <div className="text-center text-[10px] text-[#8a6f3a] leading-relaxed">
+                  <div>Expression · {p.expression}</div>
+                  <div>Âme · {p.ame}</div>
+                  {p.chemin && <div>Chemin · {p.chemin}</div>}
+                </div>
               </div>
-              <div className="text-[11px] tracking-[0.2em] uppercase text-[#c9b88a]">{prenom1}</div>
-            </div>
-
-            <div className="text-[#8a6f3a] text-2xl font-serif-display">✦</div>
-
-            <div className="flex flex-col items-center gap-2">
-              <div
-                className="w-20 h-20 rounded-full flex flex-col items-center justify-center border-2"
-                style={{ borderColor: "#9b7ed4", background: "rgba(155,126,212,0.08)" }}
-              >
-                <div className="font-serif-display text-3xl font-semibold" style={{ color: "#c8a8f0" }}>{result.n2}</div>
-              </div>
-              <div className="text-[11px] tracking-[0.2em] uppercase text-[#c9b88a]">{prenom2}</div>
-            </div>
+            ))}
           </div>
 
-          {/* Gauge */}
-          <div className="max-w-sm mx-auto mb-6">
-            <div className="flex justify-between text-[10px] tracking-widest uppercase text-[#8a6f3a] mb-2">
-              <span>Affinité</span>
-              <span>{result.score}%</span>
+          {/* Main gauge */}
+          <div className="max-w-sm mx-auto mb-2">
+            <div className="flex justify-between items-baseline mb-1">
+              <span className="text-[10px] tracking-widest uppercase text-[#8a6f3a]">Affinité globale</span>
+              <span className="font-serif-display text-2xl" style={{ color: gaugeColor(result.overall) }}>{result.overall}%</span>
             </div>
-            <div className="h-2 rounded-full bg-[rgba(255,255,255,0.06)] overflow-hidden">
+            <div className="h-2.5 rounded-full bg-[rgba(255,255,255,0.06)] overflow-hidden mb-1">
               <div
                 className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${result.score}%`, backgroundColor: gaugeColor(result.score) }}
+                style={{ width: `${result.overall}%`, backgroundColor: gaugeColor(result.overall) }}
               />
             </div>
+            <div className="text-center font-serif-display text-xl text-gradient-cream mt-3 mb-5">{result.label}</div>
           </div>
 
-          {/* Label + description */}
-          <div className="text-center">
-            <div className="font-serif-display text-2xl text-gradient-cream mb-3">{result.label}</div>
-            <p className="font-serif-text italic text-[#c9b88a] text-sm max-w-md mx-auto leading-relaxed">
-              {result.description}
-            </p>
+          {/* Breakdown bars */}
+          <div className="max-w-sm mx-auto mb-6 border-t border-[rgba(212,175,111,0.1)] pt-5">
+            <MiniBar score={result.scores.expression} label="Expression (masque social)" />
+            <MiniBar score={result.scores.ame} label="Âme (désirs profonds)" />
+            {result.scores.chemin !== null && (
+              <MiniBar score={result.scores.chemin} label="Chemin de vie (mission)" />
+            )}
           </div>
+
+          {/* AI reading */}
+          {!aiReading && !isLoadingAI && (
+            <div className="text-center">
+              {profile ? (
+                <button onClick={getAIReading} className="btn-gold">
+                  <Sparkles size={14} />
+                  <span>Révéler l'interprétation de Madame Céleste</span>
+                </button>
+              ) : (
+                <p className="text-[11px] tracking-widest uppercase text-[#8a6f3a]">
+                  Connectez-vous pour l&apos;interprétation complète par IA
+                </p>
+              )}
+            </div>
+          )}
+          {(aiReading || isLoadingAI) && (
+            <ReadingResult text={aiReading} isStreaming={isLoadingAI} />
+          )}
         </div>
       )}
     </div>
