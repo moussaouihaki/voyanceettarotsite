@@ -43,7 +43,7 @@ function CarteJeu32({ card, revealed, size = "lg" }: { card: CartomancieCard; re
   return (
     <div className={`${w} ${h} rounded-sm overflow-hidden border border-[rgba(212,175,111,0.3)]`}
       style={{ boxShadow: "0 0 12px rgba(212,175,111,0.2)" }}>
-      <img src={imgUrl} alt={card.name} className="w-full h-full object-cover" />
+      <img src={imgUrl} alt={card.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
     </div>
   );
 }

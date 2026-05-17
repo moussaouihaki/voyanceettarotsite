@@ -20,6 +20,11 @@ export async function POST(req: NextRequest) {
     return new Response("Image manquante", { status: 400 });
   }
 
+  // ~7 MB max when base64-decoded
+  if (imageBase64.length > 9_500_000) {
+    return new Response("Image trop volumineuse (max 7 Mo)", { status: 413 });
+  }
+
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) return new Response("Clé API manquante", { status: 500 });
 

@@ -34,6 +34,7 @@ const PUBLIC_PAGES: Array<{ path: string; priority: number; freq: MetadataRoute.
   { path: "/pendule",            priority: 0.80, freq: "weekly" },
   { path: "/tasseomancie",       priority: 0.80, freq: "weekly" },
   { path: "/mes-astres",         priority: 0.75, freq: "weekly" },
+  { path: "/support",             priority: 0.60, freq: "monthly" },
   { path: "/mentions-legales",   priority: 0.30, freq: "yearly" },
   { path: "/cgv",                priority: 0.30, freq: "yearly" },
 ];

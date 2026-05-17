@@ -54,12 +54,22 @@ function renderContent(content: string) {
   });
 }
 
+function escapeHtml(s: string) {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function formatInline(text: string) {
-  return text
+  const safe = escapeHtml(text);
+  return safe
     .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-[#e8c875]">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em class="italic text-[#d4af6f]">$1</em>')
-    .replace(/&laquo;/g, "«")
-    .replace(/&raquo;/g, "»");
+    .replace(/&amp;laquo;/g, "«")
+    .replace(/&amp;raquo;/g, "»");
 }
 
 export default async function ArticlePage({ params }: PageProps) {

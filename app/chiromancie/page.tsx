@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { authFetch } from "@/lib/api-client";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -17,8 +17,19 @@ export default function ChiromancePage() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagePreview]);
+
   const handleFile = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) return;
+    if (file.size > 7 * 1024 * 1024) {
+      setError("Image trop volumineuse (maximum 7 Mo).");
+      return;
+    }
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
     setReading("");
@@ -57,8 +68,11 @@ export default function ChiromancePage() {
   );
 
   const handleReset = useCallback(() => {
+    setImagePreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
     setImageFile(null);
-    setImagePreview(null);
     setReading("");
     setError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";

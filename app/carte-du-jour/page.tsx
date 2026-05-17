@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ALL_CARDS } from "@/lib/tarot-cards";
-import { getTarotImage } from "@/lib/tarot-images";
+import { getCardImage, type DeckType } from "@/lib/deck-images";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import ReadingResult from "@/components/ReadingResult";
 import { Sun, Sparkles } from "lucide-react";
@@ -37,7 +37,18 @@ export default function CarteDuJourPage() {
   const [reading, setReading] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [intention, setIntention] = useState("");
+  const [deck, setDeck] = useState<DeckType>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("tarot-deck") as DeckType) || "rws";
+    }
+    return "rws";
+  });
   const { profile, addReading } = useUserProfile();
+
+  const switchDeck = (d: DeckType) => {
+    setDeck(d);
+    localStorage.setItem("tarot-deck", d);
+  };
 
   useEffect(() => {
     setCard(getDailyCard());
@@ -76,7 +87,7 @@ export default function CarteDuJourPage() {
 
   if (!card) return null;
 
-  const imageUrl = getTarotImage(card.id);
+  const imageUrl = getCardImage(card.id, deck);
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
@@ -125,6 +136,25 @@ export default function CarteDuJourPage() {
                     backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212,175,111,0.25) 10px, rgba(212,175,111,0.25) 11px)",
                   }} />
                 </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] tracking-[0.2em] uppercase text-[#8a6f3a]">Jeu</span>
+              <div className="flex border border-[rgba(212,175,111,0.25)] rounded-sm overflow-hidden">
+                {(["rws", "marseille"] as DeckType[]).map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => switchDeck(d)}
+                    className={`px-3 py-1.5 text-[10px] tracking-[0.15em] uppercase transition-all ${
+                      deck === d
+                        ? "bg-[rgba(212,175,111,0.15)] text-[#e8c875] border-r border-[rgba(212,175,111,0.25)] last:border-r-0"
+                        : "text-[#8a6f3a] hover:text-[#c9b88a] border-r border-[rgba(212,175,111,0.15)] last:border-r-0"
+                    }`}
+                  >
+                    {d === "rws" ? "Rider-Waite" : "Marseille"}
+                  </button>
+                ))}
               </div>
             </div>
 

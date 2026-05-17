@@ -16,11 +16,12 @@ export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
 
-  const { card, intention, profile } = await req.json() as {
+  const { card, intention: rawIntention, profile } = await req.json() as {
     card: { name: string; suit: string; reversed: boolean; keywords: string[]; upright: string; meaningReversed: string };
     intention?: string;
     profile?: ProfileData;
   };
+  const intention = typeof rawIntention === "string" ? rawIntention.slice(0, 500) : undefined;
 
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) return new Response("Clé API manquante", { status: 500 });
