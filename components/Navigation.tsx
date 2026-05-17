@@ -77,6 +77,7 @@ export default function Navigation() {
   const { profile, firebaseUser, logout } = useUserProfile();
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -139,8 +140,22 @@ export default function Navigation() {
           {NAV_GROUPS.map((group) => {
             const isActive = group.items.some((item) => pathname === item.href);
             const isOpen = openGroup === group.label;
+
+            const openMenu = () => {
+              if (closeTimer.current) clearTimeout(closeTimer.current);
+              setOpenGroup(group.label);
+            };
+            const scheduleClose = () => {
+              closeTimer.current = setTimeout(() => setOpenGroup(null), 120);
+            };
+
             return (
-              <div key={group.label} className="relative">
+              <div
+                key={group.label}
+                className="relative"
+                onMouseEnter={openMenu}
+                onMouseLeave={scheduleClose}
+              >
                 <button
                   onClick={() => setOpenGroup(isOpen ? null : group.label)}
                   className={`px-2.5 py-2 text-[11px] tracking-[0.1em] uppercase font-medium transition-all duration-200 flex items-center gap-1 ${
@@ -152,29 +167,26 @@ export default function Navigation() {
                 </button>
 
                 {isOpen && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setOpenGroup(null)} />
-                    <div className="absolute right-0 top-full mt-3 w-72 z-20 luxe-card overflow-hidden rounded-sm">
-                      {group.items.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => setOpenGroup(null)}
-                          className={`block px-5 py-4 transition-all hover:bg-[rgba(212,175,111,0.06)] border-b border-[rgba(212,175,111,0.08)] last:border-b-0 ${
-                            pathname === item.href ? "bg-[rgba(212,175,111,0.08)]" : ""
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="font-serif-display text-[14px] text-[#f5ecd9]">{item.label}</div>
-                            {"premium" in item && item.premium && (
-                              <Crown size={11} className="text-[#d4af6f]" />
-                            )}
-                          </div>
-                          <div className="text-[11px] text-[#8a6f3a] tracking-wide">{item.desc}</div>
-                        </Link>
-                      ))}
-                    </div>
-                  </>
+                  <div className="absolute right-0 top-full mt-3 w-72 z-20 luxe-card overflow-hidden rounded-sm">
+                    {group.items.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setOpenGroup(null)}
+                        className={`block px-5 py-4 transition-all hover:bg-[rgba(212,175,111,0.06)] border-b border-[rgba(212,175,111,0.08)] last:border-b-0 ${
+                          pathname === item.href ? "bg-[rgba(212,175,111,0.08)]" : ""
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="font-serif-display text-[14px] text-[#f5ecd9]">{item.label}</div>
+                          {"premium" in item && item.premium && (
+                            <Crown size={11} className="text-[#d4af6f]" />
+                          )}
+                        </div>
+                        <div className="text-[11px] text-[#8a6f3a] tracking-wide">{item.desc}</div>
+                      </Link>
+                    ))}
+                  </div>
                 )}
               </div>
             );
