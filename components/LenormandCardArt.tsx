@@ -1,6 +1,7 @@
 "use client";
 
 import { LenormandCard, LENORMAND_PLAYING_CARDS } from "@/lib/lenormand";
+import { LenormandSymbol } from "@/components/LenormandSymbols";
 
 interface Props {
   card: LenormandCard;
@@ -10,9 +11,9 @@ interface Props {
 }
 
 const SIZE = {
-  sm: { card: "w-[72px] h-[108px]", emoji: "text-3xl", name: "text-[7px]", num: "text-[7px]", suit: "text-[8px]" },
-  md: { card: "w-[96px] h-[144px]", emoji: "text-4xl", name: "text-[8px]", num: "text-[8px]", suit: "text-[10px]" },
-  lg: { card: "w-[130px] h-[195px]", emoji: "text-5xl", name: "text-[10px]", num: "text-[10px]", suit: "text-[13px]" },
+  sm: { card: "w-[72px] h-[108px]", symSize: 36, name: "text-[7px]", num: "text-[7px]", suit: "text-[8px]" },
+  md: { card: "w-[96px] h-[144px]", symSize: 44, name: "text-[8px]", num: "text-[8px]", suit: "text-[10px]" },
+  lg: { card: "w-[130px] h-[195px]", symSize: 56, name: "text-[10px]", num: "text-[10px]", suit: "text-[13px]" },
 };
 
 export default function LenormandCardArt({ card, size = "md", revealed = true, showPlayingCard = true }: Props) {
@@ -57,13 +58,12 @@ export default function LenormandCardArt({ card, size = "md", revealed = true, s
 
       {/* Central illustration */}
       <div className="flex-1 flex items-center justify-center py-1 relative">
-        {/* Subtle radial glow behind emoji */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-10 h-10 rounded-full bg-[rgba(212,175,111,0.06)] blur-md" />
         </div>
-        <span className={`${s.emoji} relative z-10 leading-none`} role="img" aria-label={card.name}>
-          {card.symbol}
-        </span>
+        <div className="relative z-10" aria-label={card.name}>
+          <LenormandSymbol number={card.number} color="#d4af6f" size={s.symSize} />
+        </div>
       </div>
 
       {/* Bottom: playing card rank + name */}
