@@ -4,6 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MADAME_CELESTE_SYSTEM } from "@/lib/gemini";
 import { getSunSign } from "@/lib/astrology";
 import { computeNatalChart, ZODIAC_NAMES } from "@/lib/astro-engine";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -63,6 +64,8 @@ interface ConjointInfo {
 export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
+  const rl = rateLimit(`lecture:${auth.uid}`, 15);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   let body: { cards?: CardData[]; question?: string; spreadType?: string; spreadName?: string; profile?: UserProfile; conjoint?: ConjointInfo };
   try {

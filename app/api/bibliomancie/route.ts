@@ -2,6 +2,7 @@ import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest } from "next/server";
 import { FORMATTING_RULES } from "@/lib/gemini";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -10,6 +11,8 @@ const SYSTEM = `Tu es Madame Céleste, gardienne des textes sacrés et oracle de
 export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
+  const rl = rateLimit(`bibliomancie:${auth.uid}`, 20);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   const { question, passage, source, profile } = await req.json() as {
     question?: string;

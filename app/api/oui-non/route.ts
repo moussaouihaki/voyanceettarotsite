@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MODEL_NAME } from "@/lib/gemini";
 import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 30;
 
@@ -59,6 +60,8 @@ function computeResult(cards: string[]): CardResult {
 export async function POST(req: NextRequest) {
   const authResult = await verifyIdToken(req);
   if (!authResult) return unauthorizedResponse();
+  const rl = rateLimit(`oui-non:${authResult.uid}`, 20);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   const { question, cards } = (await req.json()) as {
     question: string;

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import Stripe from "stripe";
 import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 30;
 
@@ -21,6 +22,8 @@ const PRICE_IDS = () => ({
 export async function POST(req: NextRequest) {
   const authResult = await verifyIdToken(req);
   if (!authResult) return unauthorizedResponse();
+  const rl = rateLimit(`checkout:${authResult.uid}`, 5);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   const body = await req.json() as {
     tier: "mystique" | "vip";

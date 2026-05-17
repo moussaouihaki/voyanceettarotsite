@@ -4,6 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
 import { computeNatalChart, ZODIAC_NAMES } from "@/lib/astro-engine";
 import { getSunSign } from "@/lib/astrology";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -34,6 +35,8 @@ function formatChartForPrompt(profile: { dateNaissance: string; heureNaissance?:
 export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
+  const rl = rateLimit(`synastrie:${auth.uid}`, 10);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   const body = await req.json() as {
     person1: { prenom: string; signe: string; dateNaissance: string; heureNaissance?: string; lat?: number; lon?: number; villeNaissance?: string };

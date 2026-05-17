@@ -1,12 +1,15 @@
 import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest } from "next/server";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
+  const rl = rateLimit(`chiromancie:${auth.uid}`, 10);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   const body = await req.json() as {
     imageBase64: string;

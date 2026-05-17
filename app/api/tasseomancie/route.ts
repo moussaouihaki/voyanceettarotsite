@@ -1,12 +1,15 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest } from "next/server";
 import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   const authResult = await verifyIdToken(req);
   if (!authResult) return unauthorizedResponse();
+  const rl = rateLimit(`tasseomancie:${authResult.uid}`, 10);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   const body = (await req.json()) as {
     imageBase64: string;

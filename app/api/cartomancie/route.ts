@@ -2,12 +2,15 @@ import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getSunSign } from "@/lib/astrology";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
+  const rl = rateLimit(`cartomancie:${auth.uid}`, 20);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   let body: { cards?: Array<{ name: string; rank: string; suit: string; suitSymbol: string; position: string; keywords: string[] }>; question?: string; spreadName?: string; profile?: { prenom?: string; dateNaissance?: string } };
   try { body = await req.json(); } catch { return new Response("Requête invalide", { status: 400 }); }

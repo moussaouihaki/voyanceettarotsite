@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MADAME_CELESTE_SYSTEM } from "@/lib/gemini";
 import { getSunSign } from "@/lib/astrology";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -22,6 +23,8 @@ interface UserProfile {
 export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
+  const rl = rateLimit(`voyance:${auth.uid}`, 15);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   let body: { messages?: ChatMessage[]; profile?: UserProfile };
   try {

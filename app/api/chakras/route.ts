@@ -2,6 +2,7 @@ import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -10,6 +11,8 @@ const SYSTEM = `Tu es Madame Céleste, guérisseuse énergétique et experte en 
 export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
+  const rl = rateLimit(`chakras:${auth.uid}`, 20);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   const { scores } = await req.json() as { scores: Record<string, number> };
   const apiKey = process.env.GOOGLE_API_KEY;

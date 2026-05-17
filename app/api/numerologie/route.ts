@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FORMATTING_RULES } from "@/lib/gemini";
 import type { NumerologyProfile } from "@/lib/numerology";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -11,6 +12,8 @@ const SYSTEM = `Tu es Madame Céleste, numérologue mystique maîtrisant la num�
 export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
+  const rl = rateLimit(`numerologie:${auth.uid}`, 20);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   const { prenom, nom, dateNaissance, profile } = await req.json() as {
     prenom: string;

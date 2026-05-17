@@ -1,12 +1,15 @@
 import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
   if (!auth) return unauthorizedResponse();
+  const rl = rateLimit(`belline:${auth.uid}`, 20);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
   let body: { cards?: Array<{ id: number; name: string; planet: string; keywords: string[]; position: string }>; question?: string; spreadName?: string; profile?: { prenom?: string; dateNaissance?: string } };
   try { body = await req.json(); } catch { return new Response("Requête invalide", { status: 400 }); }
