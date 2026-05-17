@@ -8,6 +8,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import InstallBanner from "@/components/InstallBanner";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 
 const playfair = Playfair_Display({
@@ -94,6 +95,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={`h-full ${playfair.variable} ${cormorant.variable} ${inter.variable}`}>
       <body className="min-h-full flex flex-col relative">
+        <GoogleAnalytics />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
