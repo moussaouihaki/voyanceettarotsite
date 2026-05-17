@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ScrollToTop from "@/components/ScrollToTop";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import InstallBanner from "@/components/InstallBanner";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 
 const playfair = Playfair_Display({
@@ -136,6 +137,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ErrorBoundary>{children}</ErrorBoundary>
           </main>
           <Footer />
+          <InstallBanner />
         </UserProfileProvider>
       </body>
     </html>
