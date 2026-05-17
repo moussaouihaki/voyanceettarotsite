@@ -28,6 +28,11 @@ const PUBLIC_PAGES: Array<{ path: string; priority: number; freq: MetadataRoute.
   { path: "/bibliomancie",       priority: 0.65, freq: "monthly" },
   { path: "/autel",              priority: 0.65, freq: "monthly" },
   { path: "/revolution-solaire", priority: 0.70, freq: "weekly" },
+  { path: "/anges",              priority: 0.85, freq: "weekly" },
+  { path: "/calendrier-astral",  priority: 0.85, freq: "daily" },
+  { path: "/oui-non",            priority: 0.90, freq: "daily" },
+  { path: "/pendule",            priority: 0.80, freq: "weekly" },
+  { path: "/tasseomancie",       priority: 0.80, freq: "weekly" },
   { path: "/mentions-legales",   priority: 0.30, freq: "yearly" },
   { path: "/cgv",                priority: 0.30, freq: "yearly" },
 ];

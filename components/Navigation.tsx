@@ -15,6 +15,7 @@ const NAV_GROUPS = [
       { href: "/tirage", label: "Tirage de Tarot", desc: "55+ tirages disponibles" },
       { href: "/carte-du-jour", label: "Carte du Jour", desc: "Guidance quotidienne" },
       { href: "/voyance", label: "Voyance Libre", desc: "Chat avec Madame Céleste" },
+      { href: "/oui-non", label: "Tirage Oui/Non", desc: "Réponse rapide · Oracle instantané" },
     ],
   },
   {
@@ -24,6 +25,7 @@ const NAV_GROUPS = [
       { href: "/horoscope", label: "Horoscope", desc: "Jour / Semaine / Mois" },
       { href: "/profil-astral", label: "Profil Astral", desc: "Thème natal complet" },
       { href: "/synastrie", label: "Synastrie", desc: "Compatibilité amoureuse", premium: true },
+      { href: "/calendrier-astral", label: "Calendrier Astral", desc: "Éphémérides · Événements du ciel" },
     ],
   },
   {
@@ -35,6 +37,9 @@ const NAV_GROUPS = [
       { href: "/ogham", label: "Ogham Celtique", desc: "25 feadha · Tradition druidique", premium: true },
       { href: "/belline", label: "Oracle de Belline", desc: "53 cartes · Planètes & Destins", premium: true },
       { href: "/cartomancie", label: "Cartomancie", desc: "Jeu de 32 cartes · Tradition populaire" },
+      { href: "/anges", label: "Oracle des Anges", desc: "Messages célestes · Guidance angélique" },
+      { href: "/pendule", label: "Pendule Virtuel", desc: "Réponses intuitives · Radiesthésie" },
+      { href: "/tasseomancie", label: "Tasséomancie", desc: "Lecture du marc de café · Tradition orientale" },
     ],
   },
   {

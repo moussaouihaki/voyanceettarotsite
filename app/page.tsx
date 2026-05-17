@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import CircleVideo from "@/components/CircleVideo";
+import { getUpcomingEvents } from "@/lib/planetary-events";
 import {
   Sparkles,
   Moon,
@@ -98,6 +100,7 @@ const FEATURES_LIST = [
 
 export default function Home() {
   const { profile } = useUserProfile();
+  const nextEvent = useMemo(() => getUpcomingEvents(1)[0] ?? null, []);
 
   return (
     <>
@@ -168,6 +171,42 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ─────────── PROCHAIN ÉVÉNEMENT ASTRAL ─────────── */}
+      {nextEvent && (
+        <section className="max-w-6xl mx-auto px-6 mb-8 fade-in-up-delay-4">
+          <Link href="/calendrier-astral" className="group block">
+            <div className="luxe-card-premium rounded-sm p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-5 relative overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[radial-gradient(circle,rgba(212,175,111,0.1),transparent_70%)] pointer-events-none" />
+              {/* Emoji */}
+              <div className="flex-shrink-0 w-14 h-14 rounded-sm flex items-center justify-center text-3xl bg-[rgba(212,175,111,0.1)] border border-[rgba(212,175,111,0.25)]">
+                {nextEvent.emoji}
+              </div>
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f] mb-1.5">
+                  ✦ Prochain Événement Astral
+                </div>
+                <h3 className="font-serif-display text-xl md:text-2xl text-cream group-hover:text-[#e8c875] transition-colors leading-snug">
+                  {nextEvent.title}
+                </h3>
+                <p className="text-[11px] text-[#8a6f3a] mt-0.5 mb-2">
+                  {new Date(nextEvent.date + "T12:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                  {nextEvent.endDate && ` → ${new Date(nextEvent.endDate + "T12:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}`}
+                </p>
+                <p className="text-[13px] text-[#c9b88a] leading-relaxed line-clamp-2 max-w-2xl">
+                  {nextEvent.description}
+                </p>
+              </div>
+              {/* Arrow */}
+              <div className="flex-shrink-0 flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase text-[#d4af6f] group-hover:gap-3 transition-all whitespace-nowrap">
+                <span>Voir le calendrier</span>
+                <ArrowRight size={13} />
+              </div>
+            </div>
+          </Link>
+        </section>
+      )}
 
       {/* ─────────── PILLARS ─────────── */}
       <section className="max-w-6xl mx-auto px-6 py-20">
