@@ -35,9 +35,9 @@ const NEUTRAL_CARDS = [
   "Le Magicien",
   "La Papesse",
   "Le Pape",
-  "Le Chariot (endroit)",
+  "L'Hermite",
   "La Roue de Fortune (inversée)",
-  "La Mort (endroit)",
+  "Le Pendu (endroit)",
   "L'As de Bâtons",
   "Le 2 de Coupes",
   "Le 3 de Pentacles",
@@ -63,8 +63,12 @@ interface Reading {
 }
 
 function pickCards(): string[] {
-  const shuffled = [...ALL_CARDS].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 3);
+  const arr = [...ALL_CARDS];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.slice(0, 3);
 }
 
 function resultColor(result: CardResult): string {

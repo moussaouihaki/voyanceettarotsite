@@ -49,12 +49,20 @@ export default function TasseomanciePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((file: File) => {
-    if (!file.type.startsWith("image/")) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Format non supporté. Veuillez choisir une image (JPG, PNG, WebP).");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("L'image est trop volumineuse (maximum 5 Mo).");
+      return;
+    }
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
     setReading("");
     setError(null);
-  }, []);
+  }, [imagePreview]);
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -88,13 +96,14 @@ export default function TasseomanciePage() {
   );
 
   const handleReset = useCallback(() => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
     setImageFile(null);
     setImagePreview(null);
     setReading("");
     setError(null);
     setQuestion("");
     if (fileInputRef.current) fileInputRef.current.value = "";
-  }, []);
+  }, [imagePreview]);
 
   const handleAnalyze = useCallback(async () => {
     if (!imageFile) return;

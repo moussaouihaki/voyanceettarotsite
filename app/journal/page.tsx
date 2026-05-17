@@ -18,6 +18,18 @@ const TYPE_META: Record<string, { label: string; emoji: string; color: string }>
   reves:             { label: "Rêves",             emoji: "💭", color: "#c4b5fd" },
   chiromancie:       { label: "Chiromancie",       emoji: "✋", color: "#fda4af" },
   bibliomancie:      { label: "Bibliomancie",      emoji: "📖", color: "#93c5fd" },
+  anges:             { label: "Oracle des Anges",  emoji: "👼", color: "#e0c3fc" },
+  pendule:           { label: "Pendule",           emoji: "🔮", color: "#c084fc" },
+  tasseomancie:      { label: "Tasséomancie",      emoji: "☕", color: "#a16207" },
+  "oui-non":         { label: "Oui / Non",         emoji: "🃏", color: "#f97316" },
+  chakras:           { label: "Chakras",           emoji: "✨", color: "#4ade80" },
+  numerologie:       { label: "Numérologie",       emoji: "🔢", color: "#38bdf8" },
+  horoscope:         { label: "Horoscope",         emoji: "♈", color: "#fb923c" },
+  aura:              { label: "Aura",              emoji: "🌈", color: "#c4b5fd" },
+  lithotherapie:     { label: "Lithothérapie",     emoji: "💎", color: "#67e8f9" },
+  sigil:             { label: "Sigil",             emoji: "⚡", color: "#facc15" },
+  autel:             { label: "Autel Virtuel",     emoji: "🕯️", color: "#f9a8d4" },
+  "mes-astres":      { label: "Thème Astral",      emoji: "🪐", color: "#818cf8" },
 };
 
 function getMeta(type: string) {

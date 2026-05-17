@@ -1,9 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest } from "next/server";
+import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
+  const authResult = await verifyIdToken(req);
+  if (!authResult) return unauthorizedResponse();
+
   const body = (await req.json()) as {
     imageBase64: string;
     mimeType?: string;

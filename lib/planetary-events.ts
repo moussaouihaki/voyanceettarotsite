@@ -57,6 +57,9 @@ export const PLANETARY_EVENTS_2026: PlanetaryEvent[] = [
   // Entrées planétaires majeures
   { id: "uranus-gem26", date: "2026-07-07", type: "ingress", planet: "Uranus", title: "Uranus entre en Gémeaux", description: "Uranus entre définitivement en Gémeaux pour 7 ans. Révolution dans la communication, les transports, l'intelligence artificielle et les échanges d'information.", impact: "majeur", emoji: "⛢" },
   { id: "jupiter-sco26", date: "2026-10-22", type: "ingress", planet: "Jupiter", title: "Jupiter entre en Scorpion", description: "Jupiter entre en Scorpion. Expansion dans les domaines de la transformation, de l'héritage et des ressources partagées.", impact: "majeur", emoji: "♃" },
+  // Rétrogrades 2026
+  { id: "saturn-rx26", date: "2026-05-12", type: "retrograde", planet: "Saturne", title: "Saturne Rétrograde en Bélier", description: "Saturne rétrograde jusqu'au 28 septembre 2026. Période de révision des structures, des engagements et des responsabilités. Temps de bilan profond.", rituel: "Méditez sur les structures qui freinent votre évolution. Notez ce qui mérite d'être reconstruit.", impact: "majeur", emoji: "♄℞" },
+  { id: "jupiter-rx26", date: "2026-11-02", type: "retrograde", planet: "Jupiter", title: "Jupiter Rétrograde en Scorpion", description: "Jupiter rétrograde en Scorpion jusqu'en mars 2027. Expansion intérieure et révision des croyances profondes. Richesse intérieure plutôt que matérielle.", rituel: "Revisitez vos projets d'expansion. Qu'est-ce qui mérite une croissance plus alignée avec vos valeurs profondes ?", impact: "majeur", emoji: "♃℞" },
 ];
 
 // Événements 2025 déjà passés mais récents

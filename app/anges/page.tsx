@@ -2,7 +2,7 @@
 import { authFetch } from "@/lib/api-client";
 import { useState } from "react";
 import Link from "next/link";
-import { ANGEL_CARDS, ANGEL_SPREADS, drawAngelCards, type AngeCard, type AngelSpread } from "@/lib/anges";
+import { ANGEL_CARDS, ANGEL_SPREADS, type AngeCard, type AngelSpread } from "@/lib/anges";
 import GenericDeckPick from "@/components/GenericDeckPick";
 import DeckShuffle from "@/components/DeckShuffle";
 import ReadingResult from "@/components/ReadingResult";

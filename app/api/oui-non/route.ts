@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MODEL_NAME } from "@/lib/gemini";
+import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 
 export const maxDuration = 30;
 
@@ -56,6 +57,9 @@ function computeResult(cards: string[]): CardResult {
 }
 
 export async function POST(req: NextRequest) {
+  const authResult = await verifyIdToken(req);
+  if (!authResult) return unauthorizedResponse();
+
   const { question, cards } = (await req.json()) as {
     question: string;
     cards: string[];
