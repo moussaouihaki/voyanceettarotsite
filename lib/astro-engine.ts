@@ -240,7 +240,7 @@ function getLunarNode(T: number): number {
 
 // ───────── 5e. Lilith — apogée moyen de la Lune ─────────
 function getLilith(T: number): number {
-  return rev(83.3532465 + 40.9982502 * T);
+  return rev(83.3532465 + 4069.0137287 * T);
 }
 
 // ───────── 6. Greenwich Mean Sidereal Time ─────────

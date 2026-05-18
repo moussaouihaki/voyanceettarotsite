@@ -12,15 +12,6 @@ export interface BellineCard {
 export const BELLINE_DECK: BellineCard[] = [
   {
     id: 1,
-    name: "Le Génie",
-    planet: "Soleil",
-    keywords: ["inspiration", "génie", "créativité", "révélation"],
-    upright: "Une illumination intérieure vous guide vers une découverte extraordinaire qui changera le cours de votre vie.",
-    element: "Feu",
-    beneficial: true,
-  },
-  {
-    id: 2,
     name: "La Destinée",
     planet: "Saturne",
     keywords: ["destin", "karma", "chemin de vie", "prédestination"],
@@ -29,7 +20,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 3,
+    id: 2,
     name: "La Lettre",
     planet: "Mercure",
     keywords: ["message", "communication", "nouvelle", "correspondance"],
@@ -37,7 +28,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 4,
+    id: 3,
     name: "Le Cadeau",
     planet: "Vénus",
     keywords: ["don", "présent", "générosité", "surprise"],
@@ -46,7 +37,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 5,
+    id: 4,
     name: "La Voyageuse",
     planet: "Mercure",
     keywords: ["voyage", "déplacement", "mobilité", "exploration"],
@@ -54,7 +45,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 6,
+    id: 5,
     name: "Le Chemin",
     planet: "Mercure",
     keywords: ["direction", "voie", "parcours", "progression"],
@@ -62,7 +53,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 7,
+    id: 6,
     name: "La Fortune",
     planet: "Jupiter",
     keywords: ["chance", "prospérité", "bonne étoile", "abondance"],
@@ -71,7 +62,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 8,
+    id: 7,
     name: "La Joie",
     planet: "Soleil",
     keywords: ["bonheur", "allégresse", "contentement", "célébration"],
@@ -80,7 +71,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 9,
+    id: 8,
     name: "La Mort",
     planet: "Saturne",
     keywords: ["transformation", "fin", "renouveau", "passage"],
@@ -89,7 +80,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 10,
+    id: 9,
     name: "La Force",
     planet: "Mars",
     keywords: ["puissance", "courage", "détermination", "vitalité"],
@@ -98,7 +89,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 11,
+    id: 10,
     name: "La Flatterie",
     planet: "Vénus",
     keywords: ["séduction", "compliments", "faux semblants", "charme"],
@@ -107,7 +98,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 12,
+    id: 11,
     name: "Le Mariage",
     planet: "Vénus",
     keywords: ["union", "engagement", "alliance", "lien sacré"],
@@ -116,7 +107,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 13,
+    id: 12,
     name: "La Trahison",
     planet: "Neptune",
     keywords: ["trahison", "mensonge", "déception", "illusion"],
@@ -125,7 +116,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 14,
+    id: 13,
     name: "La Surprise",
     planet: "Uranus",
     keywords: ["imprévu", "surprise", "révélation soudaine", "choc"],
@@ -133,7 +124,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 15,
+    id: 14,
     name: "Le Profit",
     planet: "Jupiter",
     keywords: ["gain", "bénéfice", "récompense", "avantage"],
@@ -142,7 +133,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 16,
+    id: 15,
     name: "La Visite",
     planet: "Lune",
     keywords: ["visite", "arrivée", "rencontre", "invité"],
@@ -150,7 +141,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Eau",
   },
   {
-    id: 17,
+    id: 16,
     name: "La Douleur",
     planet: "Saturne",
     keywords: ["souffrance", "épreuve", "peine", "difficulté"],
@@ -159,7 +150,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 18,
+    id: 17,
     name: "La Femme Aimée",
     planet: "Vénus",
     keywords: ["amour", "féminité", "désir", "bien-aimée"],
@@ -168,7 +159,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 19,
+    id: 18,
     name: "La Famille",
     planet: "Lune",
     keywords: ["famille", "racines", "héritage", "liens familiaux"],
@@ -176,7 +167,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Eau",
   },
   {
-    id: 20,
+    id: 19,
     name: "La Maison",
     planet: "Lune",
     keywords: ["foyer", "demeure", "sécurité", "habitat"],
@@ -184,7 +175,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Terre",
   },
   {
-    id: 21,
+    id: 20,
     name: "Le Retour",
     planet: "Lune",
     keywords: ["retour", "renaissance", "réconciliation", "recommencement"],
@@ -192,7 +183,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Eau",
   },
   {
-    id: 22,
+    id: 21,
     name: "L'Enquête",
     planet: "Mercure",
     keywords: ["recherche", "investigation", "analyse", "vérité"],
@@ -200,7 +191,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 23,
+    id: 22,
     name: "La Pensée",
     planet: "Mercure",
     keywords: ["réflexion", "intellect", "idée", "méditation"],
@@ -208,7 +199,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 24,
+    id: 23,
     name: "La Justice",
     planet: "Saturne",
     keywords: ["équité", "vérité", "jugement", "équilibre"],
@@ -217,7 +208,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 25,
+    id: 24,
     name: "La Réussite",
     planet: "Soleil",
     keywords: ["succès", "accomplissement", "victoire", "épanouissement"],
@@ -226,7 +217,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 26,
+    id: 25,
     name: "Le Médecin",
     planet: "Mercure",
     keywords: ["guérison", "soin", "conseil", "expertise"],
@@ -234,7 +225,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Terre",
   },
   {
-    id: 27,
+    id: 26,
     name: "La Faveur",
     planet: "Jupiter",
     keywords: ["grâce", "protection", "bénédiction", "soutien"],
@@ -243,7 +234,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 28,
+    id: 27,
     name: "La Plainte",
     planet: "Saturne",
     keywords: ["grief", "réclamation", "mécontentement", "conflit"],
@@ -252,7 +243,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 29,
+    id: 28,
     name: "La Santé",
     planet: "Soleil",
     keywords: ["vitalité", "bien-être", "guérison", "forme"],
@@ -261,7 +252,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 30,
+    id: 29,
     name: "L'Absurdité",
     planet: "Uranus",
     keywords: ["confusion", "chaos", "incompréhension", "désordre"],
@@ -269,7 +260,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 31,
+    id: 30,
     name: "La Maladie",
     planet: "Saturne",
     keywords: ["maladie", "fragilité", "vulnérabilité", "affaiblissement"],
@@ -278,7 +269,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 32,
+    id: 31,
     name: "Le Chagrin",
     planet: "Neptune",
     keywords: ["tristesse", "peine", "mélancolie", "affliction"],
@@ -287,7 +278,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 33,
+    id: 32,
     name: "La Satisfaction",
     planet: "Vénus",
     keywords: ["contentement", "plénitude", "accomplissement", "bonheur"],
@@ -296,7 +287,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 34,
+    id: 33,
     name: "Le Changement",
     planet: "Uranus",
     keywords: ["mutation", "transformation", "évolution", "renouveau"],
@@ -304,7 +295,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 35,
+    id: 34,
     name: "La Nouveauté",
     planet: "Uranus",
     keywords: ["innovation", "fraîcheur", "commencement", "découverte"],
@@ -312,7 +303,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 36,
+    id: 35,
     name: "La Hâte",
     planet: "Mars",
     keywords: ["urgence", "rapidité", "précipitation", "impatience"],
@@ -321,7 +312,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 37,
+    id: 36,
     name: "L'Espoir",
     planet: "Jupiter",
     keywords: ["espérance", "foi", "optimisme", "attente positive"],
@@ -330,7 +321,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 38,
+    id: 37,
     name: "Le Désir",
     planet: "Vénus",
     keywords: ["désir", "aspiration", "envie", "passion"],
@@ -339,7 +330,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 39,
+    id: 38,
     name: "L'Ambition",
     planet: "Mars",
     keywords: ["ambition", "objectif", "détermination", "ascension"],
@@ -348,7 +339,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 40,
+    id: 39,
     name: "L'Amour",
     planet: "Vénus",
     keywords: ["amour", "passion", "tendresse", "union des cœurs"],
@@ -357,7 +348,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 41,
+    id: 40,
     name: "Le Conseil",
     planet: "Mercure",
     keywords: ["guidance", "conseil", "sagesse", "recommandation"],
@@ -365,7 +356,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 42,
+    id: 41,
     name: "La Peur",
     planet: "Neptune",
     keywords: ["crainte", "anxiété", "blocage", "paralysie"],
@@ -374,7 +365,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 43,
+    id: 42,
     name: "L'Ennemi",
     planet: "Mars",
     keywords: ["adversaire", "opposition", "rivalité", "obstacle humain"],
@@ -383,7 +374,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 44,
+    id: 43,
     name: "La Richesse",
     planet: "Jupiter",
     keywords: ["prospérité", "abondance", "opulence", "succès matériel"],
@@ -392,7 +383,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 45,
+    id: 44,
     name: "La Méfiance",
     planet: "Saturne",
     keywords: ["prudence", "doute", "suspicion", "vigilance"],
@@ -401,7 +392,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 46,
+    id: 45,
     name: "La Question",
     planet: "Mercure",
     keywords: ["interrogation", "incertitude", "recherche de réponse", "doute"],
@@ -409,7 +400,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 47,
+    id: 46,
     name: "Le Coup de Théâtre",
     planet: "Uranus",
     keywords: ["retournement", "surprise totale", "renversement", "choc inattendu"],
@@ -417,7 +408,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 48,
+    id: 47,
     name: "La Réponse",
     planet: "Mercure",
     keywords: ["réponse", "solution", "clarification", "révélation"],
@@ -425,7 +416,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 49,
+    id: 48,
     name: "L'Aide",
     planet: "Jupiter",
     keywords: ["soutien", "assistance", "secours", "solidarité"],
@@ -434,7 +425,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: true,
   },
   {
-    id: 50,
+    id: 49,
     name: "La Tristesse",
     planet: "Neptune",
     keywords: ["mélancolie", "deuil", "abattement", "isolement"],
@@ -443,7 +434,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 51,
+    id: 50,
     name: "Le Mouvement",
     planet: "Mercure",
     keywords: ["action", "dynamisme", "progression", "activité"],
@@ -451,7 +442,7 @@ export const BELLINE_DECK: BellineCard[] = [
     element: "Air",
   },
   {
-    id: 52,
+    id: 51,
     name: "Le Temps",
     planet: "Saturne",
     keywords: ["patience", "durée", "cycles", "maturité"],
@@ -460,7 +451,7 @@ export const BELLINE_DECK: BellineCard[] = [
     beneficial: false,
   },
   {
-    id: 53,
+    id: 52,
     name: "La Célébration",
     planet: "Soleil",
     keywords: ["fête", "victoire", "reconnaissance", "joie collective"],
