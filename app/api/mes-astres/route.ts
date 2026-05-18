@@ -63,6 +63,13 @@ function buildPrompt(section: MesAstresRequest["section"], profile: MesAstresReq
   const moonSign = moon?.sign ?? "inconnu";
   const ascSign = natalChart.ascendant.sign;
   const mcSign = natalChart.midheaven.sign;
+  const OPPOSITE_SIGN: Record<string, string> = {
+    "Bélier": "Balance", "Taureau": "Scorpion", "Gémeaux": "Sagittaire",
+    "Cancer": "Capricorne", "Lion": "Verseau", "Vierge": "Poissons",
+    "Balance": "Bélier", "Scorpion": "Taureau", "Sagittaire": "Gémeaux",
+    "Capricorne": "Cancer", "Verseau": "Lion", "Poissons": "Vierge",
+  };
+  const house7Sign = OPPOSITE_SIGN[ascSign] ?? ascSign;
   const venusSign = venus?.sign ?? "inconnu";
   const marsSign = mars?.sign ?? "inconnu";
   const jupiterSign = jupiter?.sign ?? "inconnu";
@@ -75,7 +82,7 @@ function buildPrompt(section: MesAstresRequest["section"], profile: MesAstresReq
       return `${header}Dresse un portrait complet de la personnalité de ${prenom} basé sur son thème natal. Inclus : (1) Soleil en ${sunSign} — caractère fondamental, (2) Lune en ${moonSign} — vie émotionnelle, (3) Ascendant en ${ascSign} — apparence et première impression, (4) influences majeures des planètes lentes (Jupiter, Saturne, Uranus, Neptune), (5) thèmes dominants et dons naturels, (6) axes de croissance personnelle. Style poétique de Madame Céleste voyante mystique, environ 500 à 700 mots, en français.`;
 
     case "amour":
-      return `${header}Analyse la vie amoureuse et relationnelle de ${prenom} à travers son thème natal. Examine : (1) Vénus en ${venusSign} — manière d'aimer, (2) Mars en ${marsSign} — désirs et attirance, (3) Lune en ${moonSign} — besoins émotionnels, (4) maison 7 (partenariats) en ${ascSign}, (5) aspects entre Vénus/Mars/Lune, (6) ce qu'il/elle cherche dans une relation, (7) conseils pour l'épanouissement amoureux. Style poétique de Madame Céleste voyante mystique, environ 500 à 700 mots, en français.`;
+      return `${header}Analyse la vie amoureuse et relationnelle de ${prenom} à travers son thème natal. Examine : (1) Vénus en ${venusSign} — manière d'aimer, (2) Mars en ${marsSign} — désirs et attirance, (3) Lune en ${moonSign} — besoins émotionnels, (4) maison 7 (partenariats) en ${house7Sign}, (5) aspects entre Vénus/Mars/Lune, (6) ce qu'il/elle cherche dans une relation, (7) conseils pour l'épanouissement amoureux. Style poétique de Madame Céleste voyante mystique, environ 500 à 700 mots, en français.`;
 
     case "carriere":
       return `${header}Analyse les aspirations professionnelles et le chemin de vie de ${prenom}. Examine : (1) Soleil en ${sunSign} — vocation profonde, (2) Saturne en ${saturneSign} — ambitions et responsabilités, (3) MC en ${mcSign} — image professionnelle, (4) Jupiter en ${jupiterSign} — opportunités et chance, (5) Mars en ${marsSign} — énergie et initiatives, (6) secteurs d'activité favorables, (7) conseils pour réussir. Style poétique de Madame Céleste voyante mystique, environ 500 à 700 mots, en français.`;
