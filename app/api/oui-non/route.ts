@@ -21,6 +21,7 @@ const POSITIVE_CARDS = new Set([
   "La Force",
   "La Tempérance",
   "L'Empereur",
+  "Le Chariot",
 ]);
 
 const NEGATIVE_CARDS = new Set([
@@ -30,7 +31,6 @@ const NEGATIVE_CARDS = new Set([
   "La Mort",
   "Le Pendu",
   "L'Ermite",
-  "Le Chariot",
   "La Maison-Dieu",
 ]);
 

@@ -35,10 +35,9 @@ export async function POST(req: NextRequest) {
     ? `Cette carte du jour est tirée pour ${profile.prenom}. Adresse-toi à ${profile.prenom} directement et par son prénom tout au long du message.`
     : "";
 
-  const userPrompt = `${MADAME_CELESTE_SYSTEM}
-${personalCtx}
+  const userPrompt = `${personalCtx}
 
-C'est la carte du jour du ${today} : **${card.name}** (${card.suit})${card.reversed ? " — position INVERSÉE" : ""}.
+C'est la carte du jour du ${today} : ${card.name} (${card.suit})${card.reversed ? " — position INVERSÉE" : ""}.
 
 Mots-clés : ${card.keywords.join(", ")}.
 Signification ${card.reversed ? "inversée" : "droite"} : ${card.reversed ? card.meaningReversed : card.upright}
@@ -56,6 +55,7 @@ Sois poétique, inspirant et bienveillant.${profile?.prenom ? ` Commence en t'ad
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
+    systemInstruction: MADAME_CELESTE_SYSTEM,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any,
   });

@@ -104,7 +104,7 @@ export const LENORMAND_DECK: LenormandCard[] = [
     combined: "Embellit et positivise les cartes voisines ; annonce cadeaux, compliments ou moments de joie.",
   },
   {
-    id: "faux", number: 10, name: "La Faux", symbol: "⚔️",
+    id: "faux", number: 10, name: "La Faux", symbol: "🌾",
     keywords: ["danger", "décision", "séparation", "récolte"],
     upright: "Une décision tranchante s'impose ou un danger soudain apparaît. La récolte arrive, mais une séparation peut en découler.",
     combined: "Coupe, termine ou sépare les énergies des cartes voisines ; décision irréversible proche.",
@@ -224,7 +224,7 @@ export const LENORMAND_DECK: LenormandCard[] = [
     combined: "Représente la consultante ou une femme importante liée aux cartes voisines.",
   },
   {
-    id: "lys", number: 30, name: "Les Lys", symbol: "🌺",
+    id: "lys", number: 30, name: "Les Lys", symbol: "⚜️",
     keywords: ["sagesse", "sérénité", "sensualité", "plaisir des sens", "maturité"],
     upright: "La sagesse, la sérénité et la sensualité guident votre chemin. Une période de maturité et de paix intérieure s'installe, avec le plaisir des sens pleinement assumé.",
     combined: "Apporte sérénité et maturité aux cartes voisines ; peut indiquer une relation durable et apaisée.",

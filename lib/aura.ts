@@ -62,7 +62,7 @@ export const AURA_COLORS: AuraColor[] = [
     colorHex: "#27AE60",
     colorSecondary: "#1E8449",
     chakra: "Cœur",
-    element: "Terre",
+    element: "Air",
     archetype: "Le Guérisseur",
     keywords: ["amour", "guérison", "compassion", "croissance", "harmonie"],
     strengths: "Capacité de guérison naturelle, empathie profonde et don pour créer des espaces de sécurité et de croissance pour les autres.",

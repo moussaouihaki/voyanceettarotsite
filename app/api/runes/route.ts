@@ -22,10 +22,11 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(`runes:${auth.uid}`, 20);
   if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
-  const { runes, question, spreadName } = await req.json() as {
+  const { runes, question, spreadName, prenom } = await req.json() as {
     runes: RuneData[];
     question: string;
     spreadName: string;
+    prenom?: string;
   };
 
   const apiKey = process.env.GOOGLE_API_KEY;
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
   const prompt = `${SYSTEM}
 
 Tirage runique : ${spreadName}
+${prenom ? `Consultant(e) : ${prenom}` : ""}
 ${question ? `Question : "${question}"` : "Lecture générale."}
 
 Les runes tirées :
