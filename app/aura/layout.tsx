@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Lecture d'Aura — Couleurs & Énergie Vibratoire | Madame Céleste",
   description:
-    "Découvrez les couleurs de votre aura et leur signification spirituelle. Analyse de votre champ énergétique subtil pour comprendre votre vibration et potentiel.",
+    "Lecture de votre aura — découvrez la couleur dominante de votre champ énergétique, sa signification spirituelle et les conseils pour renforcer votre rayonnement. Analyse IA personnalisée.",
   keywords: [
     "lecture aura",
     "couleur aura signification",

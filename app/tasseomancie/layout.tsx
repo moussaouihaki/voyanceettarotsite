@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Tasséomancie — Lecture des Feuilles de Thé par IA | Madame Céleste",
   description:
-    "Photographiez le fond de votre tasse de thé et recevez une lecture divinatoire par intelligence artificielle. Tasséomancie ancestrale modernisée par Madame Céleste.",
+    "La tasséomancie virtuelle — l'art de lire l'avenir dans le marc de café. Tradition orientale ancestrale interprétée par l'IA : symboles, formes, messages cachés dans votre tasse.",
   keywords: [
     "tasséomancie",
     "lecture feuilles de thé",

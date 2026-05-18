@@ -175,7 +175,7 @@ export default function CalendrierAstralPage() {
           <span className="text-shimmer-gold">Calendrier Astral</span>
         </h1>
         <p className="font-serif-text italic text-xl text-[#c9b88a] mb-3">
-          Éclipses, rétrogrades, pleines lunes &amp; nouveaux cycles
+          Lunes · Rétrogrades · Éphémérides · Planifiez avec les étoiles
         </p>
         <div className="divider-ornament max-w-sm mx-auto my-6"><span>✦</span></div>
         <p className="text-[#c9b88a] max-w-xl mx-auto text-[14px] leading-relaxed">

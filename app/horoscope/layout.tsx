@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Horoscope du Jour 2026 — 12 Signes du Zodiaque | Madame Céleste",
   description:
-    "Consultez votre horoscope du jour, de la semaine ou du mois pour les 12 signes du zodiaque. Prédictions astrologiques précises et personnalisées par intelligence artificielle.",
+    "Votre horoscope personnalisé du jour, de la semaine et du mois — rédigé par Madame Céleste selon votre signe solaire. Amour, travail, santé, finances : chaque domaine décrypté.",
   keywords: [
     "horoscope du jour",
     "horoscope 2026",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Horoscope du Jour 2026 — 12 Signes du Zodiaque | Madame Céleste",
     description:
-      "Consultez votre horoscope du jour, de la semaine ou du mois pour les 12 signes du zodiaque. Prédictions astrologiques précises et personnalisées par intelligence artificielle.",
+      "Votre horoscope personnalisé du jour, de la semaine et du mois — rédigé par Madame Céleste selon votre signe solaire. Amour, travail, santé, finances : chaque domaine décrypté.",
   },
   alternates: { canonical: "/horoscope" },
 };

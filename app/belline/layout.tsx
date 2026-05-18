@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Oracle de Belline — 53 Cartes Planétaires | Madame Céleste",
   description:
-    "Tirage Oracle de Belline avec les 53 cartes et leurs attributions planétaires. Oracle français du XIXe siècle pour révéler les influences célestes sur votre destin.",
+    "L'Oracle de Belline — 53 cartes planétaires de la tradition ésotérique française. Tirages complets avec interprétation IA des influences planétaires et destinées révélées par ce grand oracle.",
   keywords: [
     "oracle belline",
     "tirage belline",

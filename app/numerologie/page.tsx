@@ -396,7 +396,7 @@ export default function NumerologiePage() {
             </div>
             <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-4">Numérologie</h1>
             <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-2xl mx-auto">
-              Découvrez votre profil numérologique complet — mission de vie, désirs profonds et influences actuelles.
+              Chemin de vie · Expression · Année personnelle · Les nombres révèlent tout
             </p>
           </div>
 

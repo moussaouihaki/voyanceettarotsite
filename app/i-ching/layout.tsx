@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "I-Ching en Ligne — Oracle des 64 Hexagrammes | Madame Céleste",
   description:
-    "Consultez le I-Ching avec la méthode authentique des 3 pièces. 64 hexagrammes, lignes changeantes et hexagramme de transformation selon la sagesse taoïste.",
+    "Consultez le I-Ching, le Livre des Transformations. 64 hexagrammes, sagesse chinoise millénaire — posez votre question et recevez la réponse de l'oracle ancestral.",
   keywords: [
     "I-Ching en ligne",
     "oracle I-Ching",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "I-Ching en Ligne — Oracle des 64 Hexagrammes | Madame Céleste",
     description:
-      "Consultez le I-Ching avec la méthode authentique des 3 pièces. 64 hexagrammes, lignes changeantes et hexagramme de transformation selon la sagesse taoïste.",
+      "Consultez le I-Ching, le Livre des Transformations. 64 hexagrammes, sagesse chinoise millénaire — posez votre question et recevez la réponse de l'oracle ancestral.",
   },
   alternates: { canonical: "/i-ching" },
 };

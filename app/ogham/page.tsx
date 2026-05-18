@@ -147,7 +147,7 @@ export default function OghamPage() {
             <div className="font-serif-display text-7xl text-[#4a7c59] mb-5 float-slow">ᚇ</div>
             <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-4">Ogham Celtique</h1>
             <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-2xl mx-auto">
-              25 staves · Tradition druidique irlandaise
+              25 feadha · Tradition druidique · La sagesse de la forêt sacrée
             </p>
           </div>
 

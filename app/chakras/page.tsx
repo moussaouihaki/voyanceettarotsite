@@ -135,7 +135,7 @@ export default function ChakrasPage() {
             </div>
             <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-4">Les 7 Chakras</h1>
             <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-2xl mx-auto">
-              Évaluez l&apos;équilibre de vos 7 centres d&apos;énergie. Répondez sincèrement pour obtenir un bilan personnalisé.
+              7 chakras · Bilan énergétique · Guidance de rééquilibrage personnalisée
             </p>
           </div>
 

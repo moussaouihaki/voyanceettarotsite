@@ -231,7 +231,7 @@ export default function TiragePage() {
             </div>
             <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-4">Tirage de Tarot</h1>
             <p className="font-serif-text italic text-[#c9b88a] text-lg">
-              {ALL_SPREADS.length} tirages — choisissez celui qui résonne avec votre question
+              55 tirages · Interprétation IA · Rider-Waite &amp; Tarot de Marseille
             </p>
 
             {/* Deck selector */}

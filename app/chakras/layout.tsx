@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Bilan des Chakras — 7 Centres Énergétiques & Rééquilibrage | Madame Céleste",
   description:
-    "Diagnostiquez l'état de vos 7 chakras et recevez un programme de rééquilibrage personnalisé. Méditation, lithothérapie et pratiques énergétiques recommandées par l'IA.",
+    "Bilan complet de vos 7 chakras — racine, sacré, plexus, cœur, gorge, troisième œil, couronne. Identifiez vos blocages énergétiques et recevez des conseils de rééquilibrage personnalisés.",
   keywords: [
     "bilan chakras",
     "chakras rééquilibrage",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Bilan des Chakras — 7 Centres Énergétiques & Rééquilibrage | Madame Céleste",
     description:
-      "Diagnostiquez l'état de vos 7 chakras et recevez un programme de rééquilibrage personnalisé. Méditation, lithothérapie et pratiques énergétiques recommandées par l'IA.",
+      "Bilan complet de vos 7 chakras — racine, sacré, plexus, cœur, gorge, troisième œil, couronne. Identifiez vos blocages énergétiques et recevez des conseils de rééquilibrage personnalisés.",
   },
   alternates: { canonical: "/chakras" },
 };

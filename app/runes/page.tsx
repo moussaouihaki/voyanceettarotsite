@@ -136,7 +136,7 @@ export default function RunesPage() {
             <div className="font-serif-display text-7xl text-[#d4af6f] mb-5 float-slow">ᚠ</div>
             <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-4">Runes Nordiques</h1>
             <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-2xl mx-auto">
-              Elder Futhark — les 24 runes de la tradition vikingue. Consultez la sagesse d&apos;Odin.
+              24 runes · Elder Futhark · Sagesse viking &amp; guidance nordique
             </p>
           </div>
 

@@ -294,7 +294,7 @@ export default function OuiNonPage() {
             Tirage Oui ou Non
           </h1>
           <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-md mx-auto">
-            &ldquo;Posez votre question, laissez les cartes vous répondre.&rdquo;
+            Une réponse claire · Guidance immédiate · Oracle instantané
           </p>
         </div>
 

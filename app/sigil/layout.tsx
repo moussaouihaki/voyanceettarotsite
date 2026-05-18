@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Générateur de Sigils — Magie du Chaos & Intentions | Madame Céleste",
   description:
-    "Créez votre sigil personnalisé à partir d'une intention écrite. Magie du chaos inspirée d'Austin Osman Spare — transformez vos désirs en symboles magiques puissants.",
+    "Créez votre sigil de manifestation — symbole magique personnalisé pour amplifier vos intentions. Guidance sur l'activation et l'utilisation de votre sigilе pour la manifestation et la protection.",
   keywords: [
     "générateur sigil",
     "sigil magie",

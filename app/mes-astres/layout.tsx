@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Mes Astres — Ciel Personnel & Transits | Madame Céleste",
   description:
-    "Découvrez votre ciel personnel avec les transits planétaires en cours et leurs influences sur votre vie. Guidance astrologique quotidienne et personnalisée.",
+    "Votre ciel personnel en temps réel. Suivez les transits planétaires qui influencent votre vie maintenant — guidance personnalisée basée sur votre thème natal complet.",
   keywords: [
     "transits planétaires",
     "ciel personnel astrologie",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mes Astres — Ciel Personnel & Transits | Madame Céleste",
     description:
-      "Découvrez votre ciel personnel avec les transits planétaires en cours et leurs influences sur votre vie. Guidance astrologique quotidienne et personnalisée.",
+      "Votre ciel personnel en temps réel. Suivez les transits planétaires qui influencent votre vie maintenant — guidance personnalisée basée sur votre thème natal complet.",
   },
   alternates: { canonical: "/mes-astres" },
   robots: { index: false, follow: false },

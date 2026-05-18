@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Voyance en Ligne Gratuite — Chat avec Madame Céleste",
   description:
-    "Posez vos questions à Madame Céleste et recevez une réponse de voyance personnalisée en temps réel. Amour, travail, avenir — une voyance authentique par IA.",
+    "Consultez Madame Céleste en voyance libre 24h/24 — posez toutes vos questions sur l'amour, le travail, l'avenir. Notre IA divinatoire vous répond avec intuition et bienveillance.",
   keywords: [
     "voyance en ligne gratuite",
     "voyance par chat",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Voyance en Ligne Gratuite — Chat avec Madame Céleste",
     description:
-      "Posez vos questions à Madame Céleste et recevez une réponse de voyance personnalisée en temps réel. Amour, travail, avenir — une voyance authentique par IA.",
+      "Consultez Madame Céleste en voyance libre 24h/24 — posez toutes vos questions sur l'amour, le travail, l'avenir. Notre IA divinatoire vous répond avec intuition et bienveillance.",
   },
   alternates: { canonical: "/voyance" },
 };

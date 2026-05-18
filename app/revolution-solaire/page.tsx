@@ -166,7 +166,7 @@ export default function RevolutionSolairePage() {
             Révolution Solaire
           </h1>
           <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-xl mx-auto">
-            Chaque année, le Soleil revient exactement à sa position natale — c&apos;est votre Révolution Solaire, carte du ciel de votre année à venir.
+            Votre année anniversaire · Thèmes majeurs · 12 mois décryptés
           </p>
         </div>
 

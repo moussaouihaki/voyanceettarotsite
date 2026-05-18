@@ -102,7 +102,7 @@ export default function SynastriePage() {
             </div>
             <h1 className="font-serif-display text-5xl text-gradient-cream mb-4">Compatibilité Astrale</h1>
             <p className="font-serif-text italic text-xl text-[#c9b88a]">
-              Découvrez les dynamiques entre deux âmes
+              Compatibilité amoureuse · Aspects planétaires · Liens karmiques
             </p>
           </div>
 

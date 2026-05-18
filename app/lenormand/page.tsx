@@ -161,7 +161,7 @@ export default function LenormandPage() {
             <div className="font-serif-display text-7xl text-[#d4af6f] mb-5 float-slow">✦</div>
             <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-4">Oracle de Lenormand</h1>
             <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-2xl mx-auto">
-              36 cartes · Tradition française
+              36 cartes · Tradition française · Grand tableau &amp; tirages classiques
             </p>
           </div>
 

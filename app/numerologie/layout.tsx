@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Numérologie — Chemin de Vie & Profil Complet | Madame Céleste",
   description:
-    "Calculez votre chemin de vie, nombre d'expression, d'âme et vos défis karmiques. Profil numérologique complet basé sur votre prénom et date de naissance.",
+    "Votre profil numérologique complet — chemin de vie, expression, âme, réalisation. Compatibilité numérique et prévisions de l'année personnelle. Décryptez le sens de votre vie par les nombres.",
   keywords: [
     "numérologie chemin de vie",
     "numérologie gratuite",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Numérologie — Chemin de Vie & Profil Complet | Madame Céleste",
     description:
-      "Calculez votre chemin de vie, nombre d'expression, d'âme et vos défis karmiques. Profil numérologique complet basé sur votre prénom et date de naissance.",
+      "Votre profil numérologique complet — chemin de vie, expression, âme, réalisation. Compatibilité numérique et prévisions de l'année personnelle. Décryptez le sens de votre vie par les nombres.",
   },
   alternates: { canonical: "/numerologie" },
 };

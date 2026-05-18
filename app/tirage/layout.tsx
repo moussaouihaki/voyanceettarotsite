@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Tirage de Tarot en Ligne — 55+ Tirages | Madame Céleste",
   description:
-    "Choisissez parmi 55+ tirages de tarot : Croix Celtique, tirage amour, Shadow Work, pleine lune... Cartes Rider-Waite interprétées par l'IA pour une guidance personnalisée.",
+    "Plus de 55 tirages de tarot disponibles — Croix Celtique, tirage amour, professionnel, 3 cartes, année complète. Chaque tirage interprété par Madame Céleste, notre IA divinatoire personnalisée.",
   keywords: [
     "tirage tarot en ligne",
     "tirage tarot gratuit",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tirage de Tarot en Ligne — 55+ Tirages | Madame Céleste",
     description:
-      "Choisissez parmi 55+ tirages de tarot : Croix Celtique, tirage amour, Shadow Work, pleine lune... Cartes Rider-Waite interprétées par l'IA pour une guidance personnalisée.",
+      "Plus de 55 tirages de tarot disponibles — Croix Celtique, tirage amour, professionnel, 3 cartes, année complète. Chaque tirage interprété par Madame Céleste, notre IA divinatoire personnalisée.",
   },
   alternates: { canonical: "/tirage" },
 };

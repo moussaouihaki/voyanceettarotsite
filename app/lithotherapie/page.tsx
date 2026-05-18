@@ -256,7 +256,7 @@ export default function LithotherapiePage() {
               Lithothérapie
             </h1>
             <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-2xl mx-auto">
-              30 cristaux · Guérison vibratoire
+              30 cristaux · Guérison vibratoire · Amour, abondance &amp; protection
             </p>
           </div>
 

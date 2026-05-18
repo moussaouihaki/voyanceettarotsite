@@ -158,7 +158,7 @@ export default function ProfilAstralPage() {
             </div>
             <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-4">Profil Astral</h1>
             <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-2xl mx-auto">
-              Calcul astronomique réel de votre thème natal — positions planétaires précises, ascendant, maisons et aspects.
+              Soleil · Lune · Ascendant · Toutes vos planètes interprétées
             </p>
           </div>
 

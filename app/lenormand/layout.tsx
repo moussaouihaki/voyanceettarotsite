@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Oracle Lenormand — Grand Tableau & 36 Cartes | Madame Céleste",
   description:
-    "Tirage Oracle Lenormand authentique : 36 cartes de la tradition française, Grand Tableau, Croix Lenormand. La cartomancienne préférée de Napoléon vous guide.",
+    "Tirage de l'Oracle Lenormand — 36 cartes, méthode traditionnelle française. Grand tableau, tirage 3 cartes, croix Lenormand. Interprétation IA selon la tradition classique.",
   keywords: [
     "oracle lenormand",
     "tirage lenormand",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Oracle Lenormand — Grand Tableau & 36 Cartes | Madame Céleste",
     description:
-      "Tirage Oracle Lenormand authentique : 36 cartes de la tradition française, Grand Tableau, Croix Lenormand. La cartomancienne préférée de Napoléon vous guide.",
+      "Tirage de l'Oracle Lenormand — 36 cartes, méthode traditionnelle française. Grand tableau, tirage 3 cartes, croix Lenormand. Interprétation IA selon la tradition classique.",
   },
   alternates: { canonical: "/lenormand" },
 };

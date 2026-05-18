@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Tirage de Runes Nordiques — Elder Futhark & Wyrd | Madame Céleste",
   description:
-    "Consultez l'oracle des runes Elder Futhark. 24 runes + Wyrd, tirages authentiques avec interprétation mythologique nordique, inversées et lignes de destin.",
+    "Consultez les 24 runes nordiques du Futhark Ancien. Tirages runiques avec interprétation IA — rune unique, tirage Nornes (passé/présent/futur), croix runique. Sagesse viking ancestrale.",
   keywords: [
     "tirage runes",
     "runes elder futhark",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tirage de Runes Nordiques — Elder Futhark & Wyrd | Madame Céleste",
     description:
-      "Consultez l'oracle des runes Elder Futhark. 24 runes + Wyrd, tirages authentiques avec interprétation mythologique nordique, inversées et lignes de destin.",
+      "Consultez les 24 runes nordiques du Futhark Ancien. Tirages runiques avec interprétation IA — rune unique, tirage Nornes (passé/présent/futur), croix runique. Sagesse viking ancestrale.",
   },
   alternates: { canonical: "/runes" },
 };

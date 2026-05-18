@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Lithothérapie — 30 Cristaux & Pierres de Guérison | Madame Céleste",
   description:
-    "Découvrez les propriétés vibratoires de 30 cristaux et pierres précieuses. Guidance personnalisée pour choisir vos pierres de guérison, protection et éveil spirituel.",
+    "30 pierres et cristaux en lithothérapie — améthyste, quartz rose, lapis-lazuli, citrine et plus. Tirages de cristaux avec interprétation vibratoire IA pour l'amour, la guérison et l'abondance.",
   keywords: [
     "lithothérapie",
     "cristaux guérison",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Lithothérapie — 30 Cristaux & Pierres de Guérison | Madame Céleste",
     description:
-      "Découvrez les propriétés vibratoires de 30 cristaux et pierres précieuses. Guidance personnalisée pour choisir vos pierres de guérison, protection et éveil spirituel.",
+      "30 pierres et cristaux en lithothérapie — améthyste, quartz rose, lapis-lazuli, citrine et plus. Tirages de cristaux avec interprétation vibratoire IA pour l'amour, la guérison et l'abondance.",
   },
   alternates: { canonical: "/lithotherapie" },
 };

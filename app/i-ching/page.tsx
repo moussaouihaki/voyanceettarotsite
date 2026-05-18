@@ -132,7 +132,7 @@ export default function IChingPage() {
             </div>
             <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-4">Yi-King</h1>
             <p className="font-serif-text italic text-[#c9b88a] text-lg max-w-2xl mx-auto">
-              Le Livre des Transformations — oracle ancestral chinois. 64 hexagrammes révèlent la sagesse du Tao.
+              64 hexagrammes · Sagesse chinoise millénaire · Oracle ancestral
             </p>
           </div>
 

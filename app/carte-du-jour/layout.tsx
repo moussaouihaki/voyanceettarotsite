@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Carte du Jour — Guidance Quotidienne par le Tarot | Madame Céleste",
   description:
-    "Tirez votre carte du tarot du jour et recevez un message personnalisé de Madame Céleste. Un oracle quotidien unique pour guider chaque journée avec sagesse.",
+    "Votre carte de tarot du jour tirée chaque matin. Un message personnalisé de Madame Céleste pour guider votre journée — intention, conseil pratique et affirmation inclus.",
   keywords: [
     "carte du jour tarot",
     "tarot du jour",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Carte du Jour — Guidance Quotidienne par le Tarot | Madame Céleste",
     description:
-      "Tirez votre carte du tarot du jour et recevez un message personnalisé de Madame Céleste. Un oracle quotidien unique pour guider chaque journée avec sagesse.",
+      "Votre carte de tarot du jour tirée chaque matin. Un message personnalisé de Madame Céleste pour guider votre journée — intention, conseil pratique et affirmation inclus.",
   },
   alternates: { canonical: "/carte-du-jour" },
 };

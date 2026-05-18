@@ -350,7 +350,7 @@ function MesAstresContent({
           </span>
         </div>
         <p className="font-serif-text text-lg" style={{ color: "#c9b88a" }}>
-          Le cosmos de {profile.prenom}, révélé par Madame Céleste
+          Votre ciel en temps réel · Transits · Influences du moment
         </p>
       </div>
 

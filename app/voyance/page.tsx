@@ -215,7 +215,7 @@ export default function VoyancePage() {
           </div>
         </div>
         <p className="font-serif-text italic text-[#8a6f3a] text-sm mt-1">
-          Voyance libre · Posez votre question, sans retenue
+          Posez toutes vos questions — amour, travail, avenir, guidance spirituelle
         </p>
       </div>
 

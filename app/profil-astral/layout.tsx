@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Profil Astral & Thème Natal Complet Gratuit | Madame Céleste",
   description:
-    "Calculez votre thème natal complet : positions planétaires, maisons astrologiques, ascendant, Milieu du Ciel et aspects. Interprétation approfondie par l'IA.",
+    "Votre thème natal complet calculé en quelques secondes — Soleil, Lune, Ascendant, Mercure, Vénus, Mars et toutes vos planètes. Interprétation IA approfondie de votre carte du ciel.",
   keywords: [
     "thème natal gratuit",
     "profil astral",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Profil Astral & Thème Natal Complet Gratuit | Madame Céleste",
     description:
-      "Calculez votre thème natal complet : positions planétaires, maisons astrologiques, ascendant, Milieu du Ciel et aspects. Interprétation approfondie par l'IA.",
+      "Votre thème natal complet calculé en quelques secondes — Soleil, Lune, Ascendant, Mercure, Vénus, Mars et toutes vos planètes. Interprétation IA approfondie de votre carte du ciel.",
   },
   alternates: { canonical: "/profil-astral" },
 };

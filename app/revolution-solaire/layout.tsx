@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Révolution Solaire — Prévision Astrologique Annuelle | Madame Céleste",
   description:
-    "Calculez votre révolution solaire et obtenez une prévision astrologique complète pour votre année personnelle. Thème de retour solaire interprété par l'IA.",
+    "Votre thème de révolution solaire — l'astrologie de votre année anniversaire. Découvrez les thèmes majeurs, les opportunités et les défis qui vous attendent pour les 12 prochains mois.",
   keywords: [
     "révolution solaire",
     "retour solaire",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Révolution Solaire — Prévision Astrologique Annuelle | Madame Céleste",
     description:
-      "Calculez votre révolution solaire et obtenez une prévision astrologique complète pour votre année personnelle. Thème de retour solaire interprété par l'IA.",
+      "Votre thème de révolution solaire — l'astrologie de votre année anniversaire. Découvrez les thèmes majeurs, les opportunités et les défis qui vous attendent pour les 12 prochains mois.",
   },
   alternates: { canonical: "/revolution-solaire" },
 };

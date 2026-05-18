@@ -57,7 +57,7 @@ export default function HoroscopePage() {
           Astrologie quotidienne
         </div>
         <h1 className="font-serif-display text-5xl md:text-6xl text-gradient-cream mb-3">Horoscope</h1>
-        <p className="font-serif-text italic text-[#c9b88a] text-lg capitalize">{today}</p>
+        <p className="font-serif-text italic text-[#c9b88a] text-lg">Jour · Semaine · Mois — Amour, travail, santé, finances décryptés</p>
       </div>
 
       {/* Period selector */}

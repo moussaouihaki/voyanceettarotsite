@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Synastrie Amoureuse — Compatibilité Astrologique | Madame Céleste",
   description:
-    "Comparez deux thèmes nataux pour révéler votre compatibilité amoureuse. Analyse synastrie complète : aspects interplanétaires, Vénus, Mars et connexions karmiques.",
+    "Découvrez la compatibilité astrologique entre deux personnes. Analyse complète de synastrie — aspects planétaires, points de tension et d'harmonie, potentiel amoureux et karmique.",
   keywords: [
     "synastrie astrologique",
     "compatibilité amoureuse astrologie",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Synastrie Amoureuse — Compatibilité Astrologique | Madame Céleste",
     description:
-      "Comparez deux thèmes nataux pour révéler votre compatibilité amoureuse. Analyse synastrie complète : aspects interplanétaires, Vénus, Mars et connexions karmiques.",
+      "Découvrez la compatibilité astrologique entre deux personnes. Analyse complète de synastrie — aspects planétaires, points de tension et d'harmonie, potentiel amoureux et karmique.",
   },
   alternates: { canonical: "/synastrie" },
 };

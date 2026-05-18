@@ -107,6 +107,7 @@ export default function CarteDuJourPage() {
           </div>
           <h1 className="font-serif-display text-5xl text-gradient-cream mb-4">Carte du Jour</h1>
           <p className="font-serif-text italic text-[#c9b88a] text-lg capitalize">{today}</p>
+          <p className="font-serif-text italic text-[#c9b88a] text-base mt-2">Une carte, un message, une journée guidée par les étoiles</p>
         </div>
 
         {!revealed ? (
