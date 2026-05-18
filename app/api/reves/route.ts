@@ -27,6 +27,12 @@ export async function POST(req: NextRequest) {
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
+  if (dream.length > 5000) {
+    return new Response(
+      JSON.stringify({ error: "Description trop longue (max 5000 caractères)." }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) {

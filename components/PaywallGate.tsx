@@ -102,6 +102,10 @@ export default function PaywallGate({ feature, children, customMessage }: Props)
               ))}
             </ul>
 
+            <p className="text-base font-semibold mb-5" style={{ color: "#d4af6f" }}>
+              À partir de 9,90€/mois — satisfait ou remboursé 7 jours
+            </p>
+
             <div className="flex flex-col gap-3">
               <Link href="/tarifs" className="btn-gold block w-full">
                 Voir les offres

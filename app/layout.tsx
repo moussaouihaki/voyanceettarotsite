@@ -131,11 +131,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         <UserProfileProvider>
+          <a href="#main-content" className="skip-link">Aller au contenu</a>
           <ScrollToTop />
           <ServiceWorkerRegistration />
           <StarBackground />
           <Navigation />
-          <main className="flex-1 relative z-10">
+          <main id="main-content" className="flex-1 relative z-10">
             <ErrorBoundary>{children}</ErrorBoundary>
           </main>
           <Footer />

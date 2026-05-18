@@ -77,7 +77,7 @@ export default function ConnexionPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push(redirect);
+      router.push(mode === "register" ? "/bienvenue" : redirect);
     } catch (err: unknown) {
       const msg = (err as { code?: string })?.code;
       if (msg === "auth/email-already-in-use") setError("Cet email est déjà utilisé.");

@@ -37,9 +37,15 @@ export async function POST(req: NextRequest) {
   if (!Array.isArray(messages) || messages.length === 0) {
     return new Response("Messages requis", { status: 400 });
   }
+  if (messages.length > 20) {
+    return new Response("Trop de messages (max 20)", { status: 400 });
+  }
   const lastMessage = messages[messages.length - 1];
   if (!lastMessage || lastMessage.role !== "user" || !lastMessage.content?.trim()) {
     return new Response("Dernier message invalide", { status: 400 });
+  }
+  if (lastMessage.content.length > 2000) {
+    return new Response("Message trop long (max 2000 caractères)", { status: 400 });
   }
 
   const apiKey = process.env.GOOGLE_API_KEY;

@@ -35,6 +35,38 @@ export const metadata: Metadata = {
   },
 };
 
+const FAQ_LD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Le tirage de tarot est-il vraiment gratuit ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Oui, plusieurs tirages sont disponibles gratuitement sans inscription : la Carte du Jour, le Tirage Oui/Non, et le Tirage 3 Cartes. L'interprétation IA est incluse." }
+    },
+    {
+      "@type": "Question",
+      "name": "Faut-il créer un compte pour faire un tirage ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Non, vous pouvez effectuer un tirage gratuit sans créer de compte. Un compte gratuit vous permet d'obtenir des lectures plus personnalisées basées sur votre profil astral." }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment fonctionne l'interprétation par intelligence artificielle ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Madame Céleste est une IA formée aux symbolismes du tarot de Rider-Waite-Smith et du Tarot de Marseille. Elle analyse la combinaison de cartes tirées et génère une interprétation narrative en français, en tenant compte de votre question et de votre profil si disponible." }
+    },
+    {
+      "@type": "Question",
+      "name": "Quelle est la différence entre la version gratuite et l'abonnement ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "La version gratuite inclut les tirages de base avec un nombre limité de consultations par jour. L'abonnement Mystique (à partir de 9,90€/mois) débloque les 55+ tirages, les tirages illimités, les arts divinatoires (Runes, I-Ching, Oracle de Belline…) et une personnalisation poussée." }
+    }
+  ]
+};
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_LD) }} />
+      {children}
+    </>
+  );
 }

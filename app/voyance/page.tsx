@@ -211,7 +211,7 @@ export default function VoyancePage() {
           </div>
           <div className="text-left">
             <div className="text-[10px] tracking-[0.3em] uppercase text-[#d4af6f]">En consultation avec</div>
-            <div className="font-serif-display text-xl text-gradient-cream">Madame Céleste</div>
+            <h1 className="font-serif-display text-xl text-gradient-cream">Madame Céleste</h1>
           </div>
         </div>
         <p className="font-serif-text italic text-[#8a6f3a] text-sm mt-1">

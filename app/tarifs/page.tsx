@@ -301,6 +301,19 @@ export default function TarifsPage() {
         </div>
       )}
 
+      {/* Guarantee banner */}
+      <div className="max-w-2xl mx-auto w-full mb-10 text-center">
+        <div className="luxe-card rounded-sm px-8 py-5 border border-[rgba(212,175,111,0.3)]">
+          <div className="flex items-center justify-center gap-3">
+            <Shield size={22} className="text-[#d4af6f] flex-shrink-0" />
+            <p className="text-sm" style={{ color: "#e8dcc0" }}>
+              <strong className="text-[#d4af6f]">Satisfait ou remboursé 7 jours.</strong>{" "}
+              Si nos lectures ne vous conviennent pas, nous vous remboursons intégralement — sans question.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Trust signals */}
       <div className="grid md:grid-cols-4 gap-6 mb-20">
         {[

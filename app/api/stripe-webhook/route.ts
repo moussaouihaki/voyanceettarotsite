@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
     const tier = session.metadata?.tier as string | undefined;
     const customerEmail = session.customer_details?.email ?? session.metadata?.email;
 
-    if (tier && customerEmail) {
+    const VALID_TIERS = ["decouverte", "mystique", "oracle"];
+    if (tier && VALID_TIERS.includes(tier) && customerEmail) {
       const user = await getUserByEmail(customerEmail);
       if (user?.uid) {
         await updateFirestoreSubscription(user.uid, tier);

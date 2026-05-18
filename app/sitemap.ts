@@ -6,6 +6,7 @@ const now = new Date();
 const PUBLIC_PAGES: Array<{ path: string; priority: number; freq: MetadataRoute.Sitemap[number]["changeFrequency"] }> = [
   { path: "",                    priority: 1.0, freq: "daily" },
   { path: "/tirage",             priority: 0.95, freq: "weekly" },
+  { path: "/tirage-gratuit",    priority: 0.92, freq: "weekly" },
   { path: "/voyance",            priority: 0.90, freq: "weekly" },
   { path: "/carte-du-jour",      priority: 0.90, freq: "daily" },
   { path: "/horoscope",          priority: 0.90, freq: "daily" },

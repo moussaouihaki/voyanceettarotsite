@@ -13,6 +13,7 @@ const NAV_GROUPS = [
     label: "Tarot",
     items: [
       { href: "/tirage", label: "Tirage de Tarot", desc: "55+ tirages disponibles" },
+      { href: "/tirage-gratuit", label: "Tirage Gratuit", desc: "Essayez sans inscription" },
       { href: "/carte-du-jour", label: "Carte du Jour", desc: "Guidance quotidienne" },
       { href: "/voyance", label: "Voyance Libre", desc: "Chat avec Madame Céleste" },
       { href: "/oui-non", label: "Tirage Oui/Non", desc: "Réponse rapide · Oracle instantané" },
@@ -158,6 +159,8 @@ export default function Navigation() {
               >
                 <button
                   onClick={() => setOpenGroup(isOpen ? null : group.label)}
+                  aria-haspopup="true"
+                  aria-expanded={isOpen}
                   className={`px-2.5 py-2 text-[11px] tracking-[0.1em] uppercase font-medium transition-all duration-200 flex items-center gap-1 ${
                     isActive ? "text-[#e8c875]" : "text-[#c9b88a] hover:text-[#f5ecd9]"
                   }`}

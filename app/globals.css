@@ -35,13 +35,21 @@
 
 html, body { height: 100%; overflow-x: hidden; max-width: 100%; }
 
-body {
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background:
     radial-gradient(ellipse 80% 60% at 20% 0%, rgba(74, 14, 46, 0.35) 0%, transparent 50%),
     radial-gradient(ellipse 70% 50% at 80% 30%, rgba(45, 10, 62, 0.45) 0%, transparent 55%),
     radial-gradient(ellipse 100% 70% at 50% 100%, rgba(30, 14, 77, 0.3) 0%, transparent 60%),
     linear-gradient(180deg, #07040d 0%, #0a0617 40%, #07040d 100%);
-  background-attachment: fixed;
+  pointer-events: none;
+}
+
+body {
+  background: #07040d;
   color: var(--cream);
   font-family: var(--font-inter), system-ui, sans-serif;
   font-weight: 300;
@@ -72,6 +80,28 @@ h1, h2, h3, h4, h5 {
 .bg-night { background-color: var(--bg-night); }
 .bg-velvet { background-color: var(--bg-velvet); }
 .bg-card { background-color: var(--bg-card); }
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: var(--gold);
+  color: #07040d;
+  font-weight: 600;
+  border-radius: 0 0 4px 4px;
+  transition: top 0.1s;
+}
+.skip-link:focus {
+  top: 0;
+}
 
 @keyframes twinkle {
   0%, 100% { opacity: 0.1; transform: scale(0.8); }
