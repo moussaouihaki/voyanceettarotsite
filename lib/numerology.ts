@@ -39,9 +39,13 @@ export interface NumerologyProfile {
 }
 
 export function calculerCheminDeVie(dateNaissance: string): number {
-  // dateNaissance: "YYYY-MM-DD"
-  const digits = dateNaissance.replace(/-/g, "").split("").map(Number);
-  return reduceNumber(digits.reduce((s, d) => s + d, 0));
+  // dateNaissance: "YYYY-MM-DD" — component method to preserve master numbers
+  const [year, month, day] = dateNaissance.split("-").map(Number);
+  const rdDay = reduceNumber(day);
+  const rdMonth = reduceNumber(month);
+  const yearSum = String(year).split("").reduce((s, d) => s + parseInt(d), 0);
+  const rdYear = reduceNumber(yearSum);
+  return reduceNumber(rdDay + rdMonth + rdYear);
 }
 
 export function calculerExpression(nomComplet: string): number {
@@ -92,13 +96,15 @@ export function calculerNombreNaissance(dateNaissance: string): number {
 }
 
 export function detecterNombreKarmique(dateNaissance: string): number | null {
-  const raw = dateNaissance.replace(/-/g, "").split("").map(Number).reduce((s, d) => s + d, 0);
-  // Nombres karmiques : 13, 14, 16, 19
+  const [year, month, day] = dateNaissance.split("-").map(Number);
   const karmic = [13, 14, 16, 19];
-  // Check intermediate sum
-  let n = raw;
-  while (n > 99) n = sumDigits(n);
-  return karmic.includes(n) ? n : null;
+  // Check the intermediate sums produced by the component method
+  const rdDay = reduceNumber(day);
+  const rdMonth = reduceNumber(month);
+  const yearSum = String(year).split("").reduce((s, d) => s + parseInt(d), 0);
+  const rdYear = reduceNumber(yearSum);
+  const intermediate = rdDay + rdMonth + rdYear;
+  return karmic.includes(intermediate) ? intermediate : null;
 }
 
 export function calculerProfil(prenom: string, nom: string, dateNaissance: string): NumerologyProfile {

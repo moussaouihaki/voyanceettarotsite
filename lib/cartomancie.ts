@@ -311,6 +311,10 @@ export const CARTOMANCIE_DECK: CartomancieCard[] = [
 ];
 
 export function drawCartomancie(count: number): CartomancieCard[] {
-  const shuffled = [...CARTOMANCIE_DECK].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, Math.min(count, CARTOMANCIE_DECK.length));
+  const a = [...CARTOMANCIE_DECK];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a.slice(0, Math.min(count, a.length));
 }
