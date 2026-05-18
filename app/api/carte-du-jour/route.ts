@@ -54,7 +54,11 @@ Compose un message de guidance pour aujourd'hui, en t'appuyant sur l'énergie de
 Sois poétique, inspirant et bienveillant.${profile?.prenom ? ` Commence en t'adressant à ${profile.prenom}.` : ""} Environ 200 mots.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any,
+  });
 
   const stream = new ReadableStream({
     async start(controller) {

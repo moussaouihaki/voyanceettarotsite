@@ -66,7 +66,12 @@ export default function CarteDuJourPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ card, intention, profile }),
       });
-      if (!res.ok || !res.body) throw new Error();
+      if (!res.ok) {
+        if (res.status === 429) throw new Error("limit");
+        if (res.status === 401) throw new Error("auth");
+        throw new Error("server");
+      }
+      if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -78,8 +83,11 @@ export default function CarteDuJourPage() {
         setReading((p) => p + chunk);
       }
       addReading({ type: "carte du jour", title: `${card.name}${card.reversed ? " (inversée)" : ""}`, content: full });
-    } catch {
-      setReading("La carte du jour garde son mystère... Réessayez dans quelques instants.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg === "limit") setReading("Vous avez atteint la limite de lectures pour cette minute. Réessayez dans quelques instants.");
+      else if (msg === "auth") setReading("Votre session a expiré. Reconnectez-vous pour accéder à la carte du jour.");
+      else setReading("La carte du jour garde son mystère... Réessayez dans quelques instants.");
     } finally {
       setIsStreaming(false);
     }
