@@ -129,7 +129,7 @@ export const CHAKRAS: Chakra[] = [
     imbalanced: "Maux de tête, cauchemars, difficulté à faire confiance à son intuition, pensée rigide.",
     overactive: "Pensées obsessionnelles et ruminations, visions confuses ou envahissantes, déconnexion du monde réel, anxiété mentale intense et difficulté à s'ancrer.",
     crystals: ["Améthyste", "Sodalite", "Labradorite", "Fluorite", "Azurite"],
-    essentialOils: ["Lavande", "Clary sage", "Frankincense", "Romarin"],
+    essentialOils: ["Lavande", "Sauge sclarée", "Oliban", "Romarin"],
     affirmation: "Je fais confiance à mon intuition et à ma sagesse intérieure.",
     yogaPose: "Balasana (Enfant) — Adho Mukha Svanasana (Chien tête en bas)",
     questions: [
@@ -142,14 +142,14 @@ export const CHAKRAS: Chakra[] = [
   },
   {
     id: "couronne", number: 7, name: "Chakra Couronne", nameSanskrit: "Sahasrāra",
-    color: "#7c3aed", emoji: "👑", element: "Conscience", mantra: "AH",
+    color: "#7c3aed", emoji: "👑", element: "Conscience", mantra: "OM",
     location: "Sommet du crâne, fontanelle",
     keywords: ["connexion divine", "illumination", "unité", "sagesse universelle", "transcendance", "éveil"],
     balanced: "Connexion profonde au divin, sentiment d'unité, sérénité, accès à la sagesse universelle.",
     imbalanced: "Sentiment d'isolement spirituel, dogmatisme, dépression existentielle, déconnexion.",
     overactive: "Déconnexion du corps et du monde matériel, spiritualité utilisée comme fuite du réel, arrogance spirituelle, négligence des besoins physiques et concrets.",
-    crystals: ["Cristal de roche", "Améthyste blanche", "Séléite", "Charoïte", "Pierre de lune"],
-    essentialOils: ["Frankincense", "Myrrhe", "Lotus", "Santal blanc"],
+    crystals: ["Cristal de roche", "Améthyste", "Sélénite", "Charoïte", "Quartz blanc"],
+    essentialOils: ["Oliban", "Myrrhe", "Lotus", "Santal blanc"],
     affirmation: "Je suis connecté(e) à la sagesse divine et je fais confiance au plan de l'univers.",
     yogaPose: "Savasana (Cadavre) — Sirsasana (Poirier)",
     questions: [

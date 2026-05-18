@@ -12,7 +12,7 @@ import GenericDeckPick from "@/components/GenericDeckPick";
 
 function getOghamSpreadIcon(id: string) {
   const icons: Record<string, typeof Leaf> = {
-    "stave-unique":       Leaf,
+    "fid-unique":         Leaf,
     "triades-celtiques":  Hourglass,
     "croix-celtique":     Plus,
   };

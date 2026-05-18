@@ -156,9 +156,9 @@ export const OGHAM_STAVES: OghamStave[] = [
     upright: "Une récompense inattendue vous attend derrière un obstacle apparent ; persévérez.",
   },
   {
-    id: "emhancholl", number: 25, letter: "ᚙ", name: "Emhancholl", tree: "Peuplier blanc", element: "Feu",
+    id: "emhancholl", number: 25, letter: "ᚙ", name: "Emhancholl", tree: "Ajonc", element: "Feu",
     keywords: ["synthèse", "totalité", "accomplissement", "clôture-du-cycle"],
-    meaning: "Le Peuplier blanc, arbre des transitions et des seuils, dernier fid et gardien de la totalité, clôture le cercle de la sagesse oghamique. Il incarne l'accomplissement du grand cycle et l'union des contraires dans la plénitude.",
+    meaning: "L'Ajonc doré, épineux et lumineux, dernier fid et gardien de la totalité, clôture le cercle de la sagesse oghamique. Il incarne l'accomplissement du grand cycle et l'union des contraires dans la plénitude.",
     upright: "Un cycle important s'achève ; célébrez ce que vous avez accompli et préparez-vous au prochain cercle.",
   },
 ];
