@@ -141,116 +141,166 @@ const PENDULE_STYLES = `
 
 function PenduleSVG({ animClass, crystal, isSwinging }: { animClass: string; crystal: Crystal; isSwinging: boolean }) {
   return (
-    <svg width="300" height="320" viewBox="0 0 300 320" aria-hidden="true">
+    <svg width="300" height="330" viewBox="0 0 300 330" aria-hidden="true">
       <defs>
-        <radialGradient id="gemGradient" cx="35%" cy="30%" r="70%">
+        <radialGradient id="gemGradient" cx="32%" cy="25%" r="68%">
           <stop offset="0%" stopColor={crystal.color1} />
-          <stop offset="100%" stopColor={crystal.color2} />
+          <stop offset="55%" stopColor={crystal.color2} />
+          <stop offset="100%" stopColor={crystal.color2} stopOpacity="0.85" />
         </radialGradient>
-        <radialGradient id="pivotGradient" cx="40%" cy="30%" r="60%">
-          <stop offset="0%" stopColor="#f0d080" />
-          <stop offset="100%" stopColor="#d4af6f" />
+        <radialGradient id="pivotGradient" cx="40%" cy="25%" r="60%">
+          <stop offset="0%" stopColor="#f5e090" />
+          <stop offset="60%" stopColor="#d4af6f" />
+          <stop offset="100%" stopColor="#a07828" />
         </radialGradient>
-        <radialGradient id="bgGradient" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="rgba(45,10,62,0.4)" />
+        <radialGradient id="bgGradient" cx="50%" cy="42%" r="58%">
+          <stop offset="0%" stopColor="rgba(45,10,62,0.45)" />
           <stop offset="100%" stopColor="rgba(7,4,13,0)" />
         </radialGradient>
-        <filter id="gemGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
+        <filter id="gemGlow" x="-55%" y="-45%" width="210%" height="190%">
+          <feGaussianBlur stdDeviation="5" result="blur" />
           <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
-        <filter id="gemGlowBright" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="7" result="blur" />
+        <filter id="gemGlowBright" x="-65%" y="-55%" width="230%" height="210%">
+          <feGaussianBlur stdDeviation="9" result="blur" />
           <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
-        <filter id="softGlow">
-          <feGaussianBlur stdDeviation="2" result="blur" />
+        <filter id="chainGlow">
+          <feGaussianBlur stdDeviation="1.2" result="blur" />
           <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
       </defs>
 
-      {/* Ambient background glow */}
-      <ellipse cx="150" cy="160" rx="120" ry="100" fill="url(#bgGradient)" />
+      {/* Ambient glow */}
+      <ellipse cx="150" cy="168" rx="125" ry="108" fill="url(#bgGradient)" />
 
-      {/* Graduated circles */}
-      {[100, 85, 70].map((r, i) => (
-        <circle key={r} cx="150" cy="160" r={r}
+      {/* Concentric guide circles */}
+      {[104, 87, 70].map((r, i) => (
+        <circle key={r} cx="150" cy="168" r={r}
           fill="none"
-          stroke={`rgba(212,175,111,${0.08 - i * 0.02})`}
+          stroke={`rgba(212,175,111,${0.09 - i * 0.02})`}
           strokeWidth="1"
         />
       ))}
 
-      {/* Tick marks around circle */}
-      {Array.from({ length: 24 }, (_, i) => {
-        const angle = (i / 24) * Math.PI * 2 - Math.PI / 2;
-        const isMain = i % 6 === 0;
-        const r1 = isMain ? 88 : 93;
-        const r2 = 100;
+      {/* Tick marks */}
+      {Array.from({ length: 36 }, (_, i) => {
+        const angle = (i / 36) * Math.PI * 2 - Math.PI / 2;
+        const isMain = i % 9 === 0;
+        const isMid = i % 3 === 0;
+        const r1 = isMain ? 87 : isMid ? 93 : 96;
+        const r2 = 104;
         return (
           <line key={i}
-            x1={150 + r1 * Math.cos(angle)} y1={160 + r1 * Math.sin(angle)}
-            x2={150 + r2 * Math.cos(angle)} y2={160 + r2 * Math.sin(angle)}
-            stroke={`rgba(212,175,111,${isMain ? 0.3 : 0.1})`}
+            x1={150 + r1 * Math.cos(angle)} y1={168 + r1 * Math.sin(angle)}
+            x2={150 + r2 * Math.cos(angle)} y2={168 + r2 * Math.sin(angle)}
+            stroke={`rgba(212,175,111,${isMain ? 0.38 : isMid ? 0.15 : 0.07})`}
             strokeWidth={isMain ? 1.5 : 0.8}
           />
         );
       })}
 
-      {/* Axis lines */}
-      <line x1="150" y1="55" x2="150" y2="265" stroke="rgba(212,175,111,0.15)" strokeWidth="1" strokeDasharray="5 5" />
-      <line x1="45" y1="160" x2="255" y2="160" stroke="rgba(212,175,111,0.15)" strokeWidth="1" strokeDasharray="5 5" />
-      <line x1="79" y1="89" x2="221" y2="231" stroke="rgba(212,175,111,0.07)" strokeWidth="1" strokeDasharray="4 6" />
-      <line x1="221" y1="89" x2="79" y2="231" stroke="rgba(212,175,111,0.07)" strokeWidth="1" strokeDasharray="4 6" />
+      {/* Axis dashed lines */}
+      <line x1="150" y1="58" x2="150" y2="278" stroke="rgba(212,175,111,0.13)" strokeWidth="1" strokeDasharray="5 6" />
+      <line x1="38" y1="168" x2="262" y2="168" stroke="rgba(212,175,111,0.13)" strokeWidth="1" strokeDasharray="5 6" />
+      <line x1="79" y1="97" x2="221" y2="239" stroke="rgba(212,175,111,0.05)" strokeWidth="1" strokeDasharray="3 8" />
+      <line x1="221" y1="97" x2="79" y2="239" stroke="rgba(212,175,111,0.05)" strokeWidth="1" strokeDasharray="3 8" />
 
       {/* Axis labels */}
-      <text x="150" y="46" textAnchor="middle" fill="rgba(212,175,111,0.5)" fontSize="10" fontFamily="serif" letterSpacing="3">OUI</text>
-      <text x="265" y="164" textAnchor="start" fill="rgba(212,175,111,0.5)" fontSize="10" fontFamily="serif" letterSpacing="3">NON</text>
-      <text x="150" y="285" textAnchor="middle" fill="rgba(212,175,111,0.3)" fontSize="9" fontFamily="serif" letterSpacing="2">?</text>
-      <text x="35" y="164" textAnchor="end" fill="rgba(212,175,111,0.5)" fontSize="10" fontFamily="serif" letterSpacing="3">NON</text>
+      <text x="150" y="50" textAnchor="middle" fill="rgba(212,175,111,0.55)" fontSize="10" fontFamily="serif" letterSpacing="4">OUI</text>
+      <text x="272" y="172" textAnchor="middle" fill="rgba(212,175,111,0.55)" fontSize="10" fontFamily="serif" letterSpacing="4">NON</text>
+      <text x="28" y="172" textAnchor="middle" fill="rgba(212,175,111,0.55)" fontSize="10" fontFamily="serif" letterSpacing="4">NON</text>
+      <text x="150" y="297" textAnchor="middle" fill="rgba(212,175,111,0.28)" fontSize="9" fontFamily="serif" letterSpacing="2">?</text>
 
-      {/* Chain attachment bar */}
-      <rect x="136" y="8" width="28" height="6" rx="3" fill="url(#pivotGradient)" filter="url(#softGlow)" />
+      {/* Pivot bar */}
+      <rect x="133" y="7" width="34" height="9" rx="4.5" fill="url(#pivotGradient)" />
+      <rect x="138" y="8.5" width="24" height="4" rx="2" fill="rgba(255,245,150,0.35)" />
 
-      {/* The pendulum group (animated) */}
-      <g className={animClass || (isSwinging ? "" : "")}>
-        {/* Chain / fil with segments for realism */}
-        {Array.from({ length: 8 }, (_, i) => {
-          const y1 = 14 + i * 24;
-          const y2 = y1 + 20;
-          return (
-            <line key={i} x1="150" y1={y1} x2="150" y2={y2}
-              stroke={i % 2 === 0 ? "#d4af6f" : "#c9a84c"}
-              strokeWidth={1.5}
-              strokeLinecap="round"
-            />
-          );
+      {/* ─── Pendulum group (animated) ─── */}
+      <g className={animClass}>
+
+        {/* Chain — alternating V/H oval links for a realistic look */}
+        {Array.from({ length: 13 }, (_, i) => {
+          const cy = 20 + i * 16 + 8;
+          const isVert = i % 2 === 0;
+          return isVert
+            ? <ellipse key={i} cx="150" cy={cy} rx="2.8" ry="6.5"
+                fill="none" stroke="#d4af6f" strokeWidth="1.6"
+                filter="url(#chainGlow)" opacity="0.95" />
+            : <ellipse key={i} cx="150" cy={cy} rx="6.5" ry="2.8"
+                fill="none" stroke="#c09840" strokeWidth="1.6"
+                filter="url(#chainGlow)" opacity="0.9" />;
         })}
-        {/* Chain links */}
-        {Array.from({ length: 7 }, (_, i) => (
-          <ellipse key={i} cx="150" cy={34 + i * 24} rx="3" ry="2"
-            fill="none" stroke="#d4af6f" strokeWidth="1" opacity="0.6"
-          />
-        ))}
 
-        {/* Crystal gem */}
+        {/* Bail (golden cap connecting chain to gem) */}
+        <rect x="142" y="222" width="16" height="11" rx="5" fill="url(#pivotGradient)" />
+        <ellipse cx="150" cy="223" rx="5.5" ry="2.5" fill="rgba(255,245,150,0.3)" />
+
+        {/* ─── Faceted crystal gem ─── */}
         <g className={isSwinging ? "gem-pulse" : ""}>
-          {/* Outer glow ring */}
-          <circle cx="150" cy="275" r="28" fill={crystal.glowColor} opacity="0.25" />
-          {/* Main gem body */}
+
+          {/* Outer glow aura */}
+          <ellipse cx="150" cy="283" rx="40" ry="50" fill={crystal.glowColor} opacity="0.2" />
+
+          {/* Main stone body — hexagonal pendant cut */}
+          {/* top:150,232  UL:124,254  LL:122,290  bot:150,325  LR:178,290  UR:176,254 */}
           <polygon
-            points="150,248 174,268 165,295 135,295 126,268"
+            points="150,232 176,254 178,290 150,325 122,290 124,254"
             fill="url(#gemGradient)"
             filter="url(#gemGlow)"
           />
-          {/* Gem facets */}
-          <polygon points="150,248 174,268 150,268" fill={crystal.color1} opacity="0.3" />
-          <polygon points="150,248 126,268 150,268" fill={crystal.color2} opacity="0.2" />
-          <line x1="150" y1="248" x2="150" y2="295" stroke={crystal.highlight} strokeWidth="0.8" opacity="0.5" />
-          <line x1="126" y1="268" x2="174" y2="268" stroke={crystal.highlight} strokeWidth="0.8" opacity="0.4" />
-          {/* Highlight sparkle */}
-          <circle cx="141" cy="257" r="4" fill={crystal.highlight} opacity="0.7" />
-          <circle cx="138" cy="254" r="1.5" fill="rgba(255,255,255,0.9)" />
+
+          {/* Table — inner hexagon (the visible flat "face") */}
+          <polygon
+            points="150,248 166,262 165,282 150,292 135,282 134,262"
+            fill={crystal.color1}
+            opacity="0.38"
+          />
+
+          {/* Crown facets — top band between outer and table */}
+          <polygon
+            points="150,232 176,254 166,262 150,248 134,262 124,254"
+            fill={crystal.highlight}
+            opacity="0.28"
+          />
+          {/* Right crown — lighter */}
+          <polygon points="150,232 176,254 166,262 150,248" fill="rgba(255,255,255,0.18)" />
+          {/* Left crown — darker */}
+          <polygon points="150,232 124,254 134,262 150,248" fill={crystal.color2} opacity="0.16" />
+
+          {/* Pavilion facets — bottom portion */}
+          <polygon
+            points="150,325 122,290 135,282 150,292 165,282 178,290"
+            fill={crystal.color2}
+            opacity="0.6"
+          />
+          {/* Right pavilion — lighter highlight */}
+          <polygon points="150,325 178,290 165,282 150,292" fill={crystal.color1} opacity="0.14" />
+          {/* Left pavilion — deeper shadow */}
+          <polygon points="150,325 122,290 135,282 150,292" fill="rgba(0,0,0,0.22)" />
+
+          {/* Girdle center line */}
+          <line x1="122" y1="270" x2="178" y2="270" stroke={crystal.highlight} strokeWidth="0.7" opacity="0.4" />
+          {/* Vertical axis line */}
+          <line x1="150" y1="232" x2="150" y2="325" stroke={crystal.highlight} strokeWidth="0.5" opacity="0.25" />
+
+          {/* Primary specular polygon (bright face reflection) */}
+          <polygon points="150,232 164,248 157,258 150,248" fill="rgba(255,255,255,0.62)" />
+          {/* Secondary soft highlight */}
+          <ellipse cx="141" cy="258" rx="8" ry="12"
+            fill={crystal.highlight} opacity="0.26"
+            transform="rotate(-12,141,258)" />
+          {/* Bright specular point — triple layer for sparkle */}
+          <circle cx="141" cy="240" r="5.5" fill="rgba(255,255,255,0.5)" />
+          <circle cx="141" cy="239" r="3" fill="rgba(255,255,255,0.78)" />
+          <circle cx="141" cy="238" r="1.2" fill="white" />
+
+          {/* Tiny sparkle stars */}
+          <circle cx="108" cy="268" r="1.8" fill={crystal.color1} opacity="0.55" />
+          <circle cx="192" cy="262" r="1.4" fill={crystal.color1} opacity="0.42" />
+          <circle cx="150" cy="335" r="1.2" fill={crystal.color1} opacity="0.3" />
+          <circle cx="116" cy="300" r="1" fill={crystal.highlight} opacity="0.5" />
+          <circle cx="184" cy="304" r="1" fill={crystal.highlight} opacity="0.45" />
         </g>
       </g>
     </svg>
