@@ -57,7 +57,8 @@ ${cardsList}
 Interprète ce tirage angélique avec douceur et profondeur. Pour chaque ange, explique son message en lien avec sa position dans le tirage et la situation du consultant. Évoque la symbolique de chaque ange, sa guidance spécifique. Révèle les connexions entre les anges tirés. Termine par un message d'espoir lumineux et propose un rituel simple (affirmation, visualisation ou geste symbolique) que la personne peut pratiquer pour ancrer la guidance reçue.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

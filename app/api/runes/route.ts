@@ -46,7 +46,8 @@ ${runesList}
 Donne une interprétation profonde et poétique de ce tirage runique. Pour chaque rune, explique sa signification dans sa position et comment elle répond à la question. Évoque la mythologie nordique si pertinent (Odin, les Nornes, etc.). Termine par une synthèse puissante et un conseil actionnable.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

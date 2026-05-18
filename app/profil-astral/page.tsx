@@ -1,5 +1,6 @@
 "use client";
 import { authFetch } from '@/lib/api-client';
+import { checkResponse, apiErrorMessage } from "@/lib/api-errors";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ZODIAC_SIGNS, getSunSign, PLANETS } from "@/lib/astrology";
 import { computeNatalChart, computeAspects, formatPosition, NatalChart, BirthData } from "@/lib/astro-engine";
@@ -124,7 +125,8 @@ export default function ProfilAstralPage() {
           aspects: topAspects,
         }),
       });
-      if (!res.ok || !res.body) throw new Error();
+      checkResponse(res);
+      if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -136,8 +138,8 @@ export default function ProfilAstralPage() {
         setReading((p) => p + chunk);
       }
       addReading({ type: "profil astral", title: `Thème natal de ${prenom}`, content: full });
-    } catch {
-      setReading("Les astres sont voilés… Réessayez dans quelques instants.");
+    } catch (err) {
+      setReading(apiErrorMessage(err, "Les astres sont voilés… Réessayez dans quelques instants."));
     } finally {
       setIsStreaming(false);
     }

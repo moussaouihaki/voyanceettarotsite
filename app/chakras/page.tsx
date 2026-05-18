@@ -1,5 +1,6 @@
 "use client";
 import { authFetch } from '@/lib/api-client';
+import { checkResponse, apiErrorMessage } from "@/lib/api-errors";
 import { useState } from "react";
 import Link from "next/link";
 import { CHAKRAS } from "@/lib/chakras";
@@ -84,7 +85,8 @@ export default function ChakrasPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scores, profile }),
       });
-      if (!res.ok || !res.body) throw new Error();
+      checkResponse(res);
+      if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -96,8 +98,8 @@ export default function ChakrasPage() {
         setReading((p) => p + chunk);
       }
       addReading({ type: "chakras", title: "Bilan énergétique complet", content: full, meta: { scores } });
-    } catch {
-      setReading("Les énergies sont perturbées... Réessayez dans quelques instants.");
+    } catch (err) {
+      setReading(apiErrorMessage(err, "Les énergies sont perturbées... Réessayez dans quelques instants."));
     } finally {
       setIsStreaming(false);
     }

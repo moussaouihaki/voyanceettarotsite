@@ -53,7 +53,8 @@ ${colorsList}
 Compose une lecture d'aura d'environ 400 mots. Adresse-toi à ${prenom} dès la première phrase. Décris la signification de chaque couleur d'aura révélée, son archétype, son chakra associé et ce qu'elle dit de l'état de l'âme en ce moment. Explore les interactions entre les couleurs et ce qu'elles révèlent ensemble. Conclus par un message d'orientation vibratoire et un conseil pratique pour travailler avec ces énergies.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

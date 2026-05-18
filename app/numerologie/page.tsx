@@ -1,5 +1,6 @@
 "use client";
 import { authFetch } from '@/lib/api-client';
+import { checkResponse, apiErrorMessage } from "@/lib/api-errors";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { calculerProfil, calculerExpression, calculerAme, calculerCheminDeVie, NUMBER_MEANINGS, type NumerologyProfile } from "@/lib/numerology";
@@ -162,7 +163,7 @@ function NumericCompatibility() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(result),
       });
-      if (!res.ok || !res.body) throw new Error();
+      checkResponse(res); if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       while (true) {
@@ -170,8 +171,8 @@ function NumericCompatibility() {
         if (done) break;
         setAiReading((p) => p + decoder.decode(value, { stream: true }));
       }
-    } catch {
-      setAiReading("Les vibrations numériques sont perturbées... Réessayez.");
+    } catch (err) {
+      setAiReading(apiErrorMessage(err, "Les vibrations numériques sont perturbées... Réessayez."));
     } finally {
       setIsLoadingAI(false);
     }
@@ -333,7 +334,7 @@ export default function NumerologiePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prenom, nom, dateNaissance, profile: numProfile }),
       });
-      if (!res.ok || !res.body) throw new Error();
+      checkResponse(res); if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -345,8 +346,8 @@ export default function NumerologiePage() {
         setReading((p) => p + chunk);
       }
       addReading({ type: "numérologie", title: `Profil de ${prenom} ${nom}`, content: full });
-    } catch {
-      setReading("Les vibrations numériques sont perturbées... Réessayez.");
+    } catch (err) {
+      setReading(apiErrorMessage(err, "Les vibrations numériques sont perturbées... Réessayez."));
     } finally {
       setIsStreaming(false);
     }

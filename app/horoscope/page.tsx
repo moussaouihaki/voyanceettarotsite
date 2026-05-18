@@ -1,5 +1,6 @@
 "use client";
 import { authFetch } from '@/lib/api-client';
+import { checkResponse, apiErrorMessage } from "@/lib/api-errors";
 import { useState } from "react";
 import { ZODIAC_SIGNS } from "@/lib/astrology";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -25,7 +26,8 @@ export default function HoroscopePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sign: signName, period, profile }),
       });
-      if (!res.ok || !res.body) throw new Error();
+      checkResponse(res);
+      if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -37,8 +39,8 @@ export default function HoroscopePage() {
         setReading((p) => p + chunk);
       }
       addReading({ type: "horoscope", title: `${signName} · ${period}`, content: full });
-    } catch {
-      setReading("Les astres sont voilés en ce moment... Réessayez.");
+    } catch (err) {
+      setReading(apiErrorMessage(err, "Les astres sont voilés en ce moment... Réessayez."));
     } finally {
       setIsStreaming(false);
     }

@@ -57,7 +57,8 @@ ${cardsList}
 Donne une interprétation profonde et poétique d'environ 500 mots de ce tirage Lenormand. Analyse chaque carte dans sa position, puis révèle les combinaisons et les messages secrets entre les cartes voisines. Évoque la tradition cartomancique et le symbolisme propre à l'Oracle Lenormand. Termine par une synthèse lumineuse et un conseil bienveillant et actionnable.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

@@ -52,7 +52,8 @@ L'horoscope doit couvrir :
 Commence par une accroche mystique sur l'énergie ${periodLabel} pour ce signe.${profile?.prenom ? ` Commence en appelant ${profile.prenom} par son prénom.` : ""} Style élégant, mystique mais concret. Maximum 220 mots.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

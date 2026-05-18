@@ -1,5 +1,6 @@
 "use client";
 import { authFetch } from "@/lib/api-client";
+import { checkResponse, apiErrorMessage } from "@/lib/api-errors";
 import { useState } from "react";
 import Link from "next/link";
 import { ANGEL_CARDS, ANGEL_SPREADS, type AngeCard, type AngelSpread } from "@/lib/anges";
@@ -59,7 +60,8 @@ export default function AngesPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cards: cardData, question, spreadName: selectedSpread.name, profile }),
       });
-      if (!res.ok || !res.body) throw new Error();
+      checkResponse(res);
+      if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -71,8 +73,8 @@ export default function AngesPage() {
         setReading((p) => p + chunk);
       }
       addReading({ type: "anges", title: selectedSpread.name, content: full, meta: { question } });
-    } catch {
-      setReading("Les anges gardent leur silence pour l'instant... Réessayez.");
+    } catch (err) {
+      setReading(apiErrorMessage(err, "Les anges gardent leur silence pour l'instant... Réessayez."));
     } finally {
       setIsStreaming(false);
     }

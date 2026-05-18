@@ -1,5 +1,6 @@
 "use client";
 import { authFetch } from '@/lib/api-client';
+import { checkResponse, apiErrorMessage } from "@/lib/api-errors";
 import { useState } from "react";
 import Link from "next/link";
 import { HEXAGRAMS, tossCoins, buildHexagrams, type Hexagram } from "@/lib/iching";
@@ -74,7 +75,8 @@ export default function IChingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hexagram, question, profile, secondaryHexagram: secondaryHexagram ?? undefined, changingLines }),
       });
-      if (!res.ok || !res.body) throw new Error();
+      checkResponse(res);
+      if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -86,8 +88,8 @@ export default function IChingPage() {
         setReading((p) => p + chunk);
       }
       addReading({ type: "iching", title: `${hexagram.number}. ${hexagram.name}`, content: full });
-    } catch {
-      setReading("Le Yi-King garde le silence... Réessayez.");
+    } catch (err) {
+      setReading(apiErrorMessage(err, "Le Yi-King garde le silence... Réessayez."));
     } finally {
       setIsStreaming(false);
     }

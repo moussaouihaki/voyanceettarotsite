@@ -1,5 +1,6 @@
 "use client";
 import { authFetch } from '@/lib/api-client';
+import { checkResponse, apiErrorMessage } from "@/lib/api-errors";
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { ALL_CARDS, TarotCard } from "@/lib/tarot-cards";
@@ -176,7 +177,8 @@ export default function TiragePage() {
           } : undefined,
         }),
       });
-      if (!res.ok || !res.body) throw new Error();
+      checkResponse(res);
+      if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -188,8 +190,8 @@ export default function TiragePage() {
         setReading((p) => p + chunk);
       }
       addReading({ type: "tarot", title: selectedSpread.name, content: full, meta: { question } });
-    } catch {
-      setReading("Les astres sont momentanément voilés... Veuillez réessayer.");
+    } catch (err) {
+      setReading(apiErrorMessage(err, "Les astres sont momentanément voilés... Veuillez réessayer."));
     } finally {
       setIsStreaming(false);
     }

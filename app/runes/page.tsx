@@ -1,5 +1,6 @@
 "use client";
 import { authFetch } from '@/lib/api-client';
+import { checkResponse, apiErrorMessage } from "@/lib/api-errors";
 import { useState } from "react";
 import Link from "next/link";
 import { ELDER_FUTHARK, RUNE_SPREADS, drawRunes, type RuneSpread } from "@/lib/runes";
@@ -91,7 +92,8 @@ export default function RunesPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ runes: runeData, question, spreadName: selectedSpread.name, profile }),
       });
-      if (!res.ok || !res.body) throw new Error();
+      checkResponse(res);
+      if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -103,8 +105,8 @@ export default function RunesPage() {
         setReading((p) => p + chunk);
       }
       addReading({ type: "runes", title: selectedSpread.name, content: full, meta: { question } });
-    } catch {
-      setReading("Les runes gardent leur silence... Réessayez.");
+    } catch (err) {
+      setReading(apiErrorMessage(err, "Les runes gardent leur silence... Réessayez."));
     } finally {
       setIsStreaming(false);
     }

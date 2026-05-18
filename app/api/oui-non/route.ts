@@ -83,7 +83,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME, generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
     const response = await model.generateContent(prompt);
     const interpretation = response.response.text().trim();
 

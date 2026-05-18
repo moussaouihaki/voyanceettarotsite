@@ -1,5 +1,6 @@
 "use client";
 import { authFetch } from '@/lib/api-client';
+import { checkResponse, apiErrorMessage } from "@/lib/api-errors";
 import { useState } from "react";
 import Link from "next/link";
 import { LENORMAND_DECK, LENORMAND_SPREADS, drawLenormand, type LenormandSpread, type LenormandCard } from "@/lib/lenormand";
@@ -108,7 +109,8 @@ export default function LenormandPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cards: cardData, question, spreadName: selectedSpread.name, profile }),
       });
-      if (!res.ok || !res.body) throw new Error();
+      checkResponse(res);
+      if (!res.body) throw new Error("server");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -120,8 +122,8 @@ export default function LenormandPage() {
         setReading((p) => p + chunk);
       }
       addReading({ type: "lenormand", title: selectedSpread.name, content: full, meta: { question } });
-    } catch {
-      setReading("Les cartes gardent leur secret... Réessayez.");
+    } catch (err) {
+      setReading(apiErrorMessage(err, "Les cartes gardent leur secret... Réessayez."));
     } finally {
       setIsStreaming(false);
     }

@@ -4,6 +4,7 @@ import { Sparkles, RotateCcw } from "lucide-react";
 import { ALL_CARDS as TAROT_DECK, type TarotCard } from "@/lib/tarot-cards";
 import { getCardImage, type DeckType } from "@/lib/deck-images";
 import { authFetch } from "@/lib/api-client";
+import { checkResponse, apiErrorMessage } from "@/lib/api-errors";
 
 // ── Card classification by ID ─────────────────────────────────────────────────
 
@@ -254,28 +255,18 @@ export default function OuiNonPage() {
         body: JSON.stringify({ question: question.trim(), cards: picked.map(c => c.name) }),
       });
 
-      let data: Reading;
-      if (res.ok) {
-        data = await res.json() as Reading;
-      } else {
-        data = {
-          result: computeLocalResult(picked),
-          interpretation: "Les cartes ont parlé. Faites confiance à leur réponse et à votre intuition pour avancer sur votre chemin.",
-        };
-      }
+      checkResponse(res);
+      const data = await res.json() as Reading;
 
       setTimeout(() => {
         setReading(data);
         setPhase("done");
         setLoading(false);
       }, 2600);
-    } catch {
+    } catch (err) {
       setTimeout(() => {
-        setReading({
-          result: computeLocalResult(picked),
-          interpretation: "Les cartes ont parlé. Faites confiance à leur réponse et à votre intuition pour avancer sur votre chemin.",
-        });
-        setPhase("done");
+        setError(apiErrorMessage(err, "Les étoiles sont voilées... Réessayez dans quelques instants."));
+        setPhase("form");
         setLoading(false);
       }, 2600);
     }

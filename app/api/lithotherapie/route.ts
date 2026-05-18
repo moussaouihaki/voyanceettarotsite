@@ -55,7 +55,8 @@ ${crystalsList}
 Compose une lecture lithothérapeutique d'environ 500 mots. Adresse-toi à ${prenom} dès la première phrase. Pour chaque cristal, interprète son message vibratoire dans sa position et la façon dont il répond à l'intention ou à la question. Évoque les chakras concernés, les énergies en jeu et la guidance pratique de guérison. Conclus par une synthèse inspirante et un conseil concret sur l'utilisation des cristaux pour cette guidance.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {
