@@ -14,7 +14,7 @@ export async function verifyIdToken(req: NextRequest): Promise<AuthResult | null
   if (!authHeader?.startsWith("Bearer ")) return null;
 
   const idToken = authHeader.slice(7);
-  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDIdkRiuvMHqfBehDbmTiOVBMWB2SJg5q8";
   if (!apiKey) throw new Error("NEXT_PUBLIC_FIREBASE_API_KEY is not set");
 
   try {
