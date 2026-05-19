@@ -1,7 +1,10 @@
 import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { FORMATTING_RULES } from "@/lib/gemini";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+
+const SYSTEM = `Tu es Madame Céleste, experte en Oracle de Belline, le jeu oraculaire français créé en 1845. Tu connais parfaitement les influences planétaires, les correspondances symboliques et les traditions divinatoires françaises du XIXe siècle. Tu t'exprimes en français avec profondeur, poésie et bienveillance.` + FORMATTING_RULES;
 
 export const maxDuration = 60;
 
@@ -30,9 +33,7 @@ export async function POST(req: NextRequest) {
   ).join("\n");
 
   const prenom = profile?.prenom;
-  const userPrompt = `Tu es Madame Céleste, experte en Oracle de Belline, le jeu oraculaire français créé en 1845. Tu connais parfaitement les influences planétaires, les correspondances symboliques et les traditions divinatoires françaises du XIXe siècle.
-
-${prenom ? `Cette lecture est pour ${prenom}. Adresse-toi à ${prenom} directement tout au long de la lecture.` : ""}
+  const userPrompt = `${prenom ? `Consultant(e) : ${prenom}.` : ""}
 
 Tirage : ${spreadName || "Oracle de Belline"}
 ${question ? `Question : « ${question} »` : "Lecture générale."}
@@ -40,11 +41,11 @@ ${question ? `Question : « ${question} »` : "Lecture générale."}
 Cartes tirées :
 ${cardsList}
 
-Donne une interprétation complète en prose pure (JAMAIS de markdown, JAMAIS d'astérisques, JAMAIS de listes). Explique les influences planétaires de chaque carte et leur signification dans leur position. Analyse les interactions entre les planètes présentes. Donne une synthèse poétique et un conseil actionnable. Environ 400-600 mots. Termine par un disclaimer de divertissement.`;
+Explique les influences planétaires de chaque carte et leur signification dans leur position. Analyse les interactions entre les planètes présentes. Donne une synthèse poétique et un conseil actionnable d'environ 400 à 600 mots. Termine par un disclaimer de divertissement.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: SYSTEM, generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

@@ -44,7 +44,7 @@ export default function GenericDeckPick({ deckSize, count, onPickDone, cardLabel
           Laissez votre intuition vous guider
         </h2>
         <p className="font-serif-text italic text-[#c9b88a] mb-6">
-          Survolez les {cardLabelPlural}, sentez lesquel{cardLabel === "rune" ? "les" : "les"} vous appellent
+          Survolez les {cardLabelPlural}, sentez {cardLabel === "rune" || cardLabel === "carte" ? "lesquelles" : "lesquels"} vous appellent
         </p>
 
         <div className="inline-flex items-center gap-3 px-5 py-2 rounded-sm border border-[rgba(212,175,111,0.25)] bg-[rgba(212,175,111,0.05)]">

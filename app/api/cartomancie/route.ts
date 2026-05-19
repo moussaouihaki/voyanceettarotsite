@@ -2,7 +2,10 @@ import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getSunSign } from "@/lib/astrology";
+import { FORMATTING_RULES } from "@/lib/gemini";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+
+const SYSTEM = `Tu es Madame Céleste, experte en cartomancie traditionnelle française. Tu pratiques la lecture du jeu de 32 cartes selon la tradition populaire française du XIXe siècle — la voyance de grand-mère, directe, précise et authentique.` + FORMATTING_RULES;
 
 export const maxDuration = 60;
 
@@ -29,9 +32,7 @@ export async function POST(req: NextRequest) {
     `${i + 1}. Position « ${c.position} » : ${c.name} (${c.suitSymbol}) — Mots-clés : ${c.keywords.join(", ")}`
   ).join("\n");
 
-  const userPrompt = `Tu es Madame Céleste, experte en cartomancie traditionnelle française. Tu pratiques la lecture du jeu de 32 cartes selon la tradition populaire française du XIXe siècle — la voyance de grand-mère, directe, précise et authentique.
-
-${prenom ? `Cette lecture est pour ${prenom}${sunSign ? `, ${sunSign}` : ""}. Adresse-toi directement à ${prenom} tout au long de la lecture.` : ""}
+  const userPrompt = `${prenom ? `Consultant(e) : ${prenom}${sunSign ? ` (${sunSign})` : ""}.` : ""}
 
 Tirage : ${spreadName || "Cartomancie traditionnelle"}
 ${question ? `Question : « ${question} »` : "Lecture générale."}
@@ -39,11 +40,11 @@ ${question ? `Question : « ${question} »` : "Lecture générale."}
 Cartes tirées :
 ${cardsList}
 
-Interprète chaque carte dans sa position selon la tradition française (♥ = sentiments/famille, ♦ = nouvelles/argent, ♣ = chance/travail, ♠ = obstacles/épreuves). Explique les relations entre les cartes, les associations de couleurs et les combinaisons significatives. Donne une lecture directe, concrète et bienveillante, en prose pure (JAMAIS de markdown ni d'astérisques). Environ 400-600 mots. Termine par un conseil pratique et un disclaimer de divertissement.`;
+Interprète chaque carte dans sa position selon la tradition française (♥ = sentiments/famille, ♦ = nouvelles/argent, ♣ = chance/travail, ♠ = obstacles/épreuves). Explique les relations entre les cartes, les associations de couleurs et les combinaisons significatives. Donne une lecture directe, concrète et bienveillante d'environ 400 à 600 mots. Termine par un conseil pratique et un disclaimer de divertissement.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: SYSTEM, generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

@@ -12,14 +12,14 @@ interface Props {
 export default function ReadingResult({ text, isStreaming }: Props) {
   const [isSpeaking, setIsSpeaking] = useState(false);
 
-  // Cancel speech on unmount or when text changes
+  // Cancel speech on unmount only
   useEffect(() => {
     return () => {
       if (typeof window !== "undefined" && window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
     };
-  }, [text]);
+  }, []);
 
   function stripHtml(html: string): string {
     return html.replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, " ").replace(/&#39;/g, "'").replace(/&quot;/g, '"');
@@ -94,6 +94,8 @@ export default function ReadingResult({ text, isStreaming }: Props) {
       <div
         className="font-serif-text text-[#e8dcc0] text-[16px] leading-[1.85]"
         dangerouslySetInnerHTML={{ __html: cleanAIText(text) }}
+        aria-live="polite"
+        aria-atomic="false"
       />
       {isStreaming && <span className="typing-cursor" />}
     </div>

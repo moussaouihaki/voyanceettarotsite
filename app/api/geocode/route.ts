@@ -1,4 +1,5 @@
 import { type NextRequest } from "next/server";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 30;
 
@@ -24,6 +25,10 @@ interface GeocodedPlace {
 }
 
 export async function GET(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "anon";
+  const rl = rateLimit(`geocode:${ip}`, 30);
+  if (!rl.ok) return rateLimitResponse(rl.resetAt);
+
   const q = request.nextUrl.searchParams.get("q");
 
   if (!q || q.trim() === "") {

@@ -270,10 +270,8 @@ function calculateAscendant(jd: number, latitude: number, longitudeEast: number)
     Math.sin(ramc) * Math.cos(obl) + Math.tan(lat) * Math.sin(obl)
   );
   let asc = rev(ascRaw * RAD);
-  // Quadrant correction
-  if (asc < mc) asc += 180;
-  if (asc - mc > 180) asc -= 180;
-  asc = rev(asc);
+  // Quadrant correction: ASC must lie in arc [MC, MC+180°) going eastward
+  if (rev(asc - mc) > 180) asc = rev(asc + 180);
 
   return { ascendant: asc, mc };
 }

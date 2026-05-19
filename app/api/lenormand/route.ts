@@ -44,9 +44,7 @@ export async function POST(req: NextRequest) {
     `${i + 1}. "${c.position}" : ${c.symbol} N°${c.number} — ${c.name} — Mots-clés : ${c.keywords.join(", ")}`
   ).join("\n");
 
-  const prompt = `${SYSTEM}
-
-${personalContext}
+  const prompt = `${personalContext}
 
 Tirage Lenormand : ${spreadName}
 ${question ? `Question : "${question}"` : "Lecture générale."}
@@ -58,7 +56,8 @@ Donne une interprétation profonde et poétique d'environ 500 mots de ce tirage 
 
   const genAI = new GoogleGenerativeAI(apiKey);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: SYSTEM, generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

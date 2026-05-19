@@ -85,7 +85,7 @@ export default function DeckPick({ count, shuffledDeck, onPickDone }: Props) {
           const isFull = selected.size >= count && !isSelected;
           return (
             <button
-              key={index}
+              key={card.id}
               onClick={() => toggle(index)}
               disabled={isFull}
               title={isSelected ? card.name : ""}
