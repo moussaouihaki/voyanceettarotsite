@@ -1,9 +1,12 @@
 import { verifyIdToken, unauthorizedResponse } from "@/lib/firebase-admin";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest } from "next/server";
+import { FORMATTING_RULES } from "@/lib/gemini";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
+
+const SYSTEM = `Tu es Madame Céleste, maîtresse de la chiromancie selon la tradition de Cheiro et de l'école occidentale classique. Tu lis les lignes de la main depuis 30 ans, en t'appuyant sur les grandes lignes (vie, cœur, tête, destin) et les signes secondaires (îles, croix, étoiles, chaînes). Tu t'exprimes en français avec finesse, poésie et bienveillance.` + FORMATTING_RULES;
 
 export async function POST(req: NextRequest) {
   const auth = await verifyIdToken(req);
@@ -32,14 +35,18 @@ export async function POST(req: NextRequest) {
   if (!apiKey) return new Response("Clé API manquante", { status: 500 });
 
   const genAI = new GoogleGenerativeAI(apiKey);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
+    systemInstruction: SYSTEM,
     generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any,
   });
 
-  let promptText = `Tu es Madame Céleste, maîtresse des arts divinatoires. Tu pratiques la chiromancie depuis 30 ans. Analyse cette image de la paume de la main avec finesse et poésie.
+  const personalContext = profile?.prenom ? `Consultant(e) : ${profile.prenom}.\n\n` : "";
 
-Examine et décris en prose pure (JAMAIS de markdown, JAMAIS de listes, JAMAIS d'astérisques) :
+  const promptText = `${personalContext}Analyse cette image de la paume de la main.
+
+Examine et interprète en prose pure :
 - La ligne de vie (vitalité, énergie, longévité)
 - La ligne de cœur (vie amoureuse, émotions)
 - La ligne de tête (intellect, pensée, décisions)
@@ -47,11 +54,7 @@ Examine et décris en prose pure (JAMAIS de markdown, JAMAIS de listes, JAMAIS d
 - La forme générale de la main et des doigts
 - Tout signe particulier visible (îles, croix, étoiles, chaînes)
 
-Donne une interprétation personnelle, poétique et bienveillante. Commence par adresser la personne par son prénom si connu. Termine par un message d'espoir et un conseil pratique. Environ 400-600 mots. Précise en fin que c'est à des fins d'inspiration et de divertissement.`;
-
-  if (profile?.prenom) {
-    promptText = `Tu parles avec ${profile.prenom}. Adresse-toi à elle/lui par son prénom.\n\n` + promptText;
-  }
+Donne une lecture personnelle, poétique et bienveillante d'environ 400 à 600 mots. Termine par un message d'espoir et un conseil pratique. Précise en fin que cette lecture est à des fins d'inspiration et de divertissement.`;
 
   const stream = new ReadableStream({
     async start(controller) {

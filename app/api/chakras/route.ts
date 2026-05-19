@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(`chakras:${auth.uid}`, 20);
   if (!rl.ok) return rateLimitResponse(rl.resetAt);
 
-  const { scores } = await req.json() as { scores: Record<string, number> };
+  const { scores, profile } = await req.json() as { scores: Record<string, number>; profile?: { prenom?: string } };
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) return new Response("Clé API manquante", { status: 500 });
 
@@ -35,9 +35,7 @@ export async function POST(req: NextRequest) {
   const mostBlocked = Object.entries(scores).sort(([, a], [, b]) => a - b)[0];
   const mostOpen = Object.entries(scores).sort(([, a], [, b]) => b - a)[0];
 
-  const prompt = `${SYSTEM}
-
-Bilan énergétique des chakras :
+  const prompt = `${profile?.prenom ? `Consultant(e) : ${profile.prenom}\n` : ""}Bilan énergétique des chakras :
 ${scoresList}
 
 Chakra le plus bloqué : ${chakraNames[mostBlocked[0]] || mostBlocked[0]} (${mostBlocked[1]}%)
@@ -56,7 +54,7 @@ Style bienveillant, spirituel et ancré dans les pratiques traditionnelles.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: SYSTEM, generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

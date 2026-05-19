@@ -24,19 +24,19 @@ export const OGHAM_STAVES: OghamStave[] = [
     upright: "Faites confiance à votre intuition et à votre vision ; vous êtes protégé(e) sur ce chemin.",
   },
   {
-    id: "fearn", number: 3, letter: "ᚃ", name: "Fearn", tree: "Aulne", element: "Eau",
+    id: "fearn", number: 4, letter: "ᚃ", name: "Fearn", tree: "Aulne", element: "Eau",
     keywords: ["courage", "guidance", "passage", "protection guerrière"],
     meaning: "L'Aulne pousse aux bords des eaux et forme des ponts entre les mondes. Il incarne le courage du guerrier qui traverse les eaux troubles pour atteindre sa destinée.",
     upright: "Avancez avec courage dans cette traversée ; la guidance est présente pour vous mener à bon port.",
   },
   {
-    id: "sail", number: 4, letter: "ᚄ", name: "Sail", tree: "Saule", element: "Eau",
+    id: "sail", number: 5, letter: "ᚄ", name: "Sail", tree: "Saule", element: "Eau",
     keywords: ["intuition", "lune", "émotions", "flexibilité"],
     meaning: "Le Saule, gardien des eaux lunaires, écoute les murmures de l'inconscient et des rêves. Sa flexibilité face aux vents enseigne l'art de plier sans se rompre.",
     upright: "Écoutez vos rêves et vos émotions profondes ; la flexibilité est votre force en ce moment.",
   },
   {
-    id: "nion", number: 5, letter: "ᚅ", name: "Nion", tree: "Frêne", element: "Air",
+    id: "nion", number: 3, letter: "ᚅ", name: "Nion", tree: "Frêne", element: "Air",
     keywords: ["connexion", "monde-des-esprits", "destin", "expansion"],
     meaning: "Le Frêne sacré des Celtes relie les trois royaumes — le ciel, la terre et le monde souterrain, à la manière du Bile, l'arbre cosmique de la mythologie irlandaise. Il ouvre les portes de la perception au-delà du voile de l'ordinaire.",
     upright: "Ouvrez-vous aux connexions entre les plans ; votre destin se tisse à travers plusieurs dimensions.",
@@ -90,7 +90,7 @@ export const OGHAM_STAVES: OghamStave[] = [
     upright: "Recherchez l'harmonie et la guérison ; écoutez le rythme naturel de votre corps et de votre âme.",
   },
   {
-    id: "straif", number: 14, letter: "ᚎ", name: "Straif", tree: "Épine noire", element: "Terre",
+    id: "straif", number: 14, letter: "ᚎ", name: "Straif", tree: "Prunellier", element: "Terre",
     keywords: ["contrainte du destin", "force irrésistible", "carrefour", "inévitabilité"],
     meaning: "L'Épine noire, arbre du destin inexorable, marque les carrefours où les chemins se croisent sans retour. Sa puissance révèle les forces qui dépassent la volonté humaine et imposent une direction.",
     upright: "Acceptez ce qui est inévitable ; certaines forces du destin doivent être traversées avec humilité.",
@@ -138,7 +138,7 @@ export const OGHAM_STAVES: OghamStave[] = [
     upright: "Exprimez-vous avec éloquence et authenticité ; vos paroles ont le pouvoir de traverser les voiles.",
   },
   {
-    id: "oir", number: 22, letter: "ᚖ", name: "Óir", tree: "Fusain", element: "Feu",
+    id: "oir", number: 22, letter: "ᚖ", name: "Óir", tree: "Épine dorée", element: "Feu",
     keywords: ["harmonie", "or", "douceur", "complétude"],
     meaning: "Le Fusain doré synthétise les harmonies de la création et représente la plénitude accomplie. Son essence précieuse comme l'or révèle la beauté dans l'achèvement et la complétude.",
     upright: "Vous approchez d'un moment de complétude et d'harmonie ; savourez cette belle synthèse.",
@@ -156,7 +156,7 @@ export const OGHAM_STAVES: OghamStave[] = [
     upright: "Une récompense inattendue vous attend derrière un obstacle apparent ; persévérez.",
   },
   {
-    id: "emhancholl", number: 25, letter: "ᚙ", name: "Emhancholl", tree: "Ajonc", element: "Feu",
+    id: "emhancholl", number: 25, letter: "ᚙ", name: "Emhancholl", tree: "Pin sylvestre", element: "Feu",
     keywords: ["synthèse", "totalité", "accomplissement", "clôture-du-cycle"],
     meaning: "L'Ajonc doré, épineux et lumineux, dernier fid et gardien de la totalité, clôture le cercle de la sagesse oghamique. Il incarne l'accomplissement du grand cycle et l'union des contraires dans la plénitude.",
     upright: "Un cycle important s'achève ; célébrez ce que vous avez accompli et préparez-vous au prochain cercle.",
@@ -196,6 +196,10 @@ export const OGHAM_SPREADS: OghamSpread[] = [
 ];
 
 export function drawOgham(count: number): OghamStave[] {
-  const shuffled = [...OGHAM_STAVES].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+  const a = [...OGHAM_STAVES];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a.slice(0, count);
 }

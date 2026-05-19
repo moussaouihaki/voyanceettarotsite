@@ -44,9 +44,7 @@ export async function POST(req: NextRequest) {
     `${i + 1}. "${s.position}" : ${s.letter} ${s.name} (${s.tree}) — Mots-clés : ${s.keywords.join(", ")}`
   ).join("\n");
 
-  const prompt = `${SYSTEM}
-
-${personalContext}
+  const prompt = `${personalContext}
 
 Tirage Ogham : ${spreadName}
 ${question ? `Question : "${question}"` : "Lecture générale."}
@@ -54,11 +52,11 @@ ${question ? `Question : "${question}"` : "Lecture générale."}
 Les staves tirés :
 ${stavesList}
 
-Donne une interprétation profonde et poétique de ce tirage Ogham. Pour chaque stave, explique sa signification dans sa position en évoquant l'arbre sacré associé et sa symbolique celtique. Tisse les énergies des arbres ensemble pour révéler le message des druides. Invoke la sagesse druidique, les cycles de la nature et la tradition celtique. Termine par une synthèse inspirante et un conseil ancré dans la sagesse de la forêt.`;
+Donne une interprétation profonde et poétique de ce tirage Ogham. Pour chaque stave, explique sa signification dans sa position en évoquant l'arbre sacré associé et sa symbolique celtique. Tisse les énergies des arbres ensemble pour révéler le message des druides. Invoque la sagesse druidique, les cycles de la nature et la tradition celtique. Termine par une synthèse inspirante et un conseil ancré dans la sagesse de la forêt.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: SYSTEM, generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

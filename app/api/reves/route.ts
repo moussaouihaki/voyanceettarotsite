@@ -69,9 +69,7 @@ RÈGLES ABSOLUES DE FORMAT — à respecter sans la moindre exception :
     ? `Émotions ressenties pendant et après le rêve : ${emotions.trim()}. Intègre profondément ces émotions dans ton interprétation — elles sont la clé vibratoire du message.`
     : "";
 
-  const prompt = `${systemInstruction}
-
-${prenomPhrase}
+  const prompt = `${prenomPhrase}
 ${datePhrase}
 
 Rêve à interpréter :
@@ -90,6 +88,7 @@ Conclus avec une note de bienveillance et rappelle discrètement en toute fin qu
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
+    systemInstruction,
     generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any,
   });
 

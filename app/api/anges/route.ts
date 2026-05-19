@@ -44,9 +44,7 @@ export async function POST(req: NextRequest) {
     `${i + 1}. "${c.position}" : ${c.name} (${c.theme}) — Message : ${c.message} — Mots-clés : ${c.keywords.join(", ")}`
   ).join("\n");
 
-  const prompt = `${SYSTEM}
-
-${personalContext}
+  const prompt = `${personalContext}
 
 Tirage Oracle des Anges : ${spreadName}
 ${question ? `Question : "${question}"` : "Lecture générale."}
@@ -58,7 +56,7 @@ Interprète ce tirage angélique avec douceur et profondeur. Pour chaque ange, e
 
   const genAI = new GoogleGenerativeAI(apiKey);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: SYSTEM, generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

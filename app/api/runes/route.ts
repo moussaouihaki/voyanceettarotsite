@@ -36,9 +36,7 @@ export async function POST(req: NextRequest) {
     `${i + 1}. "${r.position}" : ${r.symbol} ${r.name}${r.reversed ? " (INVERSÉE)" : ""} — Mots-clés: ${r.keywords.join(", ")}`
   ).join("\n");
 
-  const prompt = `${SYSTEM}
-
-Tirage runique : ${spreadName}
+  const prompt = `Tirage runique : ${spreadName}
 ${prenom ? `Consultant(e) : ${prenom}` : ""}
 ${question ? `Question : "${question}"` : "Lecture générale."}
 
@@ -49,7 +47,7 @@ Donne une interprétation profonde et poétique de ce tirage runique. Pour chaqu
 
   const genAI = new GoogleGenerativeAI(apiKey);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: SYSTEM, generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

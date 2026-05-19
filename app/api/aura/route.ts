@@ -41,9 +41,7 @@ export async function POST(req: NextRequest) {
     `${i + 1}. ${c.name} — Archétype : ${c.archetype} — Chakra : ${c.chakra} — Mots-clés : ${c.keywords.join(", ")} — Message : ${c.message}`
   ).join("\n");
 
-  const prompt = `${SYSTEM}
-
-Prénom de la personne : ${prenom}${dateNaissance}
+  const prompt = `Prénom de la personne : ${prenom}${dateNaissance}
 
 ${question ? `Question ou intention : "${question}"` : "Lecture aura générale."}
 
@@ -54,7 +52,7 @@ Compose une lecture d'aura d'environ 400 mots. Adresse-toi à ${prenom} dès la 
 
   const genAI = new GoogleGenerativeAI(apiKey);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: SYSTEM, generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any });
 
   const stream = new ReadableStream({
     async start(controller) {

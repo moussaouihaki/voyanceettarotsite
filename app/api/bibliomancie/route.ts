@@ -21,8 +21,14 @@ export async function POST(req: NextRequest) {
     profile?: { prenom?: string };
   };
 
-  if (!passage) {
-    return new Response("Passage manquant", { status: 400 });
+  if (!passage || passage.trim().length < 10) {
+    return new Response("Passage trop court ou manquant", { status: 400 });
+  }
+  if (passage.length > 3000) {
+    return new Response("Passage trop long (max 3000 caractères)", { status: 400 });
+  }
+  if (!source || !source.trim()) {
+    return new Response("Source manquante", { status: 400 });
   }
 
   const apiKey = process.env.GOOGLE_API_KEY;
@@ -30,22 +36,18 @@ export async function POST(req: NextRequest) {
 
   const personalContext = profile?.prenom ? `Consultant(e) : ${profile.prenom}.` : "";
 
-  const prompt = `${SYSTEM}
-
-${personalContext}
+  const prompt = `${personalContext}
 
 Source oraculaire : ${source}
 Passage tiré au sort : "${passage}"
 ${question ? `Question posée : "${question}"` : "Pas de question spécifique — lecture générale."}
 
-Interprète ce passage comme un oracle qui répond à la question ou situation de la personne. Rédige uniquement en prose, sans markdown, entre 300 et 400 mots. Adopte un ton chaleureux et mystique.
-
-${profile?.prenom ? `Commence par t'adresser à ${profile.prenom}.` : ""}
-D'abord, explique ce que dit ce passage dans son contexte original et sa tradition. Ensuite, dévoile sa signification profonde en lien avec la question posée, comme si l'univers avait guidé cette main vers ces mots précis. Enfin, donne un conseil pratique et bienveillant ancré dans ce message. Termine par une phrase d'encouragement inspirée du passage.`;
+Interprète ce passage comme un oracle qui répond à la question ou situation de la personne. Rédige uniquement en prose, sans markdown, entre 300 et 400 mots. Adopte un ton chaleureux et mystique. D'abord, explique ce que dit ce passage dans son contexte original et sa tradition. Ensuite, dévoile sa signification profonde en lien avec la question posée, comme si l'univers avait guidé cette main vers ces mots précis. Enfin, donne un conseil pratique et bienveillant ancré dans ce message. Termine par une phrase d'encouragement inspirée du passage.`;
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
+    systemInstruction: SYSTEM,
     generationConfig: { thinkingConfig: { thinkingBudget: 0 } } as any,
   });
 
